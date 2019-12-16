@@ -36,7 +36,7 @@ void build(int l,int r,int deep)
 }
 int query(int l,int r,int deep,int kth)
 {
-    if(ql == qr)return tree[ql][deep];
+    if(ql == qr)return partition_tree[ql][deep];
     int mid = l + r >> 1;
     int lcnt = prefix[qr][deep] - prefix[ql - 1][deep];
     if(lcnt >= kth)
