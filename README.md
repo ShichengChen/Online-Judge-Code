@@ -12,3 +12,7 @@
 
 - use small data
 - test it well before write code
+
+# How to prevent wrong code
+
+- write every requirement on the paper.
