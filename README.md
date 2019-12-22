@@ -16,3 +16,7 @@
 # How to prevent wrong code
 
 - write every requirement on the paper.
+
+# how to save time
+
+- never submit code continuously
