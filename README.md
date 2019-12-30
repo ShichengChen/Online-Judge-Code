@@ -20,3 +20,10 @@
 # how to save time
 
 - never submit code continuously
+- The limitation of one easy problem is 30 minutes during a contest
+
+# Graph
+
+- cycle
+- multiple graphs
+- multiple edges
