@@ -27,3 +27,8 @@
 - cycle
 - multiple graphs
 - multiple edges
+
+# If I encounter a wrong answer in first three problems or get wrong anser two times.
+- relax, go out take shower or do somethings else.
+- read the problem and code again.
+- if cannot find the error, then go on to the next problem
