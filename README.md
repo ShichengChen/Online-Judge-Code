@@ -19,6 +19,7 @@
 
 # how to save time
 
+- if i cannot remeber all situtation or form a big picture, I need to write to paper to organize the problem first and then write the code.
 - never submit code continuously
 - The limitation of one easy problem is 30 minutes during a contest
 
@@ -28,7 +29,9 @@
 - multiple graphs
 - multiple edges
 
-# If I encounter a wrong answer in first three problems or get wrong anser two times.
+# If I encounter a wrong answer in first three problems or get wrong answer two times.
 - relax, go out take shower or do somethings else.
 - read the problem and code again.
 - if cannot find the error, then go on to the next problem
+
+
