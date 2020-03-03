@@ -24,8 +24,11 @@
 
 # how to save time
 
-- if i cannot remeber all situtation or form a big picture, I need to write to paper to organize the problem first and then write the code.
+- know how to write the code for EACH step and then begin to write code
 - never submit code continuously
+
+- if i cannot remeber all situtation or form a big picture, I need to write to paper to organize the problem first and then write the code.
+
 - The limitation of one easy problem is 30 minutes during a contest
 
 # Graph
