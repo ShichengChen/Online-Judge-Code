@@ -21,6 +21,7 @@
 # How to prevent wrong code
 
 - write every requirement on the paper.
+- make variables with relations have similar names.
 
 # how to save time
 
