@@ -4,10 +4,12 @@
 # How to solve it
 
 ## from method side
+- write every thing you have thought on the paper.
+- write a formulation on the paper and try to optimize it.
 - could I use brute force
 - could I solve it by greedy and dp
 - monotonically increasing or decreasing, binary search
-- write a formulation on the paper and try to optimize it.
+
 
 ## from time side
 - first think about detail for 10-20 minutes and think of big picture of the problem(when i find a hard problem). think about the Essence of the problem.
