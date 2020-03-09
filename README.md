@@ -48,6 +48,6 @@
 
 # unsolved problem
 - [CodeCraft-20 C. Primitive Primes](https://codeforces.com/contest/1316/problem/C)
- -- enumerate from very beginning. 
+ - enumerate from very beginning. 
 
 
