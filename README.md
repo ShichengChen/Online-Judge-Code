@@ -46,3 +46,8 @@
 - if cannot find the error, then go on to the next problem
 
 
+# unsolved problem
+- [CodeCraft-20 C. Primitive Primes](https://codeforces.com/contest/1316/problem/C)
+ -- enumerate from very beginning. 
+
+
