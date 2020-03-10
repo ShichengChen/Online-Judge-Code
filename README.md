@@ -12,27 +12,29 @@
 
 
 ## from time side
-- first think about detail for 10-20 minutes and think of big picture of the problem(when i find a hard problem). think about the Essence of the problem.
-
-
-# How to test my solution
-
-- use small data
+- think about the Essence of the problem and details simultaneously.
+- know how to write the code for EACH step. If i cannot remeber all situtation or form a big picture, I need to write to paper to organize the problem first and then write the code.
 - test it well before write code
+- never submit code continuously
+- The limitation of one easy problem is 30 minutes during a contest
+
 
 # How to prevent wrong code
-
 - write every requirement on the paper.
 - make variables with relations have similar names.
+- use small data test my solution
 
-# how to save time
 
-- know how to write the code for EACH step and then begin to write code
-- never submit code continuously
 
-- if i cannot remeber all situtation or form a big picture, I need to write to paper to organize the problem first and then write the code.
+# If I encounter something
+## If I encounter a wrong answer in first three problems or get wrong answer two times.
+- relax, go out take shower or do somethings else.
+- read the problem and code again.
+- if cannot find the error, then go on to the next problem
 
-- The limitation of one easy problem is 30 minutes during a contest
+## If I cannot solve the second or third problem.
+- after 20 minutes, I should stop. I need to try to solve the fourth problem 
+
 
 # Graph
 
@@ -40,14 +42,9 @@
 - multiple graphs
 - multiple edges
 
-# If I encounter a wrong answer in first three problems or get wrong answer two times.
-- relax, go out take shower or do somethings else.
-- read the problem and code again.
-- if cannot find the error, then go on to the next problem
-
 
 # unsolved problem
 - [CodeCraft-20 C. Primitive Primes](https://codeforces.com/contest/1316/problem/C)
- - enumerate from very beginning. 
+	- enumerate from very beginning. 
 
 
