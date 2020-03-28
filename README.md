@@ -46,5 +46,8 @@
 # unsolved problem
 - [CodeCraft-20 C. Primitive Primes](https://codeforces.com/contest/1316/problem/C)
 	- enumerate from very beginning. 
+- [Codeforces Round #629 F.Make k Equal](https://codeforces.com/contest/1328/problem/F) 
+	- generate negtive results by mistake
+	- watched test data
 
 
