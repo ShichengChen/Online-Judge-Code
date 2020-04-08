@@ -50,4 +50,7 @@
 	- generate negtive results by mistake
 	- watched test data
 
+# How to win myself
+- never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.
+
 
