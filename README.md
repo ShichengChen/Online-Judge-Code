@@ -17,7 +17,7 @@
 - test it well before write code
 - never submit code continuously
 - The limitation of one easy problem is 30 minutes during a contest
-
+- The limitation of one hard problem is 1 day after contests(stop thinking if no more new ideas on this problem)
 
 # How to prevent wrong code
 - write every requirement on the paper.
@@ -49,8 +49,10 @@
 - [Codeforces Round #629 F.Make k Equal](https://codeforces.com/contest/1328/problem/F) 
 	- generate negtive results by mistake
 	- watched test data
+- [E. Quantifier Question](https://codeforces.com/contest/1345/problem/E)
+	- understand problem description clearly
 
 # How to win myself
-- never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.
+- never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.(do easy problem such as leetcode daily problem.)
 
 
