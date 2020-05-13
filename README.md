@@ -5,7 +5,7 @@
     + [For data structure problem](#for-data-structure-problem)
   * [from time side](#from-time-side)
 - [How to prevent wrong code](#how-to-prevent-wrong-code)
-  * [small bugs](#small bugs)
+  * [Small bugs](#Small bugs)
 - [How to consider thoroughly](#How to consider thoroughly)
 - [If I encounter something](#if-i-encounter-something)
   * [If I encounter a wrong answer in first three problems or get wrong answer two times.](#if-i-encounter-a-wrong-answer-in-first-three-problems-or-get-wrong-answer-two-times)
@@ -44,7 +44,7 @@
 - write every requirement on the paper.
 - make variables with relations have similar names.
 - use small data test my solution
-## small bugs
+## Small bugs
 - int overflow
 - small array size
 - what if the size of array is 1(boundary situation)
