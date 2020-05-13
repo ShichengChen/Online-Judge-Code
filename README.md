@@ -1,3 +1,6 @@
+* auto-gen TOC:
+{:toc}
+
 # Online judge code
 - my online judge code
 
