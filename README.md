@@ -6,6 +6,7 @@
   * [from time side](#from-time-side)
 - [How to prevent wrong code](#how-to-prevent-wrong-code)
   * [small bugs](#small bugs)
+- [How to consider thoroughly](#How to consider thoroughly)
 - [If I encounter something](#if-i-encounter-something)
   * [If I encounter a wrong answer in first three problems or get wrong answer two times.](#if-i-encounter-a-wrong-answer-in-first-three-problems-or-get-wrong-answer-two-times)
   * [If I cannot solve the second or third problem.](#if-i-cannot-solve-the-second-or-third-problem)
@@ -13,11 +14,8 @@
 - [unsolved problem](#unsolved-problem)
 - [How to win myself](#how-to-win-myself)
 
-# Online judge code
-- my online judge code
 
 # How to solve it
-
 ## from method side
 - write every thing you have thought on the paper.
 - write a formulation on the paper and try to optimize it.
@@ -51,6 +49,9 @@
 - small array size
 - what if the size of array is 1(boundary situation)
 
+
+# How to consider thoroughly
+- A is the aim, we may start from A, we should also consider not start from A[D. Orac and Medians](https://codeforces.com/contest/1350/problem/D) 
 
 
 # If I encounter something
