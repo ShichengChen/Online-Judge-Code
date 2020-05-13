@@ -1,5 +1,16 @@
-* auto-gen TOC:
-{:toc}
+- [Online judge code](#online-judge-code)
+- [How to solve it](#how-to-solve-it)
+  * [from method side](#from-method-side)
+    + [For math problems](#for-math-problems)
+    + [For data structure problem](#for-data-structure-problem)
+  * [from time side](#from-time-side)
+- [How to prevent wrong code](#how-to-prevent-wrong-code)
+- [If I encounter something](#if-i-encounter-something)
+  * [If I encounter a wrong answer in first three problems or get wrong answer two times.](#if-i-encounter-a-wrong-answer-in-first-three-problems-or-get-wrong-answer-two-times)
+  * [If I cannot solve the second or third problem.](#if-i-cannot-solve-the-second-or-third-problem)
+- [Graph](#graph)
+- [unsolved problem](#unsolved-problem)
+- [How to win myself](#how-to-win-myself)
 
 # Online judge code
 - my online judge code
@@ -13,6 +24,13 @@
 - could I solve it by greedy and dp
 - monotonically increasing or decreasing, binary search
 
+### For math problems
+- Factorization
+- Enumerate from very beginning
+- try to use formulation to change the form of equations
+
+### For data structure problem
+- find the maximum value from a range, try to use set first, then for RMQ or segment tree.
 
 ## from time side
 - think about the Essence of the problem and details simultaneously.
@@ -21,6 +39,7 @@
 - never submit code continuously
 - The limitation of one easy problem is 30 minutes during a contest
 - The limitation of one hard problem is 1 day after contests(stop thinking if no more new ideas on this problem)
+
 
 # How to prevent wrong code
 - write every requirement on the paper.
@@ -40,7 +59,6 @@
 
 
 # Graph
-
 - cycle
 - multiple graphs
 - multiple edges
