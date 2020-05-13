@@ -4,6 +4,7 @@
     + [For data structure problem](#for-data-structure-problem)
   * [from time side](#from-time-side)
 - [How to prevent wrong code](#how-to-prevent-wrong-code)
+  * [How to debug faster](#How to debug faster)
   * [Small bugs](#small-bugs)
 - [How to consider thoroughly](#how-to-consider-thoroughly)
 - [If I encounter something](#if-i-encounter-something)
@@ -43,6 +44,9 @@
 - write every requirement on the paper.
 - make variables with relations have similar names.
 - use small data test my solution
+##How to debug faster
+- use eyes first, then use cout
+
 ## Small bugs
 - int overflow
 - small array size
