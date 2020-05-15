@@ -6,6 +6,7 @@
 - [How to prevent wrong code](#how-to-prevent-wrong-code)
   * [How to debug faster](#How to debug faster)
   * [Small bugs](#small-bugs)
+  * [common mistakes](#common mistakes)
 - [How to consider thoroughly](#how-to-consider-thoroughly)
 - [If I encounter something](#if-i-encounter-something)
   * [If I encounter a wrong answer in first three problems or get wrong answer two times.](#if-i-encounter-a-wrong-answer-in-first-three-problems-or-get-wrong-answer-two-times)
@@ -51,6 +52,9 @@
 - int overflow
 - small array size
 - what if the size of array is 1(boundary situation)
+
+## common mistakes
+- Is greedy hold?[E. K-periodic Garland](https://codeforces.com/contest/1353/problem/E)
 
 
 # How to consider thoroughly
