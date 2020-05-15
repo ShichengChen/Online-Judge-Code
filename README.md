@@ -45,7 +45,7 @@
 - make variables with relations have similar names.
 - use small data test my solution
 ##How to debug faster
-- use eyes first, then use cout
+- use eyes first, then use cout one or few variables, then eyes then cout one or few variables etc.
 
 ## Small bugs
 - int overflow
