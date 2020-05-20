@@ -7,7 +7,7 @@
 - [How to prevent wrong code](#how-to-prevent-wrong-code)
   * [How to debug faster](#How-to-debug-faster)
   * [Small bugs](#small-bugs)
-  * [common mistakes](#common mistakes)
+  * [common mistakes](#common-mistakes)
 - [How to consider thoroughly](#how-to-consider-thoroughly)
 - [If I encounter something](#if-i-encounter-something)
   * [If I encounter a wrong answer in first three problems or get wrong answer two times.](#if-i-encounter-a-wrong-answer-in-first-three-problems-or-get-wrong-answer-two-times)
@@ -45,11 +45,12 @@
 - find patterns in the string(D. Minimum Euler Cycle)[https://codeforces.com/contest/1334/problem/D]
 
 # How to prevent wrong code
-- 
+- 1.think problem well,2.think how to write code,3.rethink problem, is that right.4.write code.
 - write every requirement on the paper.
 - make variables with relations have similar names.
 - use small data test my solution
-##How to debug faster
+
+## How to debug faster
 - use eyes first, then use cout one or few variables, then eyes then cout one or few variables etc.
 
 ## Small bugs
