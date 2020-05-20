@@ -3,6 +3,7 @@
     + [For math problems](#for-math-problems)
     + [For data structure problem](#for-data-structure-problem)
   * [from time side](#from-time-side)
+- [How to write code faster](#How to write code faster)
 - [How to prevent wrong code](#how-to-prevent-wrong-code)
   * [How to debug faster](#How to debug faster)
   * [Small bugs](#small-bugs)
@@ -40,6 +41,8 @@
 - The limitation of one easy problem is 30 minutes during a contest
 - The limitation of one hard problem is 1 day after contests(stop thinking if no more new ideas on this problem)
 
+# How to write code faster
+- find patterns in the string(D. Minimum Euler Cycle)[https://codeforces.com/contest/1334/problem/D]
 
 # How to prevent wrong code
 - write every requirement on the paper.
