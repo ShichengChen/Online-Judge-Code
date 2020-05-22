@@ -90,6 +90,8 @@
 	- watched test data
 - [E. Quantifier Question](https://codeforces.com/contest/1345/problem/E)
 	- understand problem description clearly
+- [EXPOGO](https://codingcompetitions.withgoogle.com/codejam/round/000000000019fef2/00000000002d5b62)
+	- all steps contain only one odd move and all others are even move.
 
 # How to win myself
 - never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.(do easy problem such as leetcode daily problem.)
