@@ -92,6 +92,8 @@
 	- understand problem description clearly
 - [EXPOGO](https://codingcompetitions.withgoogle.com/codejam/round/000000000019fef2/00000000002d5b62)
 	- all steps contain only one odd move and all others are even move.
+- [Restorer Distance](https://codeforces.com/contest/1355/problem/E)
+	- thinking both side from the problem(front side and rear side).
 
 # How to win myself
 - never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.(do easy problem such as leetcode daily problem.)
