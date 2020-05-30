@@ -46,7 +46,8 @@
 
 # How to prevent wrong code
 - 1.think problem well,2.think how to write code,3.rethink problem, is that right.4.write code.
-- write every requirement on the paper.
+- write every requirement on the paper. 
+	- understand the meaning of each variable clearly, especially, for the problem style I am not good at.
 - make variables with relations have similar names.
 - use small data test my solution
 
