@@ -43,6 +43,7 @@
 
 # How to solve problem faster
 - find patterns in the string(D. Minimum Euler Cycle)[https://codeforces.com/contest/1334/problem/D]
+- read problem carefully and then read samples and explanations even I believe that I understand the problem.
 
 # How to prevent wrong code
 - 1.think problem well,2.think how to write code,3.rethink problem, is that right.4.write code.
