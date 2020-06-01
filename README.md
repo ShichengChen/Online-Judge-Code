@@ -63,6 +63,7 @@
 
 ## common mistakes
 - Is greedy hold?[E. K-periodic Garland](https://codeforces.com/contest/1353/problem/E)
+- Should I do the operation for the whole subtree.[Tree Shuffling](https://codeforces.com/contest/1363/problem/E)
 
 
 # How to consider thoroughly
