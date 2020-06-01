@@ -3,9 +3,9 @@
     + [For math problems](#for-math-problems)
     + [For data structure problem](#for-data-structure-problem)
   * [from time side](#from-time-side)
-- [How to solve problem faster](#How-to-solve-problem-faster)
+- [How to solve problem faster](#how-to-solve-problem-faster)
 - [How to prevent wrong code](#how-to-prevent-wrong-code)
-  * [How to debug faster](#How-to-debug-faster)
+  * [How to debug faster](#how-to-debug-faster)
   * [Small bugs](#small-bugs)
   * [common mistakes](#common-mistakes)
 - [How to consider thoroughly](#how-to-consider-thoroughly)
@@ -46,7 +46,11 @@
 - read problem carefully and then read samples and explanations even I believe that I understand the problem.
 
 # How to prevent wrong code
-- 1.think problem well,2.think how to write code,3.rethink problem, is that right.4.write code.
+- Follow these steps as much as possible
+	- think problem well **at the very beginning**
+	- think how to write code
+	- rethink problem, is that right
+	- write code.
 - write every requirement on the paper. 
 	- understand the meaning of each variable clearly, especially, for the problem style I am not good at.
 - make variables with relations have similar names.
