@@ -64,6 +64,7 @@
 - small array size
 - what if the size of array is 1(boundary situation)
 - minn should be the minimum.
+- clear edge vectors
 
 ## common mistakes
 - Is greedy hold?[E. K-periodic Garland](https://codeforces.com/contest/1353/problem/E)
