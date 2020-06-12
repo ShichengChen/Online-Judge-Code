@@ -53,6 +53,7 @@
 	- write code.
 - write every requirement on the paper. 
 	- understand the meaning of each variable clearly, especially, for the problem style I am not good at.
+- when writing code, if i find something i do not consider before, i should stop and redo above operations.
 - make variables with relations have similar names.
 - use small data test my solution
 
