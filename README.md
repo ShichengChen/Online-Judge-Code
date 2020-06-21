@@ -24,6 +24,7 @@
 - could I use brute force
 - could I solve it by greedy and dp
 - monotonically increasing or decreasing, binary search
+- Binary search over the answer
 
 ### For math problems
 - Factorization
