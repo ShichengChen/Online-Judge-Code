@@ -57,6 +57,7 @@
 - when writing code, if i find something i do not consider before, i should stop and redo above operations.
 - make variables with relations have similar names.
 - use small data test my solution
+- after getting wrong answer, write the thinking link on the paper and check which part maybe wrong.
 
 ## How to debug faster
 - use eyes first, then use cout one or few variables, then eyes then cout one or few variables etc.
