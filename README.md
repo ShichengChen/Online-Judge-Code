@@ -15,6 +15,7 @@
 - [Graph](#graph)
 - [unsolved problem](#unsolved-problem)
 - [How to win myself](#how-to-win-myself)
+- [How to become a candidate master in codeforces](#how-to-become-a-candidate-master-in-codeforces)
 
 
 # How to solve it
@@ -112,4 +113,6 @@
 # How to win myself
 - never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.(do easy problem such as leetcode daily problem.)
 
-
+# How to become a candidate master in codeforces
+ - solve lots of problems, such as do a virtual contest almost everyday
+ - 
