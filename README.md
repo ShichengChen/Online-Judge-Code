@@ -109,6 +109,8 @@
 	- thinking both side from the problem(front side and rear side).
 - [Count The Blocks](https://codeforces.com/contest/1327/problem/E)
 	- **1**01+10**1**=**1**0**1**
+- [Reading Books (hard version)](https://codeforces.com/contest/1374/problem/E2)
+	- try to iterate for all types of variables.
 
 # How to win myself
 - never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.(do easy problem such as leetcode daily problem.)
