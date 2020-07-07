@@ -116,5 +116,8 @@
 - never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.(do easy problem such as leetcode daily problem.)
 
 # How to become a candidate master in codeforces
- - solve lots of problems, such as do a virtual contest almost everyday
- - 
+ - Be confident and then I can solve very hard problem, otherwise I cannot solve even a easy problem.
+ - Before candidate master, I try to solve lots of problems, such as do a virtual contest almost everyday. Now, I try to solve all of div3 problems and div2 A-E problems after the contest.
+ - Following Errichto suggestions, If stuck in a problem for more than 1 hour, I will watch one sentence of the editorial and then continue to try to solve it.
+ - After EACH solving problem, reading editorial to learn one more way to solve the problem even for div2 problem A.
+ - During the contest, brefore writing code, I try to read and think the problem well and then use a few minutes to design the code. 
