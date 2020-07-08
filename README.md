@@ -121,3 +121,4 @@
  - Following Errichto suggestions, If stuck in a problem for more than 1 hour, I will watch one sentence of the editorial and then continue to try to solve it.
  - After EACH solving problem, reading editorial to learn one more way to solve the problem even for div2 problem A.
  - During the contest, brefore writing code, I try to read and think the problem well and then use a few minutes to design the code. 
+ - Algorithms: greedy, dp, binary search(easy to omit)
