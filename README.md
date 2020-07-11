@@ -111,6 +111,11 @@
 	- **1**01+10**1**=**1**0**1**
 - [Reading Books (hard version)](https://codeforces.com/contest/1374/problem/E2)
 	- try to iterate for all types of variables.
+- [Restore the Permutation by Sorted Segments](https://codeforces.com/contest/1343/problem/F)
+	- iterate from the beginning. I should try to iterate over different variables
+- [Inversion SwapSort](https://codeforces.com/contest/1375/problem/E)
+	- not only try different samples, I should try to think or guess patterns
+
 
 # How to win myself
 - never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.(do easy problem such as leetcode daily problem.)
