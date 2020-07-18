@@ -109,10 +109,21 @@
 	- thinking both side from the problem(front side and rear side).
 - [Count The Blocks](https://codeforces.com/contest/1327/problem/E)
 	- **1**01+10**1**=**1**0**1**
+- [Reading Books (hard version)](https://codeforces.com/contest/1374/problem/E2)
+	- try to iterate for all types of variables.
+- [Restore the Permutation by Sorted Segments](https://codeforces.com/contest/1343/problem/F)
+	- iterate from the beginning. I should try to iterate over different variables
+- [Inversion SwapSort](https://codeforces.com/contest/1375/problem/E)
+	- not only try different samples, I should try to think or guess patterns
+
 
 # How to win myself
 - never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.(do easy problem such as leetcode daily problem.)
 
 # How to become a candidate master in codeforces
- - solve lots of problems, such as do a virtual contest almost everyday
- - 
+ - Be confident and then I can solve very hard problem, otherwise I cannot solve even a easy problem.
+ - Before candidate master, I try to solve lots of problems, such as do a virtual contest almost everyday. Now, I try to solve all of div3 problems and div2 A-E problems after the contest.
+ - Following Errichto suggestions, If stuck in a problem for more than 1 hour, I will watch one sentence of the editorial and then continue to try to solve it.
+ - After EACH solving problem, reading editorial to learn one more way to solve the problem even for div2 problem A.
+ - During the contest, brefore writing code, I try to read and think the problem well and then use a few minutes to design the code. 
+ - Algorithms: greedy, dp, binary search(easy to omit)
