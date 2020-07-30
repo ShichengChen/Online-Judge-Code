@@ -10,3 +10,6 @@
   
 # Array iteration
   - do not forget to check the last element of the array.
+  
+# Tree structure
+  - the leaf node will not execute for (int v:vec[u]) {if(v==fa)continue;dfssum(v,u);sum[u]+=sum[v];***happy[u]=(sum[u]+hidx[u])/2;***}
