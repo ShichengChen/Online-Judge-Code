@@ -115,6 +115,8 @@
 	- iterate from the beginning. I should try to iterate over different variables
 - [Inversion SwapSort](https://codeforces.com/contest/1375/problem/E)
 	- not only try different samples, I should try to think or guess patterns
+- [Directing Edges](https://codeforces.com/contest/1385/problem/E)
+	- topological sort for creating no directed cycles graphs.
 
 
 # How to win myself
