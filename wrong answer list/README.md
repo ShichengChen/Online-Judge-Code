@@ -13,3 +13,6 @@
   
 # Tree structure
   - the leaf node will not execute for (int v:vec[u]) {if(v==fa)continue;dfssum(v,u);sum[u]+=sum[v];***happy[u]=(sum[u]+hidx[u])/2;***}
+  
+# Sort
+  - greater<***int***>() should be same with vector<***int***>vec;
