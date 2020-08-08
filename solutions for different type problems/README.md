@@ -11,4 +11,7 @@
   - how to get B from A (thinking from B). [String Transformation 1](https://codeforces.com/contest/1383/problem/A)
   
 # Operations on an Array
-  - try to iterate the array from the first index to the end. 
+  - try to iterate the array from the first index to the end. 1
+  
+# Two types of elements very large weights Knapsack problem
+  - cannot use dp, enumerate the number of first elements and find corresponding number of second elements
