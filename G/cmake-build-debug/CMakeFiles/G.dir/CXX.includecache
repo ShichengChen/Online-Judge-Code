@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/csc/G/main2.cpp
+/home/csc/Online-Judge-Code/G/main2.cpp
 bits/stdc++.h
 -
 ext/pb_ds/assoc_container.hpp

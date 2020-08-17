@@ -64,10 +64,10 @@ RM = /snap/clion/123/bin/cmake/linux/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/csc/G
+CMAKE_SOURCE_DIR = /home/csc/Online-Judge-Code/G
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/csc/G/cmake-build-debug
+CMAKE_BINARY_DIR = /home/csc/Online-Judge-Code/G/cmake-build-debug
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -94,14 +94,14 @@ clean: CMakeFiles/G.dir/clean
 CMakeFiles/G.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/csc/G/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target G"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/csc/Online-Judge-Code/G/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target G"
 .PHONY : CMakeFiles/G.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/G.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/csc/G/cmake-build-debug/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/csc/Online-Judge-Code/G/cmake-build-debug/CMakeFiles 2
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/G.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/csc/G/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/csc/Online-Judge-Code/G/cmake-build-debug/CMakeFiles 0
 .PHONY : CMakeFiles/G.dir/rule
 
 # Convenience name for target.
