@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.14)
+project(G)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Wall -O2")
+#add_executable(G tc.cpp)
+add_executable(G main2.cpp)
+#add_executable(G main3.cpp)
+#set(CMAKE_CXX_STANDARD 14)
+#add_executable(G kickstart.cpp)
+#add_executable(G jam.cpp)
+#add_executable(G lc.cpp)
+#add_executable(G fb.cpp)

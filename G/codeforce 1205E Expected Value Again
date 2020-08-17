@@ -1,0 +1,76 @@
+#include <iostream>
+#include <algorithm>
+#include <set>
+#include <vector>
+#include <cstring>
+#include <queue>
+#include <cstdio>
+#include <cmath>
+#include <stdio.h>
+using namespace std;
+typedef long long ll;
+const int N = (int)100005;
+#define M 1000000007
+ll sumdp[N][320];
+ll dp[N];
+ll sumenu[N];
+//void exgcd(const ll a, const ll b, ll &g, ll &x, ll &y) {
+//  if (!b) g = a, x = 1, y = 0;
+//  else exgcd(b, a % b, g, y, x), y -= x * (a / b);
+//}
+//
+//inline int inv(const ll num) {
+//  ll g, x, y;
+//  exgcd(num, M, g, x, y);
+//  return ((x % M) + M) % M;
+//}
+inline ll qpow(const ll n, const ll k) {
+  ll ans = 1;
+  for (ll num = n, t = k; t; num = num * num % M, t >>= 1) if (t & 1) ans = ans * num % M;
+  return ans;
+}
+
+inline ll inv(const ll num) {
+  return qpow(num, M - 2);
+}
+int mymod(int a,int b){
+  if(a%b)return a%b;
+  return b;
+}
+int main() {
+  ll n, k;
+  cin>>n>>k;
+  ll denominator = inv(qpow(k,n) % M);
+  for (int i = 1; i <= n; ++i){
+    sumenu[i]=(sumenu[i]+qpow(k,i)) % M;
+    int sq=sqrt(i);
+    for (int j = 1; j < sq; ++j){
+
+    }
+  }
+
+
+  //dp[2]=k;
+  //sumdp[2][1]=k,sumdp[2][2]=k;
+  ll numerator=0;
+  for(int i=1;i<=n;i++){
+    int sq=sqrt(i);
+    //cout << "sq:" << sq << endl;
+    for (int j = 1; j < sq; ++j) {
+      int a=(i+j)/(j+1),b=(i-1)/j;
+      dp[i]=(dp[i]+dp[mymod(i,j)]+(sumenu[j]-sumenu[j-1]+M)*b)%M;
+      dp[i]=(dp[i]+sumdp[b][j]+(sumenu[j]-sumenu[j-1]+M)*(b+1-a))%M;
+    }
+    if(sq*sq!=i){
+      dp[i]=(dp[i] + dp[mymod(i,sq)] + (sumenu[sq]-sumenu[sq-1]+M)*sq)%M;
+      //cout << sumenu[sq]-sumenu[sq-1] << endl;
+    }
+    for (int j = 1; j < sqrt(n) & i-j>=0; ++j){
+      sumdp[i][j]=(sumdp[i-j][j]+dp[i])%M;
+    }
+    //cout << "dp[i]:" << dp[i] << endl;
+    numerator=(numerator+dp[i])%M;
+  }
+  cout << (denominator*numerator)%M << endl;
+  return 0;
+}
