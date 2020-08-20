@@ -12,6 +12,7 @@
   
 # Operations on an Array
   - try to iterate the array from the first index to the end. 1
+  - list different forms of equations.[C. Good Subarrays](https://codeforces.com/contest/1398/problem/C)
   
 # Two types of elements very large weights Knapsack problem
   - cannot use dp, enumerate the number of first elements and find corresponding number of second elements

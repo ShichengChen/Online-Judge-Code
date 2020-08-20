@@ -70,11 +70,15 @@ template<size_t S> string to_string(bitset<S> b) {
     FOR(S)res+=char('0'+b[i]);
     return res;
 }
-template<class T> string to_string(T v) {
+
+template <class T> string to_string(T v) {
+    char c=' ';
+    if constexpr (std::is_same_v<T, vector<vector<ll>>>) c='\n';
+    if constexpr (std::is_same_v<T, vector<vector<int>>>) c='\n';
     bool f=1;
     string res;
     EACH(x, v) {
-        if(!f)res+=' ';
+        if(!f)res+=c;
         f=0;
         res+=to_string(x);
     }
@@ -97,7 +101,7 @@ template<class H, class... T> void DBG(H h, T... t) {
 }
 #define _DEBUG
 #ifdef _DEBUG
-#define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [", DBG(__VA_ARGS__)
+#define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
 #else
 #define debug(...) 0
 #endif
@@ -122,81 +126,32 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 const int MAXN = 5e5+50;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
-int n,m;
-int in[MAXN],vis[MAXN];
-vector<int>G;
-vector<int>st,loop;
-void dfs(int u){
-    vis[u]=2;
-    st.push_back(u);
-    int v=G[u];
-    if(vis[v]==2){
-        while(sz(st)){
-            loop[st.back()]=1;
-            if(st.back()==v)break;
-            st.pop_back();
-        }
-    }
-    else dfs(v);
-    vis[u]=1;
-}
+int n;
 void solve() {
-    read(n);
-    G=vector<int>(n);
-    loop=vector<int>(n+1,0);
-    vector<int>mark(n+1,0);
-    read(G);
-    G.insert(G.begin(),0);
-    FOR(i,1,n+1)in[G[i]]++;
-    FOR(i,1,n+1)if(!vis[i]){
-        st.clear();
-        dfs(i);
+    string s;
+    read(n,s);
+    //print(n,s);
+    s='0'+s;
+    vector<int>sum(n+1,0);
+    map<int,ll>num;
+    num[0]++;
+    FOR(i,1,n+1){
+        sum[i]=sum[i-1]+s[i]-'0';
+        num[sum[i]-i]++;
     }
-    //print(loop);
-    queue<int>que;
-    int cnt=0;
-    FOR(i,1,n+1)if(!in[i])que.push(i),mark[i]=1,cnt++;
-    while(!que.empty()){
-        int u=que.front();que.pop();
-        int v=G[u];
-        if(mark[u]==2 && !mark[v])mark[v]=1;
-        if(mark[u]==1)mark[v]=2;
-        in[v]--;
-        if(!in[v])que.push(v);
+    ll ans=0;
+    EACH(i,num){
+        ll cur=i.second;
+        if(cur>=2)ans+=cur*(cur-1)/2;
     }
-    FOR(i,1,n+1)if(loop[i] && (in[i] && mark[i])){
-        if(!mark[i])mark[i]=1;
-        loop[i]=0;
-        for (int u = G[i],pre=i; u != i; u=G[u],pre=G[pre]) {
-            loop[u]=0;
-            if(mark[u])continue;
-            if(mark[pre]==1 || mark[G[u]]==1)mark[u]=2;
-            else mark[u]=1;
-        }
-    }
-    FOR(i,1,n+1)if(loop[i]){
-        if(!mark[i])mark[i]=1;
-        loop[i]=0;
-        for (int u = G[i],pre=i; u != i; u=G[u],pre=G[pre]) {
-            loop[u]=0;
-            if(mark[u])continue;
-            if(mark[pre]==1 || mark[G[u]]==1)mark[u]=2;
-            else mark[u]=1;
-        }
-    }
-
-    cnt=0;
-    int ans=0;
-    FOR(i,1,n+1)cnt+=(mark[i]==1),ans+=(mark[i]>0);
-    assert(ans==n);
-    print(cnt);
+    print(ans);
 }
 
 int main() {
 //    ios::sync_with_stdio(false);
 //    cin.tie(nullptr);
     int t=1;
-    //read(t);
+    read(t);
     FOR(t) {
         //write("Case #", i+1, ": ");
         solve();
@@ -204,6 +159,28 @@ int main() {
     return 0;
 }
 /*
+
+10
+2 3 4 5 6 7 1 6 4 2
+ans:6
+
+11
+2 3 4 5 6 7 1 6 4 2 1
+ans:7
+
+11
+
+ans:7
+
+12
+2 3 4 5 6 7 1 6 4 2 12 11
+ans:7
+
+17
+2 3 4 5 6 7 1 6 4 2 13 13 14 15 16 14 14
+ans:10
+
+
 
 5
 2 1 1 5 4
