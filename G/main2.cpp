@@ -123,30 +123,44 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     v=vt<T>(n);
     EACH(a, v)vti(a, x, m);
 }
-const int MAXN = 5e5+50;
+const int MAXN = 1e5+20;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
-int n;
+int n,m,k;
+vector<int>vec[MAXN];
+vector<ll>num,arr,child;
+ll ans;
+void dfs(int u,int fa){
+    child[u]=1;
+    EACH(v,vec[u]){
+        if(v==fa)continue;
+        dfs(v,u);
+        child[u]+=child[v];
+    }
+    num[u]=(child[u])*(n-child[u]);
+}
 void solve() {
-    string s;
-    read(n,s);
-    //print(n,s);
-    s='0'+s;
-    vector<int>sum(n+1,0);
-    map<int,ll>num;
-    num[0]++;
-    FOR(i,1,n+1){
-        sum[i]=sum[i-1]+s[i]-'0';
-        num[sum[i]-i]++;
+    read(n);
+    FOR(i,0,n+1)vec[i].clear();
+    vti(child,0,n+1);
+    vti(num,0,n+1);
+    FOR(n-1){
+        int u,v;read(u,v);
+        vec[u].push_back(v);
+        vec[v].push_back(u);
     }
-    ll ans=0;
-    EACH(i,num){
-        ll cur=i.second;
-        if(cur>=2)ans+=cur*(cur-1)/2;
-    }
+    read(m);
+    vti(arr,0,m);
+    read(arr);
+    ans=0;
+    dfs(1,-1);
+    sort(all(arr),greater<>());
+    sort(all(num),greater<>());
+    int dif=max(m-(n-1),0);
+    FOR(dif)arr[i+1]=(arr[i+1]*arr[i])%MOD;
+    FOR(n-1)if(i>=arr.size())ans=(ans+num[i])%MOD;else ans=(ans+num[i]*arr[i+dif])%MOD;
     print(ans);
 }
-
 int main() {
 //    ios::sync_with_stdio(false);
 //    cin.tie(nullptr);
@@ -159,6 +173,17 @@ int main() {
     return 0;
 }
 /*
+99
+2
+1 2
+1
+5
+
+2
+1 2
+3
+2 3 5
+
 
 10
 2 3 4 5 6 7 1 6 4 2
