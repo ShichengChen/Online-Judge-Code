@@ -1,6 +1,10 @@
 - [Dynamic programming](#dynamic-programming)
 - [STL container](#stl-container)
-- [Array iteration](#array-iteration)
+  * [Associative containers](#associative-containers)
+  * [Sequence containers](#sequence-containers)
+- [Tree structure](#tree-structure)
+- [Geometry problems](#geometry-problems)
+- [Modulo operation](#modulo-operation)
 
 # Dynamic programming
   - 2 consecutive rows Space Optimized DP. Do not forget this one: for (int j = 0; j <= n; ++j)if(d[j][i%2])d[j][(i+1)%2]=d[j][i%2];

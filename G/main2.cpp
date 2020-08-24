@@ -70,15 +70,11 @@ template<size_t S> string to_string(bitset<S> b) {
     FOR(S)res+=char('0'+b[i]);
     return res;
 }
-
-template <class T> string to_string(T v) {
-    char c=' ';
-    if constexpr (std::is_same_v<T, vector<vector<ll>>>) c='\n';
-    if constexpr (std::is_same_v<T, vector<vector<int>>>) c='\n';
+template<class T> string to_string(T v) {
     bool f=1;
     string res;
     EACH(x, v) {
-        if(!f)res+=c;
+        if(!f)res+=' ';
         f=0;
         res+=to_string(x);
     }
@@ -86,22 +82,23 @@ template <class T> string to_string(T v) {
 }
 template<class A> void write(A x) {cout << to_string(x);}
 template<class H, class... T> void write(const H& h, const T&... t) {write(h);write(t...);}
-void print() {write("\n");}
+void print();
 template<class H, class... T> void print(const H& h, const T&... t) {
     write(h);
     if(sizeof...(t))write(' ');
     print(t...);
 }
-void DBG() {cout << "]" << endl;}
+void print(){write("\n");}
+void DBG() {cerr << "]" << endl;}
 template<class H, class... T> void DBG(H h, T... t) {
-    cout << to_string(h);
+    cerr << to_string(h);
     if(sizeof...(t))
-        cout << ", ";
+        cerr << ", ";
     DBG(t...);
 }
 #define _DEBUG
 #ifdef _DEBUG
-#define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
+#define debug(...) cerr << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [", DBG(__VA_ARGS__)
 #else
 #define debug(...) 0
 #endif
@@ -123,44 +120,58 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     v=vt<T>(n);
     EACH(a, v)vti(a, x, m);
 }
-const int MAXN = 1e5+20;
+const int MAXN = 6e3+50;
+const int MAXM = 2e5+50;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
-int n,m,k;
-vector<int>vec[MAXN];
-vector<ll>num,arr,child;
-ll ans;
-void dfs(int u,int fa){
-    child[u]=1;
-    EACH(v,vec[u]){
-        if(v==fa)continue;
-        dfs(v,u);
-        child[u]+=child[v];
+int n,m;
+int ma[MAXM];
+vector<vector<int>>d;
+multiset<int>start[MAXN];
+int dp[MAXN];
+int dfs(int a,int b){
+    if(d[a][b]!=-1)return d[a][b];
+    d[a][b]=0;
+    //debug(a,b);
+    FOR(u,a,b+1)EACH(v,start[u]){
+        if(v>b)continue;
+        dfs(u,v);
     }
-    num[u]=(child[u])*(n-child[u]);
+    FOR(i,a,b+1)dp[i]=0;
+    int maxn=0;
+    //debug(a,b);
+    FOR(u,a,b+1){
+        EACH(v,start[u]){
+            if(v>b)continue;
+            //debug(u,v);
+            umax(dp[v],d[u][v]+maxn);
+        }
+        umax(maxn,dp[u]);
+    }
+    //debug(a,b,dp[b]);
+    return d[a][b]=maxn+1;
 }
 void solve() {
     read(n);
-    FOR(i,0,n+1)vec[i].clear();
-    vti(child,0,n+1);
-    vti(num,0,n+1);
-    FOR(n-1){
-        int u,v;read(u,v);
-        vec[u].push_back(v);
-        vec[v].push_back(u);
+    FOR(n*2+1)start[i].clear();
+    vector<vector<int>>vec(n,vector<int>(2));
+    read(vec);
+    vector<int>arr;
+    FOR(n)arr.pb(vec[i][0]),arr.pb(vec[i][1]);
+    sort(all(arr));
+    arr.erase(unique(all(arr)),arr.end());
+//    debug(arr);
+    FOR(sz(arr))ma[arr[i]]=i;
+    vti(d,0,n*2+2,n*2+2);
+    FOR(n){
+        FOR(j,2)vec[i][j]=ma[vec[i][j]];
+        d[vec[i][0]][vec[i][1]]=-1;
+        start[vec[i][0]].insert(vec[i][1]);
     }
-    read(m);
-    vti(arr,0,m);
-    read(arr);
-    ans=0;
-    dfs(1,-1);
-    sort(all(arr),greater<>());
-    sort(all(num),greater<>());
-    int dif=max(m-(n-1),0);
-    FOR(dif)arr[i+1]=(arr[i+1]*arr[i])%MOD;
-    FOR(n-1)if(i>=arr.size())ans=(ans+num[i])%MOD;else ans=(ans+num[i]*arr[i+dif])%MOD;
-    print(ans);
+    d[0][n*2+1]=-1;
+    print(dfs(0,n*2+1)-1);
 }
+
 int main() {
 //    ios::sync_with_stdio(false);
 //    cin.tie(nullptr);
@@ -173,49 +184,24 @@ int main() {
     return 0;
 }
 /*
-99
-2
-1 2
-1
-5
-
-2
-1 2
-3
-2 3 5
-
-
-10
-2 3 4 5 6 7 1 6 4 2
-ans:6
-
-11
-2 3 4 5 6 7 1 6 4 2 1
-ans:7
-
-11
-
-ans:7
-
-12
-2 3 4 5 6 7 1 6 4 2 12 11
-ans:7
-
-17
-2 3 4 5 6 7 1 6 4 2 13 13 14 15 16 14 14
-ans:10
-
-
 
 5
-2 1 1 5 4
-6
-2 1 4 3 6 5
-6
-2 3 1 5 6 4
-8
-2 3 4 2 6 7 8 6
+5
+1 5
+2 3
+2 5
+3 5
+2 2
+
+2 4
+1010
+0010
+
+4 2
 10
-2 3 4 5 2 7 8 9 10 7
+00
+11
+00
+
 
  * */

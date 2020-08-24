@@ -1,6 +1,8 @@
 - [XOR operation](#xor-operation)
 - [Array A to Array B](#array-a-to-array-b)
 - [Operations on an Array](#operations-on-an-array)
+- [Segmentation Coverage Problem](#segmentation-coverage-problem)
+- [Two types of elements very large weights Knapsack problem](#two-types-of-elements-very-large-weights-knapsack-problem)
 
 # XOR operation
   - think the problem one byte by one byte.[GameGame](https://codeforces.com/contest/1383/problem/B)
@@ -11,8 +13,13 @@
   - how to get B from A (thinking from B). [String Transformation 1](https://codeforces.com/contest/1383/problem/A)
   
 # Operations on an Array
-  - try to iterate the array from the first index to the end. 1
+  - try to iterate the array from the first index to the end.
   - list different forms of equations.[C. Good Subarrays](https://codeforces.com/contest/1398/problem/C)
+  
+
+# Segmentation Coverage Problem
+   - compress coordinate [Yet Another Segments Subset](https://codeforces.com/contest/1399/problem/F)
+   - enumerate all situations
   
 # Two types of elements very large weights Knapsack problem
   - cannot use dp, enumerate the number of first elements and find corresponding number of second elements
