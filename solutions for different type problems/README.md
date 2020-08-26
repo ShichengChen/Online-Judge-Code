@@ -15,7 +15,7 @@
 # Operations on an Array
   - try to iterate the array from the first index to the end.
   - list different forms of equations.[C. Good Subarrays](https://codeforces.com/contest/1398/problem/C)
-  
+  - have for different indices 1<=i<j<k<l<=n, try iterate over (i,j),(i,k),(i,l),(j,k),(j,l) or (k,l)[D. Zigzags](https://codeforces.com/contest/1400/problem/D)  
 
 # Segmentation Coverage Problem
    - compress coordinate [Yet Another Segments Subset](https://codeforces.com/contest/1399/problem/F)

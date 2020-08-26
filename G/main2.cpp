@@ -89,16 +89,16 @@ template<class H, class... T> void print(const H& h, const T&... t) {
     print(t...);
 }
 void print(){write("\n");}
-void DBG() {cerr << "]" << endl;}
+void DBG() {cout << "]" << endl;}
 template<class H, class... T> void DBG(H h, T... t) {
-    cerr << to_string(h);
+    cout << to_string(h);
     if(sizeof...(t))
-        cerr << ", ";
+        cout << ", ";
     DBG(t...);
 }
 #define _DEBUG
 #ifdef _DEBUG
-#define debug(...) cerr << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [", DBG(__VA_ARGS__)
+#define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [", DBG(__VA_ARGS__)
 #else
 #define debug(...) 0
 #endif
@@ -120,56 +120,30 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     v=vt<T>(n);
     EACH(a, v)vti(a, x, m);
 }
-const int MAXN = 6e3+50;
+const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
+const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
+const int MAXN = 3e3+50;
 const int MAXM = 2e5+50;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
-int n,m;
-int ma[MAXM];
-vector<vector<int>>d;
-multiset<int>start[MAXN];
-int dp[MAXN];
-int dfs(int a,int b){
-    if(d[a][b]!=-1)return d[a][b];
-    d[a][b]=0;
-    //debug(a,b);
-    FOR(u,a,b+1)EACH(v,start[u]){
-        if(v>b)continue;
-        dfs(u,v);
-    }
-    FOR(i,a,b+1)dp[i]=0;
-    int maxn=0;
-    //debug(a,b);
-    FOR(u,a,b+1){
-        EACH(v,start[u]){
-            if(v>b)continue;
-            //debug(u,v);
-            umax(dp[v],d[u][v]+maxn);
-        }
-        umax(maxn,dp[u]);
-    }
-    //debug(a,b,dp[b]);
-    return d[a][b]=maxn+1;
-}
+int n;
 void solve() {
     read(n);
-    FOR(n*2+1)start[i].clear();
-    vector<vector<int>>vec(n,vector<int>(2));
-    read(vec);
-    vector<int>arr;
-    FOR(n)arr.pb(vec[i][0]),arr.pb(vec[i][1]);
-    sort(all(arr));
-    arr.erase(unique(all(arr)),arr.end());
-//    debug(arr);
-    FOR(sz(arr))ma[arr[i]]=i;
-    vti(d,0,n*2+2,n*2+2);
+    vector<int>arr(n);
+    read(arr);
+    offset(-1,arr);
+    ll ans=0;
+    vt<int>l(n,0);
     FOR(n){
-        FOR(j,2)vec[i][j]=ma[vec[i][j]];
-        d[vec[i][0]][vec[i][1]]=-1;
-        start[vec[i][0]].insert(vec[i][1]);
+        vt<int>r(n,0);
+        FOR(j,i+1,n)r[arr[j]]++;
+        FOR(j,i+1,n){
+            r[arr[j]]--;
+            ans+=l[arr[j]]*r[arr[i]];
+        }
+        l[arr[i]]++;
     }
-    d[0][n*2+1]=-1;
-    print(dfs(0,n*2+1)-1);
+    print(ans);
 }
 
 int main() {

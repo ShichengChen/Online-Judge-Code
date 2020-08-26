@@ -151,20 +151,22 @@ struct TreeNode {
 };
 class Solution {
 public:
-    int longestPalindrome(string s) {
-        int ans=1;
-        vector<int>vec(128,0);
-        for (char i:s) vec[i]++;
-        sort(vec.begin(),vec.end(),greater<int>());
-        int odd=0,num=0;
-        for (int i = 0; i < 128; ++i) {
-            num+=vec[i]/2;
-            if(vec[i]%2)odd=1;
+    int maxProfit(vector<int>& arr) {
+        vector<int>ans;
+        arr.push_back(-1);
+        for (int i = 1,j=0; i < arr.size(); ++i) {
+            if(arr[i]<arr[i-1]){
+                ans.push_back(arr[i-1]-arr[j]);
+                j=i;
+            }
         }
-        return num*2+odd;
+        ans.push_back(0);
+        ans.push_back(0);
+        sort(ans.begin(),ans.end(),greater<>());
+        return ans[0]+ans[1];
     }
 };
 int main(){
     Solution s;
-    s.getRow(33);
+
 }
