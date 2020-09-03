@@ -149,24 +149,33 @@ struct TreeNode {
   TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
   TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
+#define debug1(__x) cout << '>' << #__x << ':' << (__x) << endl;
+#define debug2(__y,__z) cout << '>' << #__y << ':' << (__y) << " " << #__z << ":" <<(__z) << endl;
+#define debug3(__x,__y,__z) cout << '>' << #__x << ':' << (__x) << " >" << #__y << ":" <<(__y) << " >" << #__z << ":" <<(__z) << endl;
+#define GET4(a,b,c,d,...) d
+#define debug_(...) GET4(__VA_ARGS__,debug3,debug2,debug1)
+#define debug(...) debug_(__VA_ARGS__)(__VA_ARGS__)
 class Solution {
 public:
-    int maxProfit(vector<int>& arr) {
-        vector<int>ans;
-        arr.push_back(-1);
-        for (int i = 1,j=0; i < arr.size(); ++i) {
-            if(arr[i]<arr[i-1]){
-                ans.push_back(arr[i-1]-arr[j]);
-                j=i;
+    bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
+        if(!k || nums.size()==1)return false;
+        multiset<int>se;
+        se.insert(nums[0]);
+        int succ=0;
+        for (int i = 1; i < nums.size(); ++i) {
+            auto it=se.lower_bound(nums[i]);
+            if(it!=se.end() && abs(nums[i]-*it)<=t)succ=1;
+            if(it!=se.begin()){
+                it--;
+                if(abs(nums[i]-*it)<=t)succ=1;
             }
+            if(i-k>=0)se.erase(se.find(nums[i-k]));
+            se.insert(nums[i]);
         }
-        ans.push_back(0);
-        ans.push_back(0);
-        sort(ans.begin(),ans.end(),greater<>());
-        return ans[0]+ans[1];
+        return succ;
     }
 };
 int main(){
     Solution s;
-
+    s.largestTimeFromDigits({});
 }

@@ -23,3 +23,6 @@
   
 # Two types of elements very large weights Knapsack problem
   - cannot use dp, enumerate the number of first elements and find corresponding number of second elements
+
+# Implementation Problem
+  - list all sitations!! and then write code. 

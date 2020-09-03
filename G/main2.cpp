@@ -23,6 +23,7 @@ template<class T> bool umax(T& a, const T& b) {return a<b?a=b, 1:0;}
 ll FIRSTTRUE(function<bool(ll)> f, ll lb, ll rb) {
     while(lb<rb) {
         ll mb=(lb+rb)/2;
+        //cout << mb << endl;
         f(mb)?rb=mb:lb=mb+1;
     }
     return lb;
@@ -70,11 +71,15 @@ template<size_t S> string to_string(bitset<S> b) {
     FOR(S)res+=char('0'+b[i]);
     return res;
 }
-template<class T> string to_string(T v) {
+
+template <class T> string to_string(T v) {
+    char c=' ';
+    if constexpr (std::is_same_v<T, vector<vector<ll>>>) c='\n';
+    if constexpr (std::is_same_v<T, vector<vector<int>>>) c='\n';
     bool f=1;
     string res;
     EACH(x, v) {
-        if(!f)res+=' ';
+        if(!f)res+=c;
         f=0;
         res+=to_string(x);
     }
@@ -82,13 +87,13 @@ template<class T> string to_string(T v) {
 }
 template<class A> void write(A x) {cout << to_string(x);}
 template<class H, class... T> void write(const H& h, const T&... t) {write(h);write(t...);}
-void print();
+template<class H, class... T> void print(const H& h, const T&... t);
+void print() {write("\n");}
 template<class H, class... T> void print(const H& h, const T&... t) {
     write(h);
     if(sizeof...(t))write(' ');
     print(t...);
 }
-void print(){write("\n");}
 void DBG() {cout << "]" << endl;}
 template<class H, class... T> void DBG(H h, T... t) {
     cout << to_string(h);
@@ -98,7 +103,7 @@ template<class H, class... T> void DBG(H h, T... t) {
 }
 #define _DEBUG
 #ifdef _DEBUG
-#define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [", DBG(__VA_ARGS__)
+#define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
 #else
 #define debug(...) 0
 #endif
@@ -122,35 +127,62 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-const int MAXN = 3e3+50;
-const int MAXM = 2e5+50;
+const int MAXN = 2e5+20;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
-int n;
-void solve() {
-    read(n);
-    vector<int>arr(n);
-    read(arr);
-    offset(-1,arr);
-    ll ans=0;
-    vt<int>l(n,0);
-    FOR(n){
-        vt<int>r(n,0);
-        FOR(j,i+1,n)r[arr[j]]++;
-        FOR(j,i+1,n){
-            r[arr[j]]--;
-            ans+=l[arr[j]]*r[arr[i]];
+int n,m1,m2;
+vector<int>mine[2];
+vector<int>vec[MAXN],edge[MAXN];
+int vis[MAXN];
+vector<vector<int>>d;
+void bfs(vector<int>st,int id){
+    queue<int>q;
+    memset(vis,0,sizeof(vis));
+    EACH(u,st)q.push(u),d[id][u]=0,vis[u]=1;
+    while(!q.empty()){
+        int u=q.front();q.pop();
+        if(id==0){
+            EACH(v,vec[u])if(!vis[v])
+                    d[id][v]=d[id][u]+1,q.push(v),vis[v]=1;
+        }else{
+            EACH(v,edge[u])if(!vis[v])
+                    d[id][v]=d[id][u]+1,q.push(v),vis[v]=1;
         }
-        l[arr[i]]++;
-    }
-    print(ans);
-}
 
+    }
+}
+void solve() {
+    read(n,m1,m2);
+    vti(mine[0],0,m1);
+    vti(mine[1],0,m2);
+    FOR(2)read(mine[i]);
+    vti(d,1e7,3,n+1);
+    FOR(i,1,n+1){
+        int cur;read(cur);
+        if(!cur)continue;
+        vec[i]=vector<int>(cur);
+        read(vec[i]);
+        EACH(u,vec[i])edge[u].push_back(i);
+    }
+    //FOR(i,1,n+1)print(i,vec[i]);
+    bfs({1},0);
+    bfs(mine[0],1);
+    bfs(mine[1],2);
+    int ans=1e7;
+    //debug(d);
+    FOR(i,1,n+1)umin(ans,d[0][i]+d[1][i]+d[2][i]);
+
+    if(ans>=1e7)print("impossible");
+    else print(ans);
+}
 int main() {
+    //print(set<int>({1,2,3}).size());
 //    ios::sync_with_stdio(false);
 //    cin.tie(nullptr);
+    //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
+    //freopen("/home/csc/G/output.txt", "w", stdout);
     int t=1;
-    read(t);
+    //read(t);
     FOR(t) {
         //write("Case #", i+1, ": ");
         solve();
@@ -159,23 +191,101 @@ int main() {
 }
 /*
 
-5
-5
+
+10 2 2
+9 7
+10 6
+3 2 4 8
+1 3
+1 6
 1 5
-2 3
-2 5
-3 5
-2 2
+1 10
+1 7
+0
+1 9
+0
+0
 
-2 4
-1010
-0010
+7 2 1
+5 4
+6
+3 2 3 4
+1 5
+1 6
+1 7
+0
+0
+0
 
-4 2
-10
-00
-11
-00
 
+RGBW
+WWWW
+WWWW
+RGBW
+
+RGBW
+WWWW
+WWWW
+RGWB
+
+
+
+
+ 8 7
+ 1 2 1
+ 1 3 1
+ 1 4 1
+ 1 5 3
+ 1 6 2
+ 1 7 2
+ 1 8 2
+ 2 3 4 5 6 7 8
+
+ 3 1
+ 1 2 1
+ 1 1 1 3 3 3 3
+
+ 1 1
+ 1 1 1
+ 1 1 1 1 1 1 1
+
+ 2 1
+ 1 2 1
+ 2 2 2 2 2 2 2
+
+
+  3 3
+ 5 3 1
+ 0 0 0 0
+ 1 2 4
+ 0 0 0 0
+ 1 3 4
+ 0 0 0 0
+
+ 3 3
+ 3 1 3
+ 0 0 0 0
+ 1 2 4
+ 0 0 0 0
+ 1 3 4
+ 0 0 0 0
+
+ 3 3
+ 1 2 2
+ 0 0 0 0
+ 1 2 4
+ 0 0 0 0
+ 1 3 4
+ 0 0 0 0
+
+
+ 1
+ 5 5
+ 1 3 4 5 6
+ 0 0 0 0
+ 1 1 1 1 1
+ 0 0 0 0
+ 1 1 1 1 1
+ 0 0 0 0
 
  * */
