@@ -127,66 +127,94 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-const int MAXN = 1e5+20;
+const int MAXN = 2e5+20;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
-int n,q,m;
-template<class T>
-class BIT{
-public:
-    vector<ll>arr;
-    //type==0:query range sum,update points
-    //type==1:update range,query points  a1-a0,a2-a1,a3-a2,a4-a3
-    //input vector cur start from 1
-    BIT(vector<ll>&cur, int type){
-        arr.clear();
-        arr=vector<ll>(sz(cur),0);
-        assert(type==1);
-        if(type==1)FOR(i,1,sz(cur))update(i,cur[i]-cur[i-1]);//,print(arr[i]);
-        //print(arr);
-    }
-    void update(int x,ll val) { while(x<sz(arr))  {  arr[x]+=val;  x+=(x&-x);}   }
-    ll query(int x) {  ll res=0;  while(x>0)  {  res+=arr[x];  x-=(x&-x); } return res; }
-};
-void solve(){
-    read(n);
-    vector<ll>arr(n);
-    read(arr,q);
-    arr.insert(arr.begin(),0ll);
-    BIT<ll>bit(arr,1);
-    ll acc=0;
-    FOR(i,2,n+1)if(arr[i]-arr[i-1]>0)acc+=arr[i]-arr[i-1];
-    //FOR(k,1,n+1)print(bit.query(k));
-    if(arr[1]+acc>0)print((arr[1]+acc+1)/2);
-    else print((arr[1]+acc)/2);
-    FOR(q){
-        int l,r;ll a;read(l,r,a);
-        if(l>1){
-            arr[l]=bit.query(l);
-            arr[l-1]=bit.query(l-1);
-            ll dif=abs(arr[l]-arr[l-1]);
-            if(arr[l]-arr[l-1]>=0 && a>=0)acc+=a;
-            else if(arr[l]-arr[l-1]>=0 && a<=0)acc-=min(abs(a),dif);
-            else if(arr[l]-arr[l-1]<=0 && a>=0)acc+=max(abs(a)-dif,0ll);
 
-        }
-        if(r<n){
-            arr[r]=bit.query(r);
-            arr[r+1]=bit.query(r+1);
-            ll dif=abs(arr[r+1]-arr[r]);
-            if(arr[r+1]>=arr[r] && a>=0)acc-=min(dif,a);
-            else if(arr[r+1]>=arr[r] && a<=0)acc+=abs(a);
-            else if(arr[r+1]<=arr[r] && a<=0)acc+=max(abs(a)-dif,0ll);
-            else if(arr[r+1]<=arr[r] && a>=0) {}
-        }
-        //print(l,r);
-        bit.update(l,a);
-        bit.update(r+1,-a);
-        //FOR(k,1,n+1)print(bit.query(k));
-        arr[l]=bit.query(l),arr[r]=bit.query(r);
-        if(arr[1]+acc>0)print((arr[1]+acc+1)/2);
-        else print((arr[1]+acc)/2);
+struct Simplex {
+// reference：http://en.wikipedia.org/wiki/Simplex_algorithm
+// the ith condition is that a[i][0]*x[0] + a[i][1]*x[1] + ... <= a[i][n]
+// we want to max(a[m][0]*x[0] + a[m][1]*x[1] + ... + a[m][n-1]*x[n-1] - a[m][n])
+// note that each x[i] >= 0
+    static const int maxm = 500; //
+    static const int maxn = 500; //
+    constexpr static const double INF = 1e100;
+    constexpr static const double eps = 1e-10;
+    int n; //
+    int m; //
+    double a[maxm][maxn];
+    int B[maxm], N[maxn];
+    void pivot(int r, int c) {
+        swap(N[c], B[r]);
+        a[r][c] = 1 / a[r][c];
+        for(int j = 0; j <= n; j++) if(j != c) a[r][j] *= a[r][c];
+        for(int i = 0; i <= m; i++) if(i != r) {
+                for(int j = 0; j <= n; j++) if(j != c) a[i][j] -= a[i][c] * a[r][j];
+                a[i][c] = -a[i][c] * a[r][c];
+            }
     }
+    bool feasible() {
+        for(;;) {
+            int r, c;
+            double p = INF;
+            for(int i = 0; i < m; i++) if(a[i][n] < p) p = a[r = i][n];
+            if(p > -eps) return true;
+            p = 0;
+            for(int i = 0; i < n; i++) if(a[r][i] < p) p = a[r][c = i];
+            if(p > -eps) return false;
+            p = a[r][n] / a[r][c];
+            for(int i = r+1; i < m; i++) if(a[i][c] > eps) {
+                    double v = a[i][n] / a[i][c];
+                    if(v < p) { r = i; p = v; }
+                }
+            pivot(r, c);
+        }
+    }
+
+    // have solution reture 1，no solution return 0，unbounded return -1。
+    // x[i] is cof
+    int simplex(int n, int m, double x[maxn], double& ret) {
+        this->n = n;
+        this->m = m;
+        for(int i = 0; i < n; i++) N[i] = i;
+        for(int i = 0; i < m; i++) B[i] = n+i;
+        if(!feasible()) return 0;
+        for(;;) {
+            int r, c;
+            double p = 0;
+            for(int i = 0; i < n; i++) if(a[m][i] > p) p = a[m][c = i];
+            if(p < eps) {
+                for(int i = 0; i < n; i++) if(N[i] < n) x[N[i]] = 0;
+                for(int i = 0; i < m; i++) if(B[i] < n) x[B[i]] = a[i][n];
+                ret = -a[m][n];
+                return 1;
+            }
+            p = INF;
+            for(int i = 0; i < m; i++) if(a[i][c] > eps) {
+                    double v = a[i][n] / a[i][c];
+                    if(v < p) { r = i; p = v; }
+                }
+            if(p == INF) return -1;
+            pivot(r, c);
+        }
+    }
+};
+int n,m;
+Simplex solver;
+void solve(){
+    read(n,m);
+    vector<double>w(n);
+    vector<vector<double>>vec(m,(vector<double>(n+1)));
+    read(w);
+    read(vec);
+    FOR(j,m)solver.a[n][j]=vec[j].back();
+    FOR(i,n){
+        FOR(j,m)solver.a[i][j]=vec[j][i];
+        solver.a[i][m]=w[i];
+    }
+    double ans, x[Simplex::maxn];
+    assert(solver.simplex(m, n, x, ans) == 1);
+    printf("%.2f\n", ans*100);
 }
 int main() {
     //print(set<int>({1,2,3}).size());
@@ -194,7 +222,6 @@ int main() {
 //    cin.tie(nullptr);
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
     //freopen("/home/csc/G/output.txt", "w", stdout);
-    //print(-11/2);
     int t=1;
     //read(t);
     FOR(t) {
@@ -204,32 +231,6 @@ int main() {
     return 0;
 }
 /*
-99
-
-7 7 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
- 6 7
-
-7 6 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
- 6 7
-
- 6 6 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
-
-
 
 
 10 2 2

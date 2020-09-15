@@ -4,6 +4,11 @@
 - [Segmentation Coverage Problem](#segmentation-coverage-problem)
 - [Two types of elements very large weights Knapsack problem](#two-types-of-elements-very-large-weights-knapsack-problem)
 
+# General
+  - dp? binary search? math?
+  - find the essentials in the problem instead of trying different samples
+
+
 # XOR operation
   - think the problem one byte by one byte.[GameGame](https://codeforces.com/contest/1383/problem/B)
   - manipulation formulas.

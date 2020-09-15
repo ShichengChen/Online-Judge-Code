@@ -157,25 +157,17 @@ struct TreeNode {
 #define debug(...) debug_(__VA_ARGS__)(__VA_ARGS__)
 class Solution {
 public:
-    bool containsNearbyAlmostDuplicate(vector<int>& nums, int k, int t) {
-        if(!k || nums.size()==1)return false;
-        multiset<int>se;
-        se.insert(nums[0]);
-        int succ=0;
+    int rob(vector<int>& nums) {
+        nums.insert(nums.begin(),0);
+        vector<vector<int>>d(nums.size(),vector<int>(2,0));
         for (int i = 1; i < nums.size(); ++i) {
-            auto it=se.lower_bound(nums[i]);
-            if(it!=se.end() && abs(nums[i]-*it)<=t)succ=1;
-            if(it!=se.begin()){
-                it--;
-                if(abs(nums[i]-*it)<=t)succ=1;
-            }
-            if(i-k>=0)se.erase(se.find(nums[i-k]));
-            se.insert(nums[i]);
+            d[i][0]=max(d[i-1][1],d[i-1][0]);
+            d[i][1]=d[i-1][0]+nums[i];
         }
-        return succ;
+        return max(d.back()[0],d.back()[1]);
     }
 };
 int main(){
     Solution s;
-    s.largestTimeFromDigits({});
+    print(s.repeatedSubstringPattern("abac"));
 }
