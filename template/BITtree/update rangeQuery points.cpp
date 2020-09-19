@@ -134,19 +134,19 @@ int n,q,m;
 template<class T>
 class BIT{
 public:
-    vector<ll>arr;
+    vector<T>arr;
     //type==0:query range sum,update points
     //type==1:update range,query points  a1-a0,a2-a1,a3-a2,a4-a3
     //input vector cur start from 1
-    BIT(vector<ll>&cur, int type){
+    BIT(vector<T>&cur, int type){
         arr.clear();
-        arr=vector<ll>(sz(cur),0);
+        arr=vector<T>(sz(cur),0);
         assert(type==1);
         if(type==1)FOR(i,1,sz(cur))update(i,cur[i]-cur[i-1]);//,print(arr[i]);
         //print(arr);
     }
-    void update(int x,ll val) { while(x<sz(arr))  {  arr[x]+=val;  x+=(x&-x);}   }
-    ll query(int x) {  ll res=0;  while(x>0)  {  res+=arr[x];  x-=(x&-x); } return res; }
+    void update(int x,T val) { while(x<sz(arr))  {  arr[x]+=val;  x+=(x&-x);}   }
+    T query(int x) {  T res=0;  while(x>0)  {  res+=arr[x];  x-=(x&-x); } return res; }
 };
 void solve(){
     read(n);

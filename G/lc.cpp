@@ -157,17 +157,21 @@ struct TreeNode {
 #define debug(...) debug_(__VA_ARGS__)(__VA_ARGS__)
 class Solution {
 public:
-    int rob(vector<int>& nums) {
-        nums.insert(nums.begin(),0);
-        vector<vector<int>>d(nums.size(),vector<int>(2,0));
-        for (int i = 1; i < nums.size(); ++i) {
-            d[i][0]=max(d[i-1][1],d[i-1][0]);
-            d[i][1]=d[i-1][0]+nums[i];
+    vector<int> sequentialDigits(int low, int high) {
+        vector<int>ans;
+        for (int len = 2; len <= 9; ++len) {
+            for (int i = 1; i+len-1 <= 9; ++i) {
+                int cur=i;
+                for (int j = 0; j < len-1; ++j) {
+                    cur=cur*10+i+j+1;
+                }
+                if(cur<=high && cur>=low)ans.push_back(cur);
+            }
         }
-        return max(d.back()[0],d.back()[1]);
+        return ans;
     }
 };
 int main(){
     Solution s;
-    print(s.repeatedSubstringPattern("abac"));
+    print(s.isRobotBounded("GLRLLGLL"));
 }

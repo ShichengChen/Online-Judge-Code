@@ -131,62 +131,29 @@ const int MAXN = 1e5+20;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
 int n,q,m;
-template<class T>
-class BIT{
-public:
-    vector<ll>arr;
-    //type==0:query range sum,update points
-    //type==1:update range,query points  a1-a0,a2-a1,a3-a2,a4-a3
-    //input vector cur start from 1
-    BIT(vector<ll>&cur, int type){
-        arr.clear();
-        arr=vector<ll>(sz(cur),0);
-        assert(type==1);
-        if(type==1)FOR(i,1,sz(cur))update(i,cur[i]-cur[i-1]);//,print(arr[i]);
-        //print(arr);
-    }
-    void update(int x,ll val) { while(x<sz(arr))  {  arr[x]+=val;  x+=(x&-x);}   }
-    ll query(int x) {  ll res=0;  while(x>0)  {  res+=arr[x];  x-=(x&-x); } return res; }
-};
 void solve(){
     read(n);
-    vector<ll>arr(n);
-    read(arr,q);
-    arr.insert(arr.begin(),0ll);
-    BIT<ll>bit(arr,1);
-    ll acc=0;
-    FOR(i,2,n+1)if(arr[i]-arr[i-1]>0)acc+=arr[i]-arr[i-1];
-    //FOR(k,1,n+1)print(bit.query(k));
-    if(arr[1]+acc>0)print((arr[1]+acc+1)/2);
-    else print((arr[1]+acc)/2);
-    FOR(q){
-        int l,r;ll a;read(l,r,a);
-        if(l>1){
-            arr[l]=bit.query(l);
-            arr[l-1]=bit.query(l-1);
-            ll dif=abs(arr[l]-arr[l-1]);
-            if(arr[l]-arr[l-1]>=0 && a>=0)acc+=a;
-            else if(arr[l]-arr[l-1]>=0 && a<=0)acc-=min(abs(a),dif);
-            else if(arr[l]-arr[l-1]<=0 && a>=0)acc+=max(abs(a)-dif,0ll);
-
-        }
-        if(r<n){
-            arr[r]=bit.query(r);
-            arr[r+1]=bit.query(r+1);
-            ll dif=abs(arr[r+1]-arr[r]);
-            if(arr[r+1]>=arr[r] && a>=0)acc-=min(dif,a);
-            else if(arr[r+1]>=arr[r] && a<=0)acc+=abs(a);
-            else if(arr[r+1]<=arr[r] && a<=0)acc+=max(abs(a)-dif,0ll);
-            else if(arr[r+1]<=arr[r] && a>=0) {}
-        }
-        //print(l,r);
-        bit.update(l,a);
-        bit.update(r+1,-a);
-        //FOR(k,1,n+1)print(bit.query(k));
-        arr[l]=bit.query(l),arr[r]=bit.query(r);
-        if(arr[1]+acc>0)print((arr[1]+acc+1)/2);
-        else print((arr[1]+acc)/2);
+    vector<int>arr(n);
+    read(arr);
+    vector<int>inc={0},dec={0};
+    vector<int>d(n,1e6);
+    d[0]=0;
+    FOR(i,1,n){
+        d[i]=d[i-1]+1;
+        while(inc.size() && arr[inc.back()]>arr[i])umin(d[i],d[inc.back()]+1),inc.pop_back();
+        while(dec.size() && arr[dec.back()]<arr[i])umin(d[i],d[dec.back()]+1),dec.pop_back();
+        if(inc.size())umin(d[i],d[inc.back()]+1);
+        if(dec.size())umin(d[i],d[dec.back()]+1);
+        while(inc.size() && arr[inc.back()]>=arr[i])inc.pop_back();
+        while(dec.size() && arr[dec.back()]<=arr[i])dec.pop_back();
+//        print(inc.size(),arr[inc.back()],arr[i]);
+//        print(dec.size(),arr[dec.back()],arr[i]);
+//        print(inc,":",dec);
+        inc.push_back(i);
+        dec.push_back(i);
     }
+//    print(d);
+    print(d[n-1]);
 }
 int main() {
     //print(set<int>({1,2,3}).size());
