@@ -64,7 +64,7 @@ string to_string(vector<bool> v) {
     return res;
 }
 template<class T,class U> string to_string(pair<T,U> a){
-    return to_string(a.first)+":"+to_string(a.second);
+    return to_string(a.first)+" "+to_string(a.second);
 }
 template<size_t S> string to_string(bitset<S> b) {
     string res;
@@ -131,45 +131,30 @@ const int MAXN = 1e5+20;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
 int n;
-struct less_than_key{
-    inline bool operator() (const pair<int,vector<int>>& v0, const pair<int,vector<int>>& v1){
-        for (int i = 0; i < min(sz(v0.second),sz(v1.second)); ++i) {
-            if(v0.second[i]!=v1.second[i])return v0.second[i]<v1.second[i];
-        }
-        if(sz(v0)!=sz(v1))return sz(v0)<sz(v1);
-        assert(false);
-        return true;
-    }
-};
-void decom(int com,vector<int>&vec){
-    vec.clear();
-    for(int i=2; i*i<=com; i++){
-        if(com%i==0){
-            vec.push_back(i);
-            while(com%i==0) com/=i;
-        }
-    }
-    if(com>1)vec.push_back(com);
-}
-
 void solve(){
-    read(n);
-    vector<int>div;
-    for(int i=2; i*i<=n; i++){
-        if(n%i==0){
-            div.push_back(i);
-            if(i*i!=n)div.push_back(n/i);
-        }
+    n=100;
+    vector<vector<pair<int,ll>>>arr(n+40);
+    int multi=n*n/10;
+    arr[0].push_back({1,multi+1});
+    FOR(multi)arr[1].push_back({2,1});
+    arr[2].push_back({3,multi+1});
+    int ma[2][4]={{0,2,1,3},{0,1,2,3}};
+    int ne=multi+2;
+    for (int i = 1,j=3,k=0; j+i*2 <= n; j+=i*2,i++,k++) {
+        int id=k%2;
+        int extraw=1;
+        arr[ma[id][0]].push_back({j+1,multi+extraw});
+        FOR(l,j+1,j+i)arr[l].push_back({l+1,multi+extraw}),ne++;
+        arr[j+i].push_back({ma[id][1],multi+extraw});
+
+        arr[ma[id][2]].push_back({j+i+1,multi+extraw});
+        FOR(l,j+i+1,j+i*2)arr[l].push_back({l+1,multi+extraw}),ne++;
+        arr[j+i*2].push_back({ma[id][3],multi+extraw});
+        ne+=4;
     }
-    vector<pair<int,vector<int>>>vec;
-    EACH(i,div){
-        vec.push_back({i,vector<int>()});
-        decom(i,vec.back().second);
-    }
-    sort(all(vec),less_than_key());
-    int cnt=0;
-    FOR(i,1,sz(vec)){
-        if(gcd(vec[i],vec[i-1])==1)
+    print(n+1,0,3);
+    FOR(n+1){
+        print(sz(arr[i]),arr[i]);
     }
 }
 int main() {
@@ -177,10 +162,10 @@ int main() {
 //    ios::sync_with_stdio(false);
 //    cin.tie(nullptr);
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
-    //freopen("/home/csc/G/output.txt", "w", stdout);
+    freopen("/home/csc/Online-Judge-Code/G/maxflow_in.txt", "w", stdout);
     //print(-11/2);
     int t=1;
-    read(t);
+    //read(t);
     FOR(t) {
         //write("Case #", i+1, ": ");
         solve();

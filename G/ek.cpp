@@ -107,13 +107,6 @@ public:
 int main() {
     /*
     // Graph in Figure 8.11
-    4 0 3
-    2 1 8 2 8
-    2 2 1 3 8
-    1 3 8
-    0
-
-
     10 0 3
     3 1 6 4 20 6 50
     6 2 1 2 1 2 1 2 1 2 1 5 20
@@ -128,18 +121,20 @@ int main() {
     // the max flow value of that graph should be 16
     */
 
-    //freopen("maxflow_in.txt", "r", stdin);
+    freopen("/home/csc/Online-Judge-Code/G/maxflow_in.txt", "r", stdin);
 
     int V, s, t; scanf("%d %d %d", &V, &s, &t);
     max_flow mf(V);
+    int ne=0;
     for (int u = 0; u < V; ++u) {
         int k; scanf("%d", &k);
+        ne+=k;
         while (k--) {
             int v, w; scanf("%d %d", &v, &w);
             mf.add_edge(u, v, w);                      // default: directed edge
         }
     }
-
+    cout << ne*V << endl;
     // printf("%lld\n", mf.edmonds_karp(s, t));
     printf("%lld\n", mf.edmonds_karp(s, t));
 
