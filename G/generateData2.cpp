@@ -132,17 +132,18 @@ const int LOGMAXN = 18;
 ll const MOD=1e9+7;
 int n;
 void solve(){
-    n=100;
+    n=10;
     vector<vector<pair<int,ll>>>arr(n+40);
-    int multi=n*n;
-    arr[0].push_back({1,multi+1});
+    int multi=n;
+    int extraw=1;
+    arr[0].push_back({1,multi+extraw});
     FOR(multi)arr[1].push_back({2,1});
-    arr[2].push_back({3,multi+1});
+    arr[2].push_back({3,multi+extraw});
     int ma[2][4]={{0,2,1,3},{0,1,2,3}};
     int ne=multi+2;
     for (int i = 1,j=3,k=0; j+i*2 < n; j+=i*2,i++,k++) {
         int id=k%2;
-        int extraw=1;
+
         arr[ma[id][0]].push_back({j+1,multi+extraw});
         FOR(l,j+1,j+i)arr[l].push_back({l+1,multi+extraw}),ne++;
         arr[j+i].push_back({ma[id][1],multi+extraw});
@@ -152,9 +153,18 @@ void solve(){
         arr[j+i*2].push_back({ma[id][3],multi+extraw});
         ne+=4;
     }
-    print(n,0,3);
+    ofstream myfile;
+    myfile.open ("/home/csc/Online-Judge-Code/G/maxflow_in2.txt");
+    myfile << n << " " << ne << "\n";
+    //print(n,ne);
     FOR(n){
-        print(sz(arr[i]),arr[i]);
+        for (auto [v,w]:arr[i]) {
+            if(v==3)v=n;
+            assert(v!=3);
+            int u=i+(i<3);
+            //print(u,v+(v<3),w);
+            myfile << u << " " << v+(v<3) << " " << w << "\n";
+        }
     }
 }
 int main() {
@@ -162,7 +172,7 @@ int main() {
 //    ios::sync_with_stdio(false);
 //    cin.tie(nullptr);
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
-    freopen("/home/csc/Online-Judge-Code/G/maxflow_in.txt", "w", stdout);
+    freopen("/home/csc/Online-Judge-Code/G/maxflow_in2.txt", "w", stdout);
     //print(-11/2);
     int t=1;
     //read(t);

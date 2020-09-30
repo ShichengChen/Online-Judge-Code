@@ -23,6 +23,7 @@ template<class T> bool umax(T& a, const T& b) {return a<b?a=b, 1:0;}
 ll FIRSTTRUE(function<bool(ll)> f, ll lb, ll rb) {
     while(lb<rb) {
         ll mb=(lb+rb)/2;
+        //cout << mb << endl;
         f(mb)?rb=mb:lb=mb+1;
     }
     return lb;
@@ -53,6 +54,8 @@ template<class H, class T> void read(pair<H,T>&c){read(c.first);read(c.second);}
 template<class H, class... T> void read(H& h, T&... t) {read(h);read(t...);}
 template<class A> void read(vector<A>& x) {EACH(a, x)read(a);}
 template<class A, size_t S> void read(array<A, S>& x) {EACH(a, x)read(a);}
+template <class T> string to_string(T v);
+template<class T,class U> string to_string(pair<T,U> a);
 string to_string(char c) {return string(1, c);}
 string to_string(bool b) {return b?"true":"false";}
 string to_string(const char* s) {return string(s);}
@@ -62,42 +65,45 @@ string to_string(vector<bool> v) {
     FOR(sz(v))res+=char('0'+v[i]);
     return res;
 }
-template<class T,class U> string to_string(pair<T,U> a){
-    return to_string(a.first)+":"+to_string(a.second);
-}
 template<size_t S> string to_string(bitset<S> b) {
     string res;
     FOR(S)res+=char('0'+b[i]);
     return res;
 }
-template<class T> string to_string(T v) {
+
+template <class T> string to_string(T v) {
+    char c=' ';
+    if constexpr (std::is_same_v<T, vector<vector<ll>>>) c='\n';
+    if constexpr (std::is_same_v<T, vector<vector<int>>>) c='\n';
     bool f=1;
     string res;
     EACH(x, v) {
-        if(!f)res+=' ';
+        if(!f)res+=c;
         f=0;
         res+=to_string(x);
     }
     return res;
 }
+template<class T,class U> string to_string(pair<T,U> a){return to_string(a.first)+":"+to_string(a.second);}
 template<class A> void write(A x) {cout << to_string(x);}
 template<class H, class... T> void write(const H& h, const T&... t) {write(h);write(t...);}
+template<class H, class... T> void print(const H& h, const T&... t);
 void print() {write("\n");}
 template<class H, class... T> void print(const H& h, const T&... t) {
     write(h);
     if(sizeof...(t))write(' ');
     print(t...);
 }
-void DBG() {cerr << "]" << endl;}
+void DBG() {cout << "]" << endl;}
 template<class H, class... T> void DBG(H h, T... t) {
-    cerr << to_string(h);
+    cout << to_string(h);
     if(sizeof...(t))
-        cerr << ", ";
+        cout << ", ";
     DBG(t...);
 }
 #define _DEBUG
 #ifdef _DEBUG
-#define debug(...) cerr << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [", DBG(__VA_ARGS__)
+#define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
 #else
 #define debug(...) 0
 #endif
@@ -119,52 +125,70 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     v=vt<T>(n);
     EACH(a, v)vti(a, x, m);
 }
-const int MAXN = 5e4+20;
+const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
+const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
+const int MAXN = 1e5+20;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
-int n,m;
-vector<int>have;
-vector<pair<int,int>>vec[MAXN];
-int d[MAXN][2],l;
-int vis[MAXN];
-void dfs(int u,int fa,int dis){
-    d[u][0]=0;
-    d[u][1]=1-vis[u];
-    if(dis>=m)return;
-    EACH(it,vec[u]){
-        int v=it.first;
-        int w=it.second;
-        if(v==fa)continue;
-        dfs(v,u,dis+w*2);
-        d[u][1]+=d[v][0];
-        d[u][0]+=d[v][1];
+int n;
+struct less_than_key{
+    inline bool operator() (const pair<int,vector<int>>& v0, const pair<int,vector<int>>& v1){
+        for (int i = 0; i < min(sz(v0.second),sz(v1.second)); ++i) {
+            if(v0.second[i]!=v1.second[i])return v0.second[i]<v1.second[i];
+        }
+        if(sz(v0.second)!=sz(v1.second))return sz(v0.second)<sz(v1.second);
+        return true;
     }
-    d[u][0]=min({d[u][0],d[u][1]});
-    //print(u,d[u][0],d[u][1],d[u][2]);
-}
-void solve() {
-    read(n,m);
-    FOR(n-1){
-        int u,v,w;read(u,v,w);
-        vec[u].push_back({v,w});
-        vec[v].push_back({u,w});
+};
+void decom(int com,vector<int>&vec){
+    vec.clear();
+    for(int i=2; i*i<=com; i++){
+        if(com%i==0){
+            vec.push_back(i);
+            while(com%i==0) com/=i;
+        }
     }
-    read(l);
-    FOR(l){
-        int cur;read(cur);
-        vis[cur]=1;
-    }
-    dfs(1,-1,0);
-    print(d[1][0]);
+    if(com>1)vec.push_back(com);
 }
 
+void solve(){
+    read(n);
+    vector<int>div;
+    for(int i=2; i*i<=n; i++){
+        if(n%i==0){
+            div.push_back(i);
+            if(i*i!=n)div.push_back(n/i);
+        }
+    }
+    div.push_back(n);
+    vector<pair<int,vector<int>>>vec;
+    EACH(i,div){
+        vec.push_back({i,vector<int>()});
+        decom(i,vec.back().second);
+    }
+    print(vec);
+    sort(all(vec),less_than_key());
+    int cnt=0;
+    vector<int>ans;
+    FOR(i,1,sz(vec)){
+        int i1=vec[i].first,i0=vec[i-1].first;
+        ans.push_back(i0);
+        if(gcd(i0,i1)==1)ans.push_back(lcm(i0,i1)),cnt++;
+        if(i==sz(vec)-1)ans.push_back(i1);
+    }
+    if(gcd(vec.back().first,vec[0].first)==1)ans.push_back(lcm(vec.back().first,vec[0].first)),cnt++;
+    print(ans);
+    print(cnt);
+}
 int main() {
+    //print(set<int>({1,2,3}).size());
 //    ios::sync_with_stdio(false);
 //    cin.tie(nullptr);
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
     //freopen("/home/csc/G/output.txt", "w", stdout);
+    //print(-11/2);
     int t=1;
-    //read(t);
+    read(t);
     FOR(t) {
         //write("Case #", i+1, ": ");
         solve();
@@ -172,18 +196,128 @@ int main() {
     return 0;
 }
 /*
-2
-3
-3 4 7
-3
-3 4 5
+99
+
+7 7 1 2 5
+1 2
+2 3
+ 2 5
+ 3 4
+ 5 6
+ 6 7
+
+7 6 1 2 5
+1 2
+2 3
+ 2 5
+ 3 4
+ 5 6
+ 6 7
+
+ 6 6 1 2 5
+1 2
+2 3
+ 2 5
+ 3 4
+ 5 6
 
 
-4 2
-10
-00
-11
-00
 
+
+10 2 2
+9 7
+10 6
+3 2 4 8
+1 3
+1 6
+1 5
+1 10
+1 7
+0
+1 9
+0
+0
+
+7 2 1
+5 4
+6
+3 2 3 4
+1 5
+1 6
+1 7
+0
+0
+0
+
+
+RGBW
+WWWW
+WWWW
+RGBW
+
+RGBW
+WWWW
+WWWW
+RGWB
+
+
+
+
+ 8 7
+ 1 2 1
+ 1 3 1
+ 1 4 1
+ 1 5 3
+ 1 6 2
+ 1 7 2
+ 1 8 2
+ 2 3 4 5 6 7 8
+
+ 3 1
+ 1 2 1
+ 1 1 1 3 3 3 3
+
+ 1 1
+ 1 1 1
+ 1 1 1 1 1 1 1
+
+ 2 1
+ 1 2 1
+ 2 2 2 2 2 2 2
+
+
+  3 3
+ 5 3 1
+ 0 0 0 0
+ 1 2 4
+ 0 0 0 0
+ 1 3 4
+ 0 0 0 0
+
+ 3 3
+ 3 1 3
+ 0 0 0 0
+ 1 2 4
+ 0 0 0 0
+ 1 3 4
+ 0 0 0 0
+
+ 3 3
+ 1 2 2
+ 0 0 0 0
+ 1 2 4
+ 0 0 0 0
+ 1 3 4
+ 0 0 0 0
+
+
+ 1
+ 5 5
+ 1 3 4 5 6
+ 0 0 0 0
+ 1 1 1 1 1
+ 0 0 0 0
+ 1 1 1 1 1
+ 0 0 0 0
 
  * */

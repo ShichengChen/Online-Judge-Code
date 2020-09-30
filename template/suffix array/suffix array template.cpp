@@ -3,6 +3,12 @@
 typedef long long ll;
 using namespace std;
 using namespace __gnu_pbds;
+#define debug1(__x) cout << '>' << #__x << ':' << (__x) << endl;
+#define debug2(__y,__z) cout << '>' << #__y << ':' << (__y) << " " << #__z << ":" <<(__z) << endl;
+#define debug3(__x,__y,__z) cout << '>' << #__x << ':' << (__x) << " >" << #__y << ":" <<(__y) << " >" << #__z << ":" <<(__z) << endl;
+#define GET4(a,b,c,d,...) d
+#define debug_(...) GET4(__VA_ARGS__,debug3,debug2,debug1)
+#define debug(...) debug_(__VA_ARGS__)(__VA_ARGS__)
 #define lcnt (cnt<<1)
 #define rcnt (cnt<<1|1)
 #define vt vector
@@ -23,7 +29,6 @@ template<class T> bool umax(T& a, const T& b) {return a<b?a=b, 1:0;}
 ll FIRSTTRUE(function<bool(ll)> f, ll lb, ll rb) {
     while(lb<rb) {
         ll mb=(lb+rb)/2;
-        //cout << mb << endl;
         f(mb)?rb=mb:lb=mb+1;
     }
     return lb;
@@ -38,7 +43,6 @@ ll LASTTRUE(function<bool(ll)> f, ll lb, ll rb) {
 
 template<class A> void read(vt<A>& v);
 template<class A, size_t S> void read(array<A, S>& a);
-template<class H, class T> void read(pair<H,T>&c);
 template<class T> void read(T& x) {cin >> x;}
 void read(double& d) {
     string t;
@@ -50,7 +54,6 @@ void read(long double& d) {
     read(t);
     d=stold(t);
 }
-template<class H, class T> void read(pair<H,T>&c){read(c.first);read(c.second);}
 template<class H, class... T> void read(H& h, T&... t) {read(h);read(t...);}
 template<class A> void read(vector<A>& x) {EACH(a, x)read(a);}
 template<class A, size_t S> void read(array<A, S>& x) {EACH(a, x)read(a);}
@@ -63,23 +66,17 @@ string to_string(vector<bool> v) {
     FOR(sz(v))res+=char('0'+v[i]);
     return res;
 }
-template<class T,class U> string to_string(pair<T,U> a){
-    return to_string(a.first)+" "+to_string(a.second);
-}
 template<size_t S> string to_string(bitset<S> b) {
     string res;
-    FOR(S)res+=char('0'+b[i]);
+    FOR(S)
+        res+=char('0'+b[i]);
     return res;
 }
-
-template <class T> string to_string(T v) {
-    char c=' ';
-    if constexpr (std::is_same_v<T, vector<vector<ll>>>) c='\n';
-    if constexpr (std::is_same_v<T, vector<vector<int>>>) c='\n';
+template<class T> string to_string(T v) {
     bool f=1;
     string res;
     EACH(x, v) {
-        if(!f)res+=c;
+        if(!f)res+=' ';
         f=0;
         res+=to_string(x);
     }
@@ -87,25 +84,24 @@ template <class T> string to_string(T v) {
 }
 template<class A> void write(A x) {cout << to_string(x);}
 template<class H, class... T> void write(const H& h, const T&... t) {write(h);write(t...);}
-template<class H, class... T> void print(const H& h, const T&... t);
 void print() {write("\n");}
 template<class H, class... T> void print(const H& h, const T&... t) {
     write(h);
     if(sizeof...(t))write(' ');
     print(t...);
 }
-void DBG() {cout << "]" << endl;}
+void DBG() {cerr << "]" << endl;}
 template<class H, class... T> void DBG(H h, T... t) {
-    cout << to_string(h);
+    cerr << to_string(h);
     if(sizeof...(t))
-        cout << ", ";
+        cerr << ", ";
     DBG(t...);
 }
 #define _DEBUG
 #ifdef _DEBUG
-#define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
+#define dbg(...) cerr << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [", DBG(__VA_ARGS__)
 #else
-#define debug(...) 0
+#define dbg(...) 0
 #endif
 
 template<class T> void offset(ll o, T& x) {x+=o;}
@@ -120,50 +116,75 @@ mt19937 mt_rng(chrono::steady_clock::now().time_since_epoch().count());
 ll randint(ll a, ll b) {
     return uniform_int_distribution<ll>(a, b)(mt_rng);
 }
-template<class T, class U> void vti(vt<T> &v, U x, size_t n) {v=vt<T>(n, x);}
+
+template<class T, class U> void vti(vt<T> &v, U x, size_t n) {
+    v=vt<T>(n, x);
+}
 template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     v=vt<T>(n);
     EACH(a, v)vti(a, x, m);
 }
-const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
-const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-const int MAXN = 1e5+20;
+
+#include<cstdio>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+struct SuffixArray {
+    static const int MAXN = 4001 * 100 + 10;
+    int s[MAXN];      // 原始字符数组（最后一个字符应必须是0，而前面的字符必须非0）
+    int sa[MAXN];     // 后缀数组
+    int t[MAXN], t2[MAXN], c[MAXN]; // 辅助数组
+    int n; // 字符个数
+    void build_sa(int m){
+        int *x=t,*y=t2;
+        memset(c,0,sizeof(int)*(m+5));
+        FOR(n)c[x[i]=s[i]]++;
+        FOR(m)c[i+1]+=c[i];
+        FOR(i,n-1,-1,-1)sa[--c[x[i]]]=i;
+//        vector<int>vc(sa,sa+n);
+//        print(vc);
+//        vc=vector<int>(s,s+n);
+//        print(vc);
+//        print();
+        for (int k = 1,p=1; k <= n && p<n; k*=2,m=p) {
+            p=0;
+            FOR(i,n-k,n)y[p++]=i;
+            FOR(n)if(sa[i]>=k)y[p++]=sa[i]-k;
+//            vector<int>vc(y,y+n);
+//            print(vc);
+            memset(c,0,sizeof(int)*(m+5));
+            FOR(n)c[x[y[i]]]++;
+            FOR(m)c[i+1]+=c[i];
+            FOR(i,n-1,-1,-1)sa[--c[x[y[i]]]]=y[i];
+//            vc=vector<int>(sa,sa+n);
+//            print(vc);
+//            print();
+            p=1;y[sa[0]]=0;
+            FOR(i,1,n)y[sa[i]]=(x[sa[i]]==x[sa[i-1]] && x[sa[i]+k]==x[sa[i-1]+k])?p-1:p++;
+            swap(x,y);
+        }
+    }
+};
+const int MAXN = 4e5+50;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
-int n;
-void solve(){
-    n=100;
-    vector<vector<pair<int,ll>>>arr(n+40);
-    int multi=n*n;
-    arr[0].push_back({1,multi+1});
-    FOR(multi)arr[1].push_back({2,1});
-    arr[2].push_back({3,multi+1});
-    int ma[2][4]={{0,2,1,3},{0,1,2,3}};
-    int ne=multi+2;
-    for (int i = 1,j=3,k=0; j+i*2 < n; j+=i*2,i++,k++) {
-        int id=k%2;
-        int extraw=1;
-        arr[ma[id][0]].push_back({j+1,multi+extraw});
-        FOR(l,j+1,j+i)arr[l].push_back({l+1,multi+extraw}),ne++;
-        arr[j+i].push_back({ma[id][1],multi+extraw});
-
-        arr[ma[id][2]].push_back({j+i+1,multi+extraw});
-        FOR(l,j+i+1,j+i*2)arr[l].push_back({l+1,multi+extraw}),ne++;
-        arr[j+i*2].push_back({ma[id][3],multi+extraw});
-        ne+=4;
-    }
-    print(n,0,3);
-    FOR(n){
-        print(sz(arr[i]),arr[i]);
-    }
+void solve() {
+    SuffixArray sa;
+    string s;cin>>s;
+    int slen=s.length();
+    sa.n=slen+1;
+    vector<int>num(26,0);
+    FOR(slen)num[s[i]-'a']=1;
+    FOR(i,1,26)num[i]+=num[i-1];
+    FOR(slen)sa.s[i]=num[s[i]-'a'];
+    sa.s[sa.n-1]=0;
+    sa.build_sa(num[25]+1);
+    FOR(sa.n)cout << sa.sa[i] << " ";
 }
+
 int main() {
-    //print(set<int>({1,2,3}).size());
 //    ios::sync_with_stdio(false);
 //    cin.tie(nullptr);
-    //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
-    freopen("/home/csc/Online-Judge-Code/G/maxflow_in.txt", "w", stdout);
-    //print(-11/2);
     int t=1;
     //read(t);
     FOR(t) {
@@ -175,126 +196,5 @@ int main() {
 /*
 99
 
-7 7 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
- 6 7
-
-7 6 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
- 6 7
-
- 6 6 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
-
-
-
-
-10 2 2
-9 7
-10 6
-3 2 4 8
-1 3
-1 6
-1 5
-1 10
-1 7
-0
-1 9
-0
-0
-
-7 2 1
-5 4
-6
-3 2 3 4
-1 5
-1 6
-1 7
-0
-0
-0
-
-
-RGBW
-WWWW
-WWWW
-RGBW
-
-RGBW
-WWWW
-WWWW
-RGWB
-
-
-
-
- 8 7
- 1 2 1
- 1 3 1
- 1 4 1
- 1 5 3
- 1 6 2
- 1 7 2
- 1 8 2
- 2 3 4 5 6 7 8
-
- 3 1
- 1 2 1
- 1 1 1 3 3 3 3
-
- 1 1
- 1 1 1
- 1 1 1 1 1 1 1
-
- 2 1
- 1 2 1
- 2 2 2 2 2 2 2
-
-
-  3 3
- 5 3 1
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
- 3 3
- 3 1 3
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
- 3 3
- 1 2 2
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
-
- 1
- 5 5
- 1 3 4 5 6
- 0 0 0 0
- 1 1 1 1 1
- 0 0 0 0
- 1 1 1 1 1
- 0 0 0 0
 
  * */

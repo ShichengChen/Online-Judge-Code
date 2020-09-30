@@ -3,12 +3,6 @@
 typedef long long ll;
 using namespace std;
 using namespace __gnu_pbds;
-#define debug1(__x) cout << '>' << #__x << ':' << (__x) << endl;
-#define debug2(__y,__z) cout << '>' << #__y << ':' << (__y) << " " << #__z << ":" <<(__z) << endl;
-#define debug3(__x,__y,__z) cout << '>' << #__x << ':' << (__x) << " >" << #__y << ":" <<(__y) << " >" << #__z << ":" <<(__z) << endl;
-#define GET4(a,b,c,d,...) d
-#define debug_(...) GET4(__VA_ARGS__,debug3,debug2,debug1)
-#define debug(...) debug_(__VA_ARGS__)(__VA_ARGS__)
 #define lcnt (cnt<<1)
 #define rcnt (cnt<<1|1)
 #define vt vector
@@ -72,11 +66,14 @@ template<size_t S> string to_string(bitset<S> b) {
         res+=char('0'+b[i]);
     return res;
 }
-template<class T> string to_string(T v) {
+template <class T> string to_string(T v) {
+    char c=' ';
+    if constexpr (std::is_same_v<T, vector<vector<ll>>>) c='\n';
+    if constexpr (std::is_same_v<T, vector<vector<int>>>) c='\n';
     bool f=1;
     string res;
     EACH(x, v) {
-        if(!f)res+=' ';
+        if(!f)res+=c;
         f=0;
         res+=to_string(x);
     }
@@ -90,18 +87,18 @@ template<class H, class... T> void print(const H& h, const T&... t) {
     if(sizeof...(t))write(' ');
     print(t...);
 }
-void DBG() {cerr << "]" << endl;}
+void DBG() {cout << "]" << endl;}
 template<class H, class... T> void DBG(H h, T... t) {
-    cerr << to_string(h);
+    cout << to_string(h);
     if(sizeof...(t))
-        cerr << ", ";
+        cout << ", ";
     DBG(t...);
 }
 #define _DEBUG
 #ifdef _DEBUG
-#define dbg(...) cerr << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [", DBG(__VA_ARGS__)
+#define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
 #else
-#define dbg(...) 0
+#define debug(...) 0
 #endif
 
 template<class T> void offset(ll o, T& x) {x+=o;}
@@ -149,29 +146,28 @@ struct TreeNode {
   TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
   TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
-#define debug1(__x) cout << '>' << #__x << ':' << (__x) << endl;
-#define debug2(__y,__z) cout << '>' << #__y << ':' << (__y) << " " << #__z << ":" <<(__z) << endl;
-#define debug3(__x,__y,__z) cout << '>' << #__x << ':' << (__x) << " >" << #__y << ":" <<(__y) << " >" << #__z << ":" <<(__z) << endl;
-#define GET4(a,b,c,d,...) d
-#define debug_(...) GET4(__VA_ARGS__,debug3,debug2,debug1)
-#define debug(...) debug_(__VA_ARGS__)(__VA_ARGS__)
 class Solution {
 public:
-    vector<int> sequentialDigits(int low, int high) {
-        vector<int>ans;
-        for (int len = 2; len <= 9; ++len) {
-            for (int i = 1; i+len-1 <= 9; ++i) {
-                int cur=i;
-                for (int j = 0; j < len-1; ++j) {
-                    cur=cur*10+i+j+1;
-                }
-                if(cur<=high && cur>=low)ans.push_back(cur);
+    int firstMissingPositive(vector<int>& nums) {
+        int minn=1e6;
+        for (int i:nums) {
+            if(i>=0)minn=min(minn,i);
+        }
+        if(minn==0){
+            for (int i:nums) {
+                if(i>=0)minn=max(minn,i);
             }
         }
-        return ans;
+        return minn;
     }
 };
 int main(){
     Solution s;
-    print(s.isRobotBounded("GLRLLGLL"));
+    //print(s.uniquePathsIII({{1, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 2, -1}}));
+    print(s.uniquePathsIII({{1, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 2}}));
+    //print(s.uniquePathsIII({{1, 0, 0}, {0, 0, 0}, {0, 0, 2}}));
+    //print(s.uniquePathsIII({{0, 1},{2,0}}));
+    //print(s.uniquePathsIII({{1, 0},{2,0}}));
+    //print(s.uniquePathsIII({{1, 2}}));
+    //print(s.uniquePathsIII({{1, 0},{0,0},{0,2}}));
 }

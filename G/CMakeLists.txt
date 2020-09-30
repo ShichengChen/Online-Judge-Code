@@ -5,7 +5,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS_RELEASE "-DNDEBUG -Wall -O2")
 #add_executable(G tc.cpp)
 #add_executable(G generateData.cpp)
-add_executable(G ek.cpp)
+#add_executable(G ek.cpp)
+add_executable(G ek2.cpp)
+#add_executable(G relabel.cpp)
+#add_executable(G relabel2.cpp)
+#add_executable(G generateData2.cpp)
+
 #add_executable(G main2.cpp )
 
 #add_executable(G main3.cpp)
