@@ -131,11 +131,12 @@ const int MAXN = 1e3+20;
 const int LOGMAXN = 18;
 //ll const MOD=998244353;
 ll const MOD=1e9+7;
-
 using namespace std;
 clock_t timebegin;
 int n;
-int w[MAXN][MAXN],tour[MAXN],besttour[MAXN],dlb[MAXN],vertex2idx[MAXN];
+int w[MAXN][MAXN],tour[MAXN],besttour[MAXN],vertex2idx[MAXN];
+int dlb2[MAXN],dlb3[MAXN];
+const int DLB=0;
 int tmptour[MAXN],tmpvertex2idx[MAXN];
 ll mindis=0,curdis=0;
 int vis[MAXN],timecnt;
@@ -179,13 +180,22 @@ void dpforsmalldata(){
     }
 }
 inline void reversetour(int i,int j){
-    for (int k0 = i+1,k1=j; k0<=k1; ++k0,--k1)swap(tour[k0],tour[k1]),swap(vertex2idx[k0],vertex2idx[k1]);
+    for (int k0 = i+1,k1=j; k0<=k1; ++k0,--k1){
+        assert(vertex2idx[tour[k0]]==k0);
+        assert(vertex2idx[tour[k1]]==k1);
+        swap(vertex2idx[tour[k0]],vertex2idx[tour[k1]]);
+        swap(tour[k0],tour[k1]);
+        assert(vertex2idx[tour[k0]]==k0);
+        assert(vertex2idx[tour[k1]]==k1);
+    }
+
 }
 inline int opt2(int i,int j){
-    int a=tour[i],b=tour[i+1],c=tour[j],d=tour[j+1];
+    int a=tour[i],b=tour[(i+1)%n],c=tour[j],d=tour[(j+1)%n];
     int d0=w[a][b]+w[c][d];
     int d1=w[a][c]+w[b][d];
     if(d0>d1){
+        if(DLB)dlb2[a]=dlb2[b]=dlb2[c]=dlb2[d]=1;
         reversetour(i,j);
         return d0-d1;
     }
@@ -203,33 +213,33 @@ inline int opt3(int i,int j,int k){
     //https://en.wikipedia.org/wiki/3-opt
     if(d0>d1){
         reversetour(i,j);
-        dlb[a]=dlb[b]=dlb[c]=dlb[d]=1;
+        if(DLB)dlb3[a]=dlb3[b]=dlb3[c]=dlb3[d]=1;
         return d0-d1;
     }else if(d0>d2){
         reversetour(j,k);
-        dlb[c]=dlb[d]=dlb[e]=dlb[f]=1;
+        if(DLB)dlb3[c]=dlb3[d]=dlb3[e]=dlb3[f]=1;
         return d0-d2;
     }else if(d0>d4){
         reversetour(i,k);
-        dlb[a]=dlb[b]=dlb[e]=dlb[f]=1;
+        if(DLB)dlb3[a]=dlb3[b]=dlb3[e]=dlb3[f]=1;
         return d0-d4;
     }else if(d0>d3){
-        dlb[a]=dlb[b]=dlb[c]=dlb[d]=dlb[e]=dlb[f]=1;
+        if(DLB)dlb3[a]=dlb3[b]=dlb3[c]=dlb3[d]=dlb3[e]=dlb3[f]=1;
         memcpy(tmptour+i+1,tour+i+1,sizeof(int)*(j+1-(i+1)));
         //memcpy(tmptour,tour,sizeof(int)*n);
-        memcpy(tmpvertex2idx+i+1,vertex2idx+i+1,sizeof(int)*(j-(i+1)+1));
+        memcpy(tmpvertex2idx,vertex2idx,sizeof(int)*n);
         int m=i+1;
-        for (int l = j+1; l <= k; ++l) tour[m]=tour[l],vertex2idx[m]=tmpvertex2idx[l],m++;
-        for (int l = i+1; l <= j; ++l) tour[m]=tmptour[l],vertex2idx[m]=tmpvertex2idx[l],m++;
+        for (int l = j+1; l <= k; ++l) tour[m]=tour[l],vertex2idx[tour[m]]=m,m++;
+        for (int l = i+1; l <= j; ++l) tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;
         return d0-d3;
     }
     else if(d0>d5){
-        dlb[a]=dlb[b]=dlb[c]=dlb[d]=dlb[e]=dlb[f]=1;
+        if(DLB)dlb3[a]=dlb3[b]=dlb3[c]=dlb3[d]=dlb3[e]=dlb3[f]=1;
         memcpy(tmptour,tour,sizeof(int)*n);
         memcpy(tmpvertex2idx,vertex2idx,sizeof(int)*n);
         int m=i+1;
-        for (int l = k; l >= j+1; --l)tour[m]=tmptour[l],vertex2idx[m]=tmpvertex2idx[l],m++;
-        for (int l = i+1; l <= j; ++l)tour[m]=tmptour[l],vertex2idx[m]=tmpvertex2idx[l],m++;
+        for (int l = k; l >= j+1; --l)tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;
+        for (int l = i+1; l <= j; ++l)tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;
         return d0-d5;
     }
     return 0;
@@ -237,7 +247,7 @@ inline int opt3(int i,int j,int k){
 void solve() {
     read(n);
     FOR(n)FOR(j,2)read(vec[i][j]);
-    FOR(n)dlb[i]=1;
+    if(DLB)FOR(n)dlb3[i]=dlb2[i]=1;
     FOR(n){
         int k=0;
         FOR(j,n)if(i!=j){
@@ -287,24 +297,40 @@ void solve() {
         while(1){
             if(timecheck())break;
             int change=0;
-//            FOR(i,n-1)for(auto& [jw,j]:arr[tour[i]]){
-//                int a=tour[i],b=tour[i+1];
-//                if(w[a][b]*2<jw)break;
-//                int c=tour[j],d=tour[j+1];
-//                if()
-//            }
+            FOR(i,n-1){
+                int changei=0;
+                int a=tour[i],b=tour[(i+1)%n];
+                if(DLB && !dlb2[a])continue;
+                for(auto& [acw,c]:arr[a]){
+                    if(DLB && !dlb2[c])continue;
+                    if(timecntcheck())goto outtwoloop;
+                    int j=vertex2idx[c],d=tour[(j+1)%n];
+                    if(i+1>=j || a==d || b==c)continue;
+                    if(w[a][b]*2<acw)break;
+                    int delta = opt2(i,j);
+                    change+=bool(delta);
+                    changei+=bool(delta);
+                    curdis-=delta;
+                }
+                if(!changei)dlb2[a]=0;
+            }
 
-            FOR(i,n-1)if(dlb[i]){
+            FOR(i,n-1){
+                if(DLB && !dlb3[tour[i]])continue;
                 int changei=0;
                 //print(i);
-                FOR(j,i+2,n)if(dlb[j])FOR(k,j+2,n)if(dlb[k]){
-                    if(timecntcheck())goto outtwoloop;
-                    int delta=opt3(i,j,k);
-                    change+=bool(delta);
-                    curdis-=delta;
-                    changei=1;
+                FOR(j,i+2,n){
+                    if(DLB && !dlb3[tour[j]])continue;
+                    FOR(k,j+2,n){
+                        if(DLB && !dlb3[tour[k]])continue;
+                        if(timecntcheck())goto outtwoloop;
+                        int delta=opt3(i,j,k);
+                        change+=bool(delta);
+                        changei+=bool(delta);
+                        curdis-=delta;
+                    }
                 }
-                if(!changei)dlb[i]=0;
+                if(!changei)dlb3[tour[i]]=0;
             }
             outtwoloop:;
             if(change==0)break;
@@ -326,11 +352,13 @@ int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 #ifdef _DEBUG
-    freopen("/home/csc/Online-Judge-Code/G/10tsp.txt", "r", stdin);
+    freopen("/home/csc/Online-Judge-Code/G/1000tsp.txt", "r", stdin);
 #endif
     //1000tsp 48878406
+    //frs opt2 + opt3 48194255
     //500tsp 34591799
-    //100tsp 17375806
+    //100tsp opt3 17375806
+    //speed up opt2 + opt3 17014981
     //50tsp 11514358
     //10tsp 276
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
