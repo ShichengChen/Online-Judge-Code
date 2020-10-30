@@ -211,9 +211,9 @@ public:
     ll edmonds_karp(int s, int t) {
         ll mf = 0;                                   // mf stands for max_flow
         while (BFS(s, t)) {                          // an O(V*E^2) algorithm
-            NumAPs++;
             ll f = send_one_flow(s, t);                // find and send 1 flow f
             if (f == 0) break;                         // if f == 0, stop
+            NumAPs++;
             mf += f;                                   // if f > 0, add to mf
         }
         cout << "NumAPs:" << NumAPs << endl;
@@ -223,9 +223,12 @@ public:
     ll dinic(int s, int t) {
         ll mf = 0;                                   // mf stands for max_flow
         while (BFS(s, t)) {                          // an O(V^2*E) algorithm
+            int before=NumAPs;
             last.assign(V, 0);                         // important speedup
-            while (ll f = DFS(s, t))                   // exhaust blocking flow
-                mf += f,++NumAPs;
+            while (ll f = DFS(s, t)){
+                mf += f;++NumAPs;
+            }                   // exhaust blocking flow{
+            print("#dfs",NumAPs-before);
         }
         cout << "NumAPs:" << NumAPs << endl;
         return mf;
@@ -236,25 +239,29 @@ int main() {
     {
         int n;
         ofstream myfile;
-        myfile.open("/home/csc/Online-Judge-Code/G/maxflow_in.txt");
-        n=100;
-        vector<vector<pair<int,ll>>>arr(n+40);
-        int multi=n*n*20,ne=1;
-        ll w=n*n;
-        int cnt=0,beginn=13;
-        arr[0].push_back({1,w});
-        FOR(i,1,beginn){
-            int prei=0;
-            FOR(j,0,i){
-                arr[prei].push_back({++cnt,w});
-                ne++;
-                prei=cnt;
-            }
-            arr[prei].push_back({1,w});
-            ne++;
+        myfile.open("/home/csc/Online-Judge-Code/G/worsttestcase_dinic_shichengchen.txt");
+        n = 100;
+        vector<vector<pair<int, ll>>> arr(n + 40);
+        int multi = n * n;
+        int extraw = 1;
+        arr[0].push_back({1, multi + extraw});
+        FOR(multi)arr[1].push_back({2, 1});
+        arr[2].push_back({3, multi + extraw});
+        int ma[2][4] = {{0, 2, 1, 3},
+                        {0, 1, 2, 3}};
+        int ne = multi + 2;
+        for (int i = 1, j = 3, k = 0; j + i * 2 < n; j += i * 2, i++, k++) {
+            int id = k % 2;
+            arr[ma[id][0]].push_back({j + 1, multi + extraw});
+            FOR(l, j + 1, j + i)arr[l].push_back({l + 1, multi + extraw}), ne++;
+            arr[j + i].push_back({ma[id][1], multi + extraw});
+
+            arr[ma[id][2]].push_back({j + i + 1, multi + extraw});
+            FOR(l, j + i + 1, j + i * 2)arr[l].push_back({l + 1, multi + extraw}), ne++;
+            arr[j + i * 2].push_back({ma[id][3], multi + extraw});
+            ne += 4;
         }
-        FOR(j,0,multi)arr[1].push_back({n-1,1}),ne++;
-        myfile << n << " 0 " <<  n-1 <<"\n";
+        myfile << n << " 0 3\n";
         //print(n, 0, 3);
         FOR(n) {
             myfile << sz(arr[i]) << " ";
@@ -264,7 +271,10 @@ int main() {
         }
         myfile.close();
     }
-    freopen("/home/csc/Online-Judge-Code/G/maxflow_in.txt", "r", stdin);
+
+     clock_t begin = clock();
+
+    freopen("/home/csc/Online-Judge-Code/G/worsttestcase_dinic_shichengchen.txt", "r", stdin);
     int V, s, t; scanf("%d %d %d", &V, &s, &t);
     max_flow mf(V);
     int ne=0;
@@ -276,21 +286,29 @@ int main() {
             mf.add_edge(u, v, w);                      // default: directed edge
         }
     }
+    print("edge number,vertex number",ne,V);
     cout << ne*V << endl;
 
-    //printf("%lld\n", mf.edmonds_karp(s, t));
-    printf("%lld\n", mf.dinic(s, t));
-    cout << "ratio:" << (double)(NumAPs)/(ne*V) << endl;
+    printf("%lld\n", mf.edmonds_karp(s, t));
+    //printf("%lld\n", mf.dinic(s, t));
+    cout << "ratio:%" << (double)(NumAPs)/((double)ne*V)*100 << endl;
     cout << ne << " " << V << endl;
-    //ratio:0.0892873
+    //ek ratio:0.0989219  9.8%
+    //dinic ratio:0.0989219 9.8%
 
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    print("time usage:",elapsed_secs);
     return 0;
 }
 
 /*
- 2
- 1
- 0
+ 1011000
+NumAPs:100010
+100010
+ratio:0.0989219
+10110 100
+74.784494
 
 
  * */

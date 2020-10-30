@@ -23,6 +23,7 @@ template<class T> bool umax(T& a, const T& b) {return a<b?a=b, 1:0;}
 ll FIRSTTRUE(function<bool(ll)> f, ll lb, ll rb) {
     while(lb<rb) {
         ll mb=(lb+rb)/2;
+        //cout << mb << endl;
         f(mb)?rb=mb:lb=mb+1;
     }
     return lb;
@@ -37,6 +38,7 @@ ll LASTTRUE(function<bool(ll)> f, ll lb, ll rb) {
 
 template<class A> void read(vt<A>& v);
 template<class A, size_t S> void read(array<A, S>& a);
+template<class H, class T> void read(pair<H,T>&c);
 template<class T> void read(T& x) {cin >> x;}
 void read(double& d) {
     string t;
@@ -48,9 +50,12 @@ void read(long double& d) {
     read(t);
     d=stold(t);
 }
+template<class H, class T> void read(pair<H,T>&c){read(c.first);read(c.second);}
 template<class H, class... T> void read(H& h, T&... t) {read(h);read(t...);}
 template<class A> void read(vector<A>& x) {EACH(a, x)read(a);}
 template<class A, size_t S> void read(array<A, S>& x) {EACH(a, x)read(a);}
+template <class T> string to_string(T v);
+template<class T,class U> string to_string(pair<T,U> a);
 string to_string(char c) {return string(1, c);}
 string to_string(bool b) {return b?"true":"false";}
 string to_string(const char* s) {return string(s);}
@@ -62,10 +67,10 @@ string to_string(vector<bool> v) {
 }
 template<size_t S> string to_string(bitset<S> b) {
     string res;
-    FOR(S)
-        res+=char('0'+b[i]);
+    FOR(S)res+=char('0'+b[i]);
     return res;
 }
+
 template <class T> string to_string(T v) {
     char c=' ';
     if constexpr (std::is_same_v<T, vector<vector<ll>>>) c='\n';
@@ -79,8 +84,10 @@ template <class T> string to_string(T v) {
     }
     return res;
 }
+template<class T,class U> string to_string(pair<T,U> a){return to_string(a.first)+":"+to_string(a.second);}
 template<class A> void write(A x) {cout << to_string(x);}
 template<class H, class... T> void write(const H& h, const T&... t) {write(h);write(t...);}
+template<class H, class... T> void print(const H& h, const T&... t);
 void print() {write("\n");}
 template<class H, class... T> void print(const H& h, const T&... t) {
     write(h);
@@ -94,7 +101,7 @@ template<class H, class... T> void DBG(H h, T... t) {
         cout << ", ";
     DBG(t...);
 }
-#define _DEBUG
+//#define _DEBUG
 #ifdef _DEBUG
 #define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
 #else
@@ -111,83 +118,45 @@ template<class T, size_t S> void offset(ll o, array<T, S>& x) {
 
 mt19937 mt_rng(chrono::steady_clock::now().time_since_epoch().count());
 ll randint(ll a, ll b) {
-    return uniform_int_distribution<ll>(a, b)(mt_rng);
+    return uniform_int_distribution<>(a, b)(mt_rng);
 }
-
-template<class T, class U> void vti(vt<T> &v, U x, size_t n) {
-    v=vt<T>(n, x);
-}
+template<class T, class U> void vti(vt<T> &v, U x, size_t n) {v=vt<T>(n, x);}
 template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     v=vt<T>(n);
     EACH(a, v)vti(a, x, m);
 }
-const int MAXN = 3e5+50;
+const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
+const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
+const int MAXN = 1e3+20;
 const int LOGMAXN = 18;
+//ll const MOD=998244353;
+ll const MOD=1e9+7;
 
-struct ListNode {
-    int val;
-    ListNode *next;
-    ListNode() : val(0), next(nullptr) {}
-    ListNode(int x) : val(x), next(nullptr) {}
-    ListNode(int x, ListNode *next) : val(x), next(next) {}
-};
-class Node {
-public:
-    int val;
-    Node* prev;
-    Node* next;
-    Node* child;
-};
-struct TreeNode {
-  int val;
-  TreeNode *left;
-  TreeNode *right;
-  TreeNode() : val(0), left(nullptr), right(nullptr) {}
-  TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-  TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
-};
-class Solution {
-public:
-    int d[1048576];
-    int num[30];
-    int tot,mx;
-    bool dfs(int acc,int bi,int player){
-        if(d[bi]!=-1)return d[bi];
-        if(acc>=tot)return 0;
-        for (int i=1;i<=mx;i++) {
-            if(num[i]){
-                num[i]=0;
-                int out=dfs(acc+i,bi+(1<<(i-1)),1-player);
-                num[i]=1;
-                if(!out){
-                    d[bi]=1;
-                    return 1;
-                }
-            }
-        }
-        d[bi]=0;
-        return 0;
+using namespace std;
+clock_t timebegin;
+int n=50;
+
+void solve() {
+    //read(n);
+    print(n);
+    FOR(n){
+        int x=randint(-1000000,1000000);
+        int y=randint(-1000000,1000000);
+        print(x," ",y);
     }
-    bool canIWin(int maxChoosableInteger, int desiredTotal) {
-        if(desiredTotal==0)return 1;
-        tot=desiredTotal;mx=maxChoosableInteger;
-        int acc=0;
-        for (int i = 0; i < mx; ++i) {
-            num[i+1]=1;
-            acc+=i+1;
-        }
-        if(acc<tot)return 0;
-        memset(d,-1,sizeof(d));
-        return dfs(0,0,1);
+}
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
+    string out="/home/csc/Online-Judge-Code/G/"+to_string(n)+"tsp.txt";
+    freopen(out.c_str(), "w", stdout);
+    timebegin = clock();
+    int t=1;
+//    read(t);
+    FOR(t) {
+        //write("Case #", i+1, ": ");
+        solve();
     }
-};
-int main(){
-    Solution s;
-    //print(s.uniquePathsIII({{1, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 2, -1}}));
-    print(s.uniquePathsIII({{1, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 2}}));
-    //print(s.uniquePathsIII({{1, 0, 0}, {0, 0, 0}, {0, 0, 2}}));
-    //print(s.uniquePathsIII({{0, 1},{2,0}}));
-    //print(s.uniquePathsIII({{1, 0},{2,0}}));
-    //print(s.uniquePathsIII({{1, 2}}));
-    //print(s.uniquePathsIII({{1, 0},{0,0},{0,2}}));
+    return 0;
 }

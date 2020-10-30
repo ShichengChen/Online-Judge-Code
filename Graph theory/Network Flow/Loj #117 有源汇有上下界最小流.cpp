@@ -53,7 +53,7 @@ struct Dinic {
       int x = Q.front(); Q.pop();
       for(int i = 0; i < G[x].size(); i++) {
         Edge& e = edges[G[x][i]];
-        if(removed==1 && (e.from==n+1 || e.from==0 || e.to==0 || e.to==n+1))continue;
+        //if(removed==1 && (e.from==n+1 || e.from==0 || e.to==0 || e.to==n+1))continue;
         if(removed==1 && (G[x][i]==m-1 || G[x][i]==m-2))continue;
         if(!vis[e.to] && e.cap > e.flow) {
           vis[e.to] = 1;
@@ -70,7 +70,7 @@ struct Dinic {
     int flow = 0, f;
     for(int& i = cur[x]; i < G[x].size(); i++) {
       Edge& e = edges[G[x][i]];
-      if(removed==1 && (e.from==n+1 || e.from==0 || e.to==0 || e.to==n+1))continue;
+      //if(removed==1 && (e.from==n+1 || e.from==0 || e.to==0 || e.to==n+1))continue;
       if(removed==1 && (G[x][i]==m-1 || G[x][i]==m-2))continue;
       if(d[x] + 1 == d[e.to] && (f = DFS(e.to, min(a, e.cap-e.flow))) > 0) {
         e.flow += f;

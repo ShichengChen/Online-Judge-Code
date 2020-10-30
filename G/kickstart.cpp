@@ -20,6 +20,21 @@ using namespace __gnu_pbds;
 #define EACH(x, a) for (auto& x: a)
 template<class T> bool umin(T& a, const T& b) {return b<a?a=b, 1:0;}
 template<class T> bool umax(T& a, const T& b) {return a<b?a=b, 1:0;}
+//ll FIRSTTRUE(function<bool(ll)> f, ll lb, ll rb) {
+//    while(lb<rb) {
+//        ll mb=(lb+rb)/2;
+//        //cout << mb << endl;
+//        f(mb)?rb=mb:lb=mb+1;
+//    }
+//    return lb;
+//}
+//ll LASTTRUE(function<bool(ll)> f, ll lb, ll rb) {
+//    while(lb<rb) {
+//        ll mb=(lb+rb+1)/2;
+//        f(mb)?lb=mb:rb=mb-1;
+//    }
+//    return lb;
+//}
 
 template<class A> void read(vt<A>& v);
 template<class A, size_t S> void read(array<A, S>& a);
@@ -39,6 +54,8 @@ template<class H, class T> void read(pair<H,T>&c){read(c.first);read(c.second);}
 template<class H, class... T> void read(H& h, T&... t) {read(h);read(t...);}
 template<class A> void read(vector<A>& x) {EACH(a, x)read(a);}
 template<class A, size_t S> void read(array<A, S>& x) {EACH(a, x)read(a);}
+template <class T> string to_string(T v);
+template<class T,class U> string to_string(pair<T,U> a);
 string to_string(char c) {return string(1, c);}
 string to_string(bool b) {return b?"true":"false";}
 string to_string(const char* s) {return string(s);}
@@ -48,9 +65,6 @@ string to_string(vector<bool> v) {
     FOR(sz(v))res+=char('0'+v[i]);
     return res;
 }
-template<class T,class U> string to_string(pair<T,U> a){
-    return to_string(a.first)+":"+to_string(a.second);
-}
 template<size_t S> string to_string(bitset<S> b) {
     string res;
     FOR(S)res+=char('0'+b[i]);
@@ -59,6 +73,8 @@ template<size_t S> string to_string(bitset<S> b) {
 
 template <class T> string to_string(T v) {
     char c=' ';
+    //if constexpr (std::is_same_v<T, vector<vector<ll>>>) c='\n';
+    //if constexpr (std::is_same_v<T, vector<vector<int>>>) c='\n';
     bool f=1;
     string res;
     EACH(x, v) {
@@ -68,6 +84,7 @@ template <class T> string to_string(T v) {
     }
     return res;
 }
+template<class T,class U> string to_string(pair<T,U> a){return to_string(a.first)+":"+to_string(a.second);}
 template<class A> void write(A x) {cout << to_string(x);}
 template<class H, class... T> void write(const H& h, const T&... t) {write(h);write(t...);}
 template<class H, class... T> void print(const H& h, const T&... t);
@@ -108,74 +125,133 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     v=vt<T>(n);
     EACH(a, v)vti(a, x, m);
 }
-typedef long long ll;
-const int MAXN =5e5+20;
-int n,sum;
-vector<vector<int>>arr;
-ll f(int m){
-    //print("m",m);
-    ll extra=0;
-    ll removed=0;
-    ll maxn=sum;
-    multiset<int,greater<>>se;
-    EACH(i,arr)se.insert(i[1]+i[0]);
-    int succ=1;
-    FOR(n){
-        if(sum>=arr[i][1]+arr[i][0]){
-            extra+=arr[i][0];
-            if(succ)umax(maxn,sum+extra-removed);
-        }
-        else if(m>0){
-            removed+=arr[i][0];
-            se.erase(se.find(arr[i][1]+arr[i][0]));
-            m--;
-            if(*(se.begin())<=sum-removed)umax(maxn,sum+extra-removed);
-            else succ=0;
-            if(m==0 && *(se.begin())>sum-removed)break;
-            //if()return extra+sum-removed;
-        }
-        else break;
-        print("i",m,i,maxn,succ);
-        if(i==n-1 && *(se.begin())<=sum-removed)return 1e18;
-    }
-    return maxn;
-}
-void solve() {
-    read(n);
-    vti(arr,0,n,2);
-    read(arr);
-    //print(arr);
-    sum=0;
-    EACH(i,arr)sum+=i[0];
-    ll initime=sum;
-    int l=0,r=n-1;
-    int idx=0;
-    for (;l<n;l++) {
-        ll cur=f(l);
-        //print("l",l,cur);
-        if(initime<1e18 && cur>initime){
-            idx=l;
-            initime=cur;
-        }
-    }
-//    while (l<r){
-//        int mid=(l+r+1)/2;
-//        ll cur=f(mid);
-//        print(mid,cur);
-//        if(initime<1e18 && cur>initime){
-//            l=mid;
-//            initime=cur;
-//        }
-//        else r=mid-1;
+const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
+const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
+//const int MAXN = 2e5+20;
+const int LOGMAXN = 18;
+//ll const MOD=998244353;
+ll const MOD=1e9+7;
+
+using namespace std;
+
+const int INF = 1000000000;
+
+//template <int MOD_> struct modnum {
+//    static constexpr int MOD = MOD_;
+//    static_assert(MOD_ > 0, "MOD must be positive");
+//private:
+//    using ll = long long;
+//    int v;
+//    static int minv(int a, int m) {
+//        a %= m;
+//        assert(a);
+//        return a == 1 ? 1 : int(m - ll(minv(m, a)) * ll(m) / a);
 //    }
-    if(initime>=1e18){
-        write(idx);
-        print(" INDEFINITELY");
+//public:
+//    modnum() : v(0) {}
+//    modnum(ll v_) : v(int(v_ % MOD)) { if (v < 0) v += MOD; }
+//    explicit operator int() const { return v; }
+//    friend std::ostream& operator << (std::ostream& out, const modnum& n) { return out << int(n); }
+//    friend std::istream& operator >> (std::istream& in, modnum& n) { ll v_; in >> v_; n = modnum(v_); return in; }
+//    friend string to_string(modnum& n){return to_string(n.v);}
+//    friend bool operator == (const modnum& a, const modnum& b) { return a.v == b.v; }
+//    friend bool operator != (const modnum& a, const modnum& b) { return a.v != b.v; }
+//
+//    modnum inv() const {
+//        modnum res;
+//        res.v = minv(v, MOD);
+//        return res;
+//    }
+//    friend modnum inv(const modnum& m) { return m.inv(); }
+//    modnum neg() const {
+//        modnum res;
+//        res.v = v ? MOD-v : 0;
+//        return res;
+//    }
+//    friend modnum neg(const modnum& m) { return m.neg(); }
+//
+//    modnum operator- () const {
+//        return neg();
+//    }
+//    modnum operator+ () const {
+//        return modnum(*this);
+//    }
+//
+//    modnum& operator ++ () {
+//        v ++;
+//        if (v == MOD) v = 0;
+//        return *this;
+//    }
+//    modnum& operator -- () {
+//        if (v == 0) v = MOD;
+//        v --;
+//        return *this;
+//    }
+//    modnum& operator += (const modnum& o) {
+//        v += o.v;
+//        if (v >= MOD) v -= MOD;
+//        return *this;
+//    }
+//    modnum& operator -= (const modnum& o) {
+//        v -= o.v;
+//        if (v < 0) v += MOD;
+//        return *this;
+//    }
+//    modnum& operator *= (const modnum& o) {
+//        v = int(ll(v) * ll(o.v) % MOD);
+//        return *this;
+//    }
+//    modnum& operator /= (const modnum& o) {
+//        return *this *= o.inv();
+//    }
+//    friend modnum operator ++ (modnum& a, int) { modnum r = a; ++a; return r; }
+//    friend modnum operator -- (modnum& a, int) { modnum r = a; --a; return r; }
+//    friend modnum operator + (const modnum& a, const modnum& b) { return modnum(a) += b; }
+//    friend modnum operator - (const modnum& a, const modnum& b) { return modnum(a) -= b; }
+//    friend modnum operator * (const modnum& a, const modnum& b) { return modnum(a) *= b; }
+//    friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
+//};
+typedef long long ll;
+const int MAXN =1e5+20;
+vector<int>vec;
+ll sum[2][MAXN];
+int n,m;
+void solve() {
+    read(n,m);
+    vec.clear();
+    sum[0][0]=sum[1][0]=0;
+    vec=vector<int>(n);
+    read(vec);
+    offset(-1,vec);
+    sort(all(vec));
+    vec.insert(vec.begin(),0);
+    FOR(n){
+        sum[0][i+1]=sum[0][i]+vec[i+1];
+        sum[1][i+1]=sum[1][i]+m-vec[i+1];
     }
-    else{
-        write(idx," ");
-        print(initime);
+    sum[0][n+1]=sum[0][n];
+    sum[1][n+1]=sum[1][n];
+    ll ans=1e18;
+    for (int i = 1,li=1,ri=1; i <= n; ++i) {
+        ll cur=0;
+        ll a=vec[i];
+        ll l=a-m/2,r=a+m/2;
+        while(li<i && vec[li]<l)li++;
+        while(ri<=n && vec[ri]<=r)ri++;
+        //debug(li,ri);
+        cur+=sum[0][li-1]+(li-1)*(m-a);
+        //debug(cur);
+        cur+=(sum[1][i-1]-sum[1][li-1])-(i-li)*(m-a);
+
+        //debug(cur);
+
+        cur+=(sum[0][ri-1]-sum[0][i])-(ri-1-i)*a;
+        cur+=sum[1][n]-sum[1][ri-1]+(n-ri+1)*a;
+
+        //print(i,cur);
+        umin(ans,cur);
     }
+    print(ans);
 }
 int main() {
 //    ios::sync_with_stdio(0);
@@ -191,12 +267,9 @@ int main() {
 }
 /*
 
-4
-4
-30 17
-1 17
-5 10
-10 3
+99
+8 10
+1 1 2 2 3 3 9 9
 
 
 

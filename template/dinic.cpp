@@ -131,131 +131,137 @@ const int MAXN = 3e5+20;
 const int LOGMAXN = 18;
 ll const MOD=998244353;
 
-template <int MOD_> struct modnum {
-    static constexpr int MOD = MOD_;
-    static_assert(MOD_ > 0, "MOD must be positive");
-private:
-    using ll = long long;
-    int v;
-    static int minv(int a, int m) {
-        a %= m;
-        assert(a);
-        return a == 1 ? 1 : int(m - ll(minv(m, a)) * ll(m) / a);
-    }
-public:
-    modnum() : v(0) {}
-    modnum(ll v_) : v(int(v_ % MOD)) { if (v < 0) v += MOD; }
-    explicit operator int() const { return v; }
-    friend std::ostream& operator << (std::ostream& out, const modnum& n) { return out << int(n); }
-    friend std::istream& operator >> (std::istream& in, modnum& n) { ll v_; in >> v_; n = modnum(v_); return in; }
-    friend string to_string(modnum& n){return to_string(n.v);}
-    friend bool operator == (const modnum& a, const modnum& b) { return a.v == b.v; }
-    friend bool operator != (const modnum& a, const modnum& b) { return a.v != b.v; }
+#include<cstdio>
+#include<cstring>
+#include<queue>
+#include<vector>
+#include<algorithm>
+using namespace std;
 
-    modnum inv() const {
-        modnum res;
-        res.v = minv(v, MOD);
-        return res;
-    }
-    friend modnum inv(const modnum& m) { return m.inv(); }
-    modnum neg() const {
-        modnum res;
-        res.v = v ? MOD-v : 0;
-        return res;
-    }
-    friend modnum neg(const modnum& m) { return m.neg(); }
+const int maxn = 100 + 10;
+const int INF = 1000000000;
 
-    modnum operator- () const {
-        return neg();
-    }
-    modnum operator+ () const {
-        return modnum(*this);
-    }
-
-    modnum& operator ++ () {
-        v ++;
-        if (v == MOD) v = 0;
-        return *this;
-    }
-    modnum& operator -- () {
-        if (v == 0) v = MOD;
-        v --;
-        return *this;
-    }
-    modnum& operator += (const modnum& o) {
-        v += o.v;
-        if (v >= MOD) v -= MOD;
-        return *this;
-    }
-    modnum& operator -= (const modnum& o) {
-        v -= o.v;
-        if (v < 0) v += MOD;
-        return *this;
-    }
-    modnum& operator *= (const modnum& o) {
-        v = int(ll(v) * ll(o.v) % MOD);
-        return *this;
-    }
-    modnum& operator /= (const modnum& o) {
-        return *this *= o.inv();
-    }
-    friend modnum operator ++ (modnum& a, int) { modnum r = a; ++a; return r; }
-    friend modnum operator -- (modnum& a, int) { modnum r = a; --a; return r; }
-    friend modnum operator + (const modnum& a, const modnum& b) { return modnum(a) += b; }
-    friend modnum operator - (const modnum& a, const modnum& b) { return modnum(a) -= b; }
-    friend modnum operator * (const modnum& a, const modnum& b) { return modnum(a) *= b; }
-    friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
+struct Edge {
+    int from, to, cap, flow;
 };
-/*
- void exgcd(const ll a, const ll b, ll &g, ll &x, ll &y) {
-    if (!b) g = a, x = 1, y = 0;
-    else exgcd(b, a % b, g, y, x), y -= x * (a / b);
+
+bool operator < (const Edge& a, const Edge& b) {
+    return a.from < b.from || (a.from == b.from && a.to < b.to);
 }
-inline ll inv(const ll num) {
-    ll g, x, y;
-    exgcd(num, MOD, g, x, y);
-    return ((x % MOD) + MOD) % MOD;
-}
- * */
-int n,k;
-void solve(){
-    using mint = modnum<MOD>;
-    read(n,k);
-    vector<vector<int>>arr(n,vector<int>(2,0));
-    vector<mint>d(n+1,0);
-    read(arr);
-    d[k]=1;
-    FOR(i,k+1,n+1)d[i]=((d[i-1]/(i-k))*i);
-    map<int,int>ri,li;
-    set<int>se;
-    FOR(i,0,sz(arr))li[arr[i][0]]++,ri[arr[i][1]+1]++,se.insert(arr[i][0]),se.insert(arr[i][1]+1);
-    ll cnt=0,used=0;
-    mint ans=0;
-    for (auto l:se) {
-        ll lv=0,rv=0;
-        if(li.count(l))lv=li[l];
-        if(ri.count(l))rv=ri[l];
-        used-=rv;
-        if(used<k)used=0;
-        cnt+=lv-rv;
-        if(lv && cnt>=k){
-            if(used==0){
-                ans=(ans+d[cnt]);
-            }else{
-                ans=(ans+d[cnt]-d[used]);
-            }
-            used=cnt;
-        }
+
+struct Dinic {
+    int n, m, s, t;
+    vector<Edge> edges;    // 边数的两倍
+    vector<int> G[maxn];   // 邻接表，G[i][j]表示结点i的第j条边在e数组中的序号
+    bool vis[maxn];         // BFS使用
+    int d[maxn];           // 从起点到i的距离
+    int cur[maxn];        // 当前弧指针
+
+    void ClearAll(int n) {
+        for(int i = 0; i < n; i++) G[i].clear();
+        edges.clear();
     }
-    print(ans);
+
+    void ClearFlow() {
+        for(int i = 0; i < edges.size(); i++) edges[i].flow = 0;
+    }
+
+    void AddEdge(int from, int to, int cap) {
+        edges.push_back((Edge){from, to, cap, 0});
+        edges.push_back((Edge){to, from, 0, 0});
+        m = edges.size();
+        G[from].push_back(m-2);
+        G[to].push_back(m-1);
+    }
+
+    bool BFS() {
+        memset(vis, 0, sizeof(vis));
+        queue<int> Q;
+        Q.push(s);
+        vis[s] = 1;
+        d[s] = 0;
+        while(!Q.empty()) {
+            int x = Q.front(); Q.pop();
+            for(int i = 0; i < G[x].size(); i++) {
+                Edge& e = edges[G[x][i]];
+                if(!vis[e.to] && e.cap > e.flow) {
+                    vis[e.to] = 1;
+                    d[e.to] = d[x] + 1;
+                    Q.push(e.to);
+                }
+            }
+        }
+        return vis[t];
+    }
+
+    int DFS(int x, int a) {
+        if(x == t || a == 0) return a;
+        int flow = 0, f;
+        for(int& i = cur[x]; i < G[x].size(); i++) {
+            Edge& e = edges[G[x][i]];
+            if(d[x] + 1 == d[e.to] && (f = DFS(e.to, min(a, e.cap-e.flow))) > 0) {
+                e.flow += f;
+                edges[G[x][i]^1].flow -= f;
+                flow += f;
+                a -= f;
+                if(a == 0) break;
+            }
+        }
+        return flow;
+    }
+
+    int Maxflow(int s, int t) {
+        this->s = s; this->t = t;
+        int flow = 0;
+        while(BFS()) {
+            memset(cur, 0, sizeof(cur));
+            flow += DFS(s, INF);
+        }
+        return flow;
+    }
+
+    vector<int> Mincut() { // call this after maxflow
+        vector<int> ans;
+        for(int i = 0; i < edges.size(); i++) {
+            Edge& e = edges[i];
+            if(vis[e.from] && !vis[e.to] && e.cap > 0) ans.push_back(i);
+        }
+        return ans;
+    }
+
+    void Reduce() {
+        for(int i = 0; i < edges.size(); i++) edges[i].cap -= edges[i].flow;
+    }
+};
+
+Dinic g;
+
+int n,m,k;
+void solve(){
+    read(n,m,k);
+    g.ClearAll(n);
+    while(m--) {
+        int a, b, c;
+        read(a,b,c);
+        g.AddEdge(a-1, b-1, c);
+        g.AddEdge(b-1,a-1,  c);
+    }
+    ll sum=g.Maxflow(0, 1);
+    print(sum);
+    while(k--){
+        int a, b, c;
+        read(a,b,c);
+        g.AddEdge(a-1, b-1, c);
+        g.AddEdge(b-1,a-1,  c);
+        sum+=g.Maxflow(0, 1);
+        print(sum);
+    }
 }
 int main() {
-    //print(set<int>({1,2,3}).size());
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+//    ios::sync_with_stdio(false);
+//    cin.tie(nullptr);
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
     //freopen("/home/csc/G/output.txt", "w", stdout);
-    //print(-11/2);
     int t=1;
     //read(t);
     FOR(t) {

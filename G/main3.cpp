@@ -127,58 +127,81 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-const int MAXN = 1e5+20;
+const int MAXN = 2e5+20;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
 int n;
-struct less_than_key{
-    inline bool operator() (const pair<int,vector<int>>& v0, const pair<int,vector<int>>& v1){
-        for (int i = 0; i < min(sz(v0.second),sz(v1.second)); ++i) {
-            if(v0.second[i]!=v1.second[i])return v0.second[i]<v1.second[i];
-        }
-        if(sz(v0.second)!=sz(v1.second))return sz(v0.second)<sz(v1.second);
-        return true;
-    }
-};
-void decom(int com,vector<int>&vec){
-    vec.clear();
-    for(int i=2; i*i<=com; i++){
+map<int,vector<int>>ma;
+vector<int>prime;
+map<int,int>divisor;
+void decom(int com){
+    int orc=com;
+    for(int i=2; i*i<=orc; i++){
         if(com%i==0){
-            vec.push_back(i);
-            while(com%i==0) com/=i;
+            ma[i].push_back(com);
+            while(com%i==0)com/=i;
         }
     }
-    if(com>1)vec.push_back(com);
+    if(com>1)ma[com].push_back(orc);
 }
-
 void solve(){
+    ma.clear();
+    prime.clear();
+    divisor.clear();
     read(n);
+    int m=n;
+    for(int i=2; i*i<=n; i++){
+        if(m%i==0){
+            //ma[i]=vector<int>();
+            prime.push_back(i);
+            while(m%i==0)m/=i;
+        }
+    }
+    if(m>1)prime.push_back(m);//ma[m]=vector<int>(),
     vector<int>div;
     for(int i=2; i*i<=n; i++){
         if(n%i==0){
             div.push_back(i);
+            divisor[i]=divisor[n/i]=1;
             if(i*i!=n)div.push_back(n/i);
         }
     }
-    div.push_back(n);
-    vector<pair<int,vector<int>>>vec;
-    EACH(i,div){
-        vec.push_back({i,vector<int>()});
-        decom(i,vec.back().second);
-    }
-    print(vec);
-    sort(all(vec),less_than_key());
-    int cnt=0;
+    //print("div",div);
+
+    div.push_back(n);divisor[n]=1;
+    EACH(i,div)decom(i);
+    //debug(ma);
     vector<int>ans;
-    FOR(i,1,sz(vec)){
-        int i1=vec[i].first,i0=vec[i-1].first;
-        ans.push_back(i0);
-        if(gcd(i0,i1)==1)ans.push_back(lcm(i0,i1)),cnt++;
-        if(i==sz(vec)-1)ans.push_back(i1);
+    if(ma.size()==1){
+        print(div);
+        print(0);
     }
-    if(gcd(vec.back().first,vec[0].first)==1)ans.push_back(lcm(vec.back().first,vec[0].first)),cnt++;
-    print(ans);
-    print(cnt);
+    else if(ma.size()==2){
+        int d0=prime[0],d1=prime[1];
+        if(ma[d0].back()/d0/d1!=1)ans.push_back(ma[d0].back());
+        else if(ma[d1].back()/d0/d1!=1)ans.push_back(ma[d1].back());
+        int succ=sz(ans);
+        if(sz(ans))divisor[ans[0]]=0;
+        divisor[d0*d1]=0;
+        for(int j:ma[d0])
+            if(divisor[j])ans.push_back(j),divisor[j]=0;
+        ans.push_back(d0*d1);
+        for(int j:ma[d1])
+            if(divisor[j])ans.push_back(j),divisor[j]=0;
+        print(ans);
+        print(1-succ);
+    }else{
+        divisor[prime.back()*prime[0]]=0;
+        FOR(i,sz(prime)){
+            divisor[prime[i]*prime[(i+1)%sz(prime)]]=0;
+            for (int j:ma[prime[i]])
+                if(divisor[j])ans.push_back(j),divisor[j]=0;
+            ans.push_back(prime[i]*prime[(i+1)%sz(prime)]);
+            //print(ans);
+        }
+        print(ans);
+        print(0);
+    }
 }
 int main() {
     //print(set<int>({1,2,3}).size());

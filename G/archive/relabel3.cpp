@@ -209,8 +209,8 @@ struct PushRelabel {
     void Relabel(int v) {
         count[dist[v]]--;
         dist[v] = 2*N;
-        //if(v==1 || v==2)
-            //print("relabel",v+1,NumRelabels);
+        //if(v==1 || v==2)print("relabel",v+1,NumRelabels);
+        //print("relabel",v+1);
         int before=NumRelabels;
         for (int i = 0; i < G[v].size(); i++)
             if (G[v][i].cap - G[v][i].flow > 0){
@@ -219,7 +219,7 @@ struct PushRelabel {
                 ++NumRelabels;
             }
         //if(v==1 || v==2)
-            //print("relabel",v+1,NumRelabels-before,dist[v]);
+        //print("relabel",v+1,NumRelabels-before,dist[v]);
         count[dist[v]]++;
         Enqueue(v);
     }
@@ -232,6 +232,7 @@ struct PushRelabel {
             else
                 Relabel(v);
         }
+        print(v,dist);
     }
 
     LL GetMaxFlow(int s, int t) {
@@ -263,43 +264,28 @@ struct PushRelabel {
 
 int main() {
     int n, m;
-    freopen("/home/csc/Online-Judge-Code/G/maxflow_in2.txt", "r", stdin);
-    n=100;
-    vector<vector<pair<int,ll>>>arr(n+40);
-    int multi=n;
-    ll extraw=(ll)1e10;
-    arr[0].push_back({1,multi+extraw});
-    FOR(multi)arr[1].push_back({2,1});
-    arr[2].push_back({3,multi});
-    int ma[2][4]={{0,2,1,3},{0,1,2,3}};
-    int ne=multi+2;
-    for (int i = 1,j=3,k=0; j+i*2 < n; j+=i*2,i++,k++) {
-        int id=k%2;
-        arr[ma[id][0]].push_back({j+1,multi+extraw});
-        FOR(l,j+1,j+i)arr[l].push_back({l+1,multi+extraw}),ne++;
-        arr[j+i].push_back({ma[id][1],multi+extraw});
+    {
 
-        arr[ma[id][2]].push_back({j+i+1,multi+extraw});
-        FOR(l,j+i+1,j+i*2)arr[l].push_back({l+1,multi+extraw}),ne++;
-        arr[j+i*2].push_back({ma[id][3],multi+extraw});
-        ne+=4;
-    }
-    ofstream myfile;
-    myfile.open ("/home/csc/Online-Judge-Code/G/maxflow_in2.txt");
-    myfile << n << " " << ne << "\n";
-    //print(n,ne);
-    FOR(n){
-        for (auto [v,w]:arr[i]) {
-            if(v==3)v=n;
-            assert(v!=3);
-            int u=i+(i<3);
-            //print(u,v+(v<3),w);
-            myfile << u << " " << v+(v<3) << " " << w << "\n";
+        freopen("/home/csc/Online-Judge-Code/G/worsttestcase_pr_shichengchen.txt", "r", stdin);
+        n = 100;
+        vector<vector<pair<int, ll>>> arr(n + 40);
+        int ne = 0;
+        int c = 1;
+        FOR(i, 1, n - c-1)arr[max(i - c, 0)].push_back({i, n+1-i}), ne++;
+        //FOR(i, 1, n - c-1)arr[max(i - c, 0)].push_back({i, 2}), ne++;
+        FOR(i, n - c-1, n-1)arr[i - c].push_back({i, 1}), ne++;
+        ofstream myfile;
+        myfile.open("/home/csc/Online-Judge-Code/G/worsttestcase_pr_shichengchen.txt");
+        myfile << n << " " << ne << "\n";
+        //print(n,ne);
+        FOR(n+10) {
+            for (auto[v, w]:arr[i])
+                myfile << i + 1 << " " << v + 1 << " " << w << "\n";
         }
+        myfile.close();
     }
-    myfile.close();
 
-
+ 
 
     scanf("%d%d", &n, &m);
     print("n,m",n,m);
@@ -314,26 +300,10 @@ int main() {
 
     printf("%Ld\n", pr.GetMaxFlow(0, n-1));
     //printf("%Ld\n", pr.GetMaxFlow(0, 3));
-    cout << "ratio" << (NumPushes+NumRelabels+0.0)/(m*n) << endl;
-    //ratio0.0866114
+    cout << "ratio" << ((double)NumPushes+NumRelabels)/((double)m*n) << endl;
+    //ratio 0.554898
     return 0;
     /*
-        Push-Relabel performs 2000189 pushes and 7000521 relabels
-        10000010
-        ratio0.0899972
-
-        Push-Relabel performs 20189 pushes and 70521 relabels
-        100010
-        ratio0.089723
-
-        Push-Relabel performs 20182 pushes and 50494 relabels (for w*1 and 1*w)
-        100000
-        ratio0.069907
-
-        Push-Relabel performs 793 pushes and 1909 relabels
-        12690589672
-        ratio0.128667
-
      * */
 }
 

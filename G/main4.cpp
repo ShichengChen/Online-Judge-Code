@@ -54,6 +54,8 @@ template<class H, class T> void read(pair<H,T>&c){read(c.first);read(c.second);}
 template<class H, class... T> void read(H& h, T&... t) {read(h);read(t...);}
 template<class A> void read(vector<A>& x) {EACH(a, x)read(a);}
 template<class A, size_t S> void read(array<A, S>& x) {EACH(a, x)read(a);}
+template <class T> string to_string(T v);
+template<class T,class U> string to_string(pair<T,U> a);
 string to_string(char c) {return string(1, c);}
 string to_string(bool b) {return b?"true":"false";}
 string to_string(const char* s) {return string(s);}
@@ -62,9 +64,6 @@ string to_string(vector<bool> v) {
     string res;
     FOR(sz(v))res+=char('0'+v[i]);
     return res;
-}
-template<class T,class U> string to_string(pair<T,U> a){
-    return to_string(a.first)+":"+to_string(a.second);
 }
 template<size_t S> string to_string(bitset<S> b) {
     string res;
@@ -85,6 +84,7 @@ template <class T> string to_string(T v) {
     }
     return res;
 }
+template<class T,class U> string to_string(pair<T,U> a){return to_string(a.first)+":"+to_string(a.second);}
 template<class A> void write(A x) {cout << to_string(x);}
 template<class H, class... T> void write(const H& h, const T&... t) {write(h);write(t...);}
 template<class H, class... T> void print(const H& h, const T&... t);
@@ -126,120 +126,119 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     EACH(a, v)vti(a, x, m);
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
+const int d2i[4]={-1, 0}, d2j[4]={0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-const int MAXN = 2e5+20;
+const int MAXN = 3e5+20;
 const int LOGMAXN = 18;
-ll const MOD=1e9+7;
-int n,m;
-vector<string>arr;
-int vis[4][4],cntb;
-void dfsc(int y,int x){
-    vis[y][x]=1;
-    FOR(i,4)FOR(j,4) {
-            int ny=y+d4i[i],nx=x+d4j[j];
-            if(ny>=0&&nx>=0&&ny<4&&nx<4&&!vis[ny][nx]&&arr[ny][nx]==arr[y][x])dfsc(ny,nx);
+ll const MOD=998244353;
+
+//#define LOCAL
+
+#define MAX 350
+#define INF (1<<30)
+int w[MAX][MAX],lx[MAX],ly[MAX],left1[MAX];
+bool vx[MAX],vy[MAX];
+
+bool match(int u,int n)
+{
+    int i;
+    vx[u]=true;
+    for(i=0;i<n;i++)
+    {
+        if(lx[u]+ly[i]==w[u][i]&&!vy[i])
+        {
+            vy[i]=true;
+            if(left1[i]==-1||match(left1[i],n))
+            {
+                left1[i]=u;
+                return true;
+            }
         }
-}
-bool check(){
-    memset(vis,0,sizeof(vis));
-    cntb=0;
-    FOR(i,4)FOR(j,4)if(!vis[i][j])dfsc(i,j),cntb++;
-    return cntb==4;
-}
-char ma[4]={'Y','R','G','B'};
-bool dfs(int idx,int len){
-    if(idx==16){
-        if(check())print(arr);
-        return check();
-    }
-    int y=idx/4,x=idx%4;
-    if(arr[y][x]!='W')if(dfs(idx+1,len))return true;
-    FOR(i,4){
-        arr[y][x]=ma[i];
-        if(dfs(idx+1,len))return true;
-        arr[y][x]='W';
     }
     return false;
 }
-void solve() {
-    arr=vector<string>(4);
-    read(arr);
-    int ye=0;
-    FOR(4)FOR(j,4)if(arr[i][j]=='Y')ye=1;
-    if(dfs(0,ye+3))print("solvable");
-    else print("not solvable");
+
+void update(int n)
+{
+    int i,j,tmp;
+    tmp=INF;
+    for(i=0;i<n;i++) if(vx[i])
+        {
+            for(j=0;j<n;j++) if(!vy[j])
+                {
+                    tmp=min(tmp,lx[i]+ly[j]-w[i][j]);
+                }
+        }
+    for(i=0;i<n;i++)
+    {
+        if(vx[i]) lx[i]-=tmp;
+        if(vy[i]) ly[i]+=tmp;
+    }
+}
+
+int km(int n)
+{
+    int i,j,ans;
+    for(i=0;i<n;i++)
+    {
+        lx[i]=-INF;
+        ly[i]=0;
+        left1[i]=-1;
+        for(j=0;j<n;j++)  lx[i]=max(lx[i],w[i][j]);
+    }
+    for(i=0;i<n;i++)
+    {
+        while(1)
+        {
+            memset(vx,false,sizeof(vx));
+            memset(vy,false,sizeof(vy));
+            if(match(i,n)) break;
+            else update(n);
+        }
+    }
+    ans=0;
+    for(i=0;i<n;i++) ans+=w[left1[i]][i];
+    return ans;
+}
+
+int n,m;
+void solve(){
+    vector<string>s(2);
+    vector<vector<int>>arr(2,vector<int>(26));
+    read(s);
+    FOR(l,2){
+        FOR(i,26){
+            if(s[l][i]=='A')arr[l][i]=12;
+            else if(s[l][i]=='K')arr[l][i]=11;
+            else if(s[l][i]=='Q')arr[l][i]=10;
+            else if(s[l][i]=='J')arr[l][i]=9;
+            else if(s[l][i]=='T')arr[l][i]=8;
+            else arr[l][i]=s[l][i]-'2';
+        }
+    }
+    //FOR(2)sort(all(arr[i]),greater<>());
+    FOR(2)sort(all(arr[i]));
+    print(arr);
+    memset(w,0,sizeof(w));
+    FOR(i,26)FOR(j,26){
+            if(arr[1][i]==arr[0][j])
+                w[i][j]=1;
+            else if(arr[1][i]>arr[0][j])
+                w[i][j]=2;
+            else w[i][j]=0;
+        }
+    print(km(n));
 }
 int main() {
-    //print(set<int>({1,2,3}).size());
 //    ios::sync_with_stdio(false);
 //    cin.tie(nullptr);
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
     //freopen("/home/csc/G/output.txt", "w", stdout);
     int t=1;
-    //read(t);
+    read(t);
     FOR(t) {
         //write("Case #", i+1, ": ");
         solve();
     }
     return 0;
 }
-/*
-
- 8 7
- 1 2 1
- 1 3 1
- 1 4 1
- 1 5 3
- 1 6 2
- 1 7 2
- 1 8 2
- 2 3 4 5 6 7 8
-
- 3 1
- 1 2 1
- 1 1 1 3 3 3 3
-
- 1 1
- 1 1 1
- 1 1 1 1 1 1 1
-
- 2 1
- 1 2 1
- 2 2 2 2 2 2 2
-
-
-  3 3
- 5 3 1
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
- 3 3
- 3 1 3
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
- 3 3
- 1 2 2
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
-
- 1
- 5 5
- 1 3 4 5 6
- 0 0 0 0
- 1 1 1 1 1
- 0 0 0 0
- 1 1 1 1 1
- 0 0 0 0
-
- * */

@@ -1,4 +1,4 @@
-/snap/clion/124/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/csc/Online-Judge-Code/G
+/snap/clion/129/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/csc/Online-Judge-Code/G
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /home/csc/Online-Judge-Code/G/cmake-build-debug

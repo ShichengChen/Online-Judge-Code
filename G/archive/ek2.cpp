@@ -233,42 +233,7 @@ public:
 };
 
 int main() {
-    {
-        int n;
-        ofstream myfile;
-        myfile.open("/home/csc/Online-Judge-Code/G/maxflow_in.txt");
-        n = 100;
-        vector<vector<pair<int, ll>>> arr(n + 40);
-        int multi = n * n;
-        int extraw = 1;
-        arr[0].push_back({1, multi + extraw});
-        FOR(multi)arr[1].push_back({2, 1});
-        arr[2].push_back({3, multi + extraw});
-        int ma[2][4] = {{0, 2, 1, 3},
-                        {0, 1, 2, 3}};
-        int ne = multi + 2;
-        for (int i = 1, j = 3, k = 0; j + i * 2 < n; j += i * 2, i++, k++) {
-            int id = k % 2;
-            arr[ma[id][0]].push_back({j + 1, multi + extraw});
-            FOR(l, j + 1, j + i)arr[l].push_back({l + 1, multi + extraw}), ne++;
-            arr[j + i].push_back({ma[id][1], multi + extraw});
-
-            arr[ma[id][2]].push_back({j + i + 1, multi + extraw});
-            FOR(l, j + i + 1, j + i * 2)arr[l].push_back({l + 1, multi + extraw}), ne++;
-            arr[j + i * 2].push_back({ma[id][3], multi + extraw});
-            ne += 4;
-        }
-        myfile << n << " 0 3\n";
-        //print(n, 0, 3);
-        FOR(n) {
-            myfile << sz(arr[i]) << " ";
-            EACH(j,arr[i])myfile<< j.first << " " << j.second << " ";
-            myfile << "\n";
-            //print(sz(arr[i]), arr[i]);
-        }
-        myfile.close();
-    }
-    freopen("/home/csc/Online-Judge-Code/G/maxflow_in.txt", "r", stdin);
+    freopen("/home/csc/Online-Judge-Code/G/worsttestcase_ek_shichengchen.txt", "r", stdin);
     int V, s, t; scanf("%d %d %d", &V, &s, &t);
     max_flow mf(V);
     int ne=0;
@@ -282,8 +247,8 @@ int main() {
     }
     cout << ne*V << endl;
 
-    //printf("%lld\n", mf.edmonds_karp(s, t));
-    printf("%lld\n", mf.dinic(s, t));
+    printf("%lld\n", mf.edmonds_karp(s, t));
+    //printf("%lld\n", mf.dinic(s, t));
     cout << "ratio:" << (double)(NumAPs)/(ne*V) << endl;
     cout << ne << " " << V << endl;
     //ratio:0.0892873

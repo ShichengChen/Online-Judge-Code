@@ -101,7 +101,7 @@ template<class H, class... T> void DBG(H h, T... t) {
         cout << ", ";
     DBG(t...);
 }
-#define _DEBUG
+//#define _DEBUG
 #ifdef _DEBUG
 #define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
 #else
@@ -118,7 +118,7 @@ template<class T, size_t S> void offset(ll o, array<T, S>& x) {
 
 mt19937 mt_rng(chrono::steady_clock::now().time_since_epoch().count());
 ll randint(ll a, ll b) {
-    return uniform_int_distribution<ll>(a, b)(mt_rng);
+    return uniform_int_distribution<>(a, b)(mt_rng);
 }
 template<class T, class U> void vti(vt<T> &v, U x, size_t n) {v=vt<T>(n, x);}
 template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
@@ -127,270 +127,143 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-const int MAXN = 3e5+20;
+const int MAXN = 1e3+20;
 const int LOGMAXN = 18;
-ll const MOD=998244353;
+//ll const MOD=998244353;
+ll const MOD=1e9+7;
 
-template <int MOD_> struct modnum {
-    static constexpr int MOD = MOD_;
-    static_assert(MOD_ > 0, "MOD must be positive");
-private:
-    using ll = long long;
-    int v;
-    static int minv(int a, int m) {
-        a %= m;
-        assert(a);
-        return a == 1 ? 1 : int(m - ll(minv(m, a)) * ll(m) / a);
-    }
-public:
-    modnum() : v(0) {}
-    modnum(ll v_) : v(int(v_ % MOD)) { if (v < 0) v += MOD; }
-    explicit operator int() const { return v; }
-    friend std::ostream& operator << (std::ostream& out, const modnum& n) { return out << int(n); }
-    friend std::istream& operator >> (std::istream& in, modnum& n) { ll v_; in >> v_; n = modnum(v_); return in; }
-    friend string to_string(modnum& n){return to_string(n.v);}
-    friend bool operator == (const modnum& a, const modnum& b) { return a.v == b.v; }
-    friend bool operator != (const modnum& a, const modnum& b) { return a.v != b.v; }
-
-    modnum inv() const {
-        modnum res;
-        res.v = minv(v, MOD);
-        return res;
-    }
-    friend modnum inv(const modnum& m) { return m.inv(); }
-    modnum neg() const {
-        modnum res;
-        res.v = v ? MOD-v : 0;
-        return res;
-    }
-    friend modnum neg(const modnum& m) { return m.neg(); }
-
-    modnum operator- () const {
-        return neg();
-    }
-    modnum operator+ () const {
-        return modnum(*this);
-    }
-
-    modnum& operator ++ () {
-        v ++;
-        if (v == MOD) v = 0;
-        return *this;
-    }
-    modnum& operator -- () {
-        if (v == 0) v = MOD;
-        v --;
-        return *this;
-    }
-    modnum& operator += (const modnum& o) {
-        v += o.v;
-        if (v >= MOD) v -= MOD;
-        return *this;
-    }
-    modnum& operator -= (const modnum& o) {
-        v -= o.v;
-        if (v < 0) v += MOD;
-        return *this;
-    }
-    modnum& operator *= (const modnum& o) {
-        v = int(ll(v) * ll(o.v) % MOD);
-        return *this;
-    }
-    modnum& operator /= (const modnum& o) {
-        return *this *= o.inv();
-    }
-    friend modnum operator ++ (modnum& a, int) { modnum r = a; ++a; return r; }
-    friend modnum operator -- (modnum& a, int) { modnum r = a; --a; return r; }
-    friend modnum operator + (const modnum& a, const modnum& b) { return modnum(a) += b; }
-    friend modnum operator - (const modnum& a, const modnum& b) { return modnum(a) -= b; }
-    friend modnum operator * (const modnum& a, const modnum& b) { return modnum(a) *= b; }
-    friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
-};
-/*
- void exgcd(const ll a, const ll b, ll &g, ll &x, ll &y) {
-    if (!b) g = a, x = 1, y = 0;
-    else exgcd(b, a % b, g, y, x), y -= x * (a / b);
+using namespace std;
+clock_t timebegin;
+int n;
+int w[MAXN][MAXN],edge[MAXN],bestedge[MAXN],mindis=0,curdis=0;
+int vis[MAXN];
+double vec[MAXN][2];
+pair<int,int> arr[MAXN][MAXN];
+ll bitdp[21][270000];
+int nextedge[21][270000];
+inline bool timecheck(){
+    clock_t timeend = clock();
+    double elapsed_secs = double(timeend - timebegin) / CLOCKS_PER_SEC;
+    return elapsed_secs>=1.99;
 }
-inline ll inv(const ll num) {
-    ll g, x, y;
-    exgcd(num, MOD, g, x, y);
-    return ((x % MOD) + MOD) % MOD;
+inline int dis(double a0,double a1,double b0,double b1){
+    return int(sqrt((a0-a1)*(a0-a1)+(b0-b1)*(b0-b1))+0.5);
 }
- * */
-int n,k;
-void solve(){
-    using mint = modnum<MOD>;
-    read(n,k);
-    vector<vector<int>>arr(n,vector<int>(2,0));
-    vector<mint>d(n+1,0);
-    read(arr);
-    d[k]=1;
-    FOR(i,k+1,n+1)d[i]=((d[i-1]/(i-k))*i);
-    map<int,int>ri,li;
-    set<int>se;
-    FOR(i,0,sz(arr))li[arr[i][0]]++,ri[arr[i][1]+1]++,se.insert(arr[i][0]),se.insert(arr[i][1]+1);
-    ll cnt=0,used=0;
-    mint ans=0;
-    for (auto l:se) {
-        ll lv=0,rv=0;
-        if(li.count(l))lv=li[l];
-        if(ri.count(l))rv=ri[l];
-        used-=rv;
-        if(used<k)used=0;
-        cnt+=lv-rv;
-        if(lv && cnt>=k){
-            if(used==0){
-                ans=(ans+d[cnt]);
-            }else{
-                ans=(ans+d[cnt]-d[used]);
-            }
-            used=cnt;
+void dpforsmalldata(){
+    memset(bitdp,0x3f,sizeof(bitdp));
+    bitdp[0][(1<<n)-1]=0;
+    for(int s=(1<<n)-2;s>=0;--s)
+        FOR(i,n)FOR(j,n)if(!(s>>j & 1))
+        if(i!=j && ((s==0 && i==0) || (s && (s>>i & 1))) && umin(bitdp[i][s],bitdp[j][s|(1<<j)]+w[i][j])){
+            nextedge[i][s]=j;
         }
+    //print(0,bitdp[0][0]);
+    print(0);
+    for (int i = 0,u=0,s=0; i < n-1; ++i) {
+        int v=nextedge[u][s];
+        //print(v,bitdp[u][s],w[u][v]);
+        print(v);
+        s|=(1<<v);
+        u=v;
+        //if(i==n-2)print(0,bitdp[u][s],w[u][0]);
     }
-    print(ans);
+}
+inline void swapuv(int u0,int v0,int u1,int v1){
+    for (int cv0=v0,nv0=edge[v0],nnv0=edge[nv0]; ; cv0=nv0,nv0=nnv0,nnv0=edge[nnv0]) {
+        edge[nv0]=cv0;
+        //if(nnv0==v1)assert(nv0==u1);
+        if(nnv0==v1)break;
+    }
+    edge[u0]=u1;
+    edge[v0]=v1;
+}
+void solve() {
+    read(n);
+    FOR(n)FOR(j,2)read(vec[i][j]);
+    FOR(n){
+        int k=0;
+        FOR(j,n)if(i!=j){
+                w[i][j]=dis(vec[i][0],vec[j][0],vec[i][1],vec[j][1]);
+                arr[i][k]={w[i][j],j};
+                k++;
+            }
+        //assert(k==n-1);
+        sort(arr[i],arr[i]+n-1);
+    }
+    //FOR(n)FOR(j,n)assert(w[i][j]==w[j][i]);
+    if(n<=18){
+        dpforsmalldata();
+        //print("min",bitdp[0][0]);
+        debug(bitdp[0][0]);
+        return;
+    }
+    FOR(q,10000){
+        memset(vis,0,sizeof(int)*(n+5));
+        vis[0]=1;
+        for (int k = 0,u=0; k < n-1; ++k){
+            int rand=randint(1,min(n-k-1,2)); 
+            //int rand=randint(1,1);
+            int cnt=0;
+            FOR(j,n-1)if(!vis[arr[u][j].second]){
+                    int v=arr[u][j].second;
+                    if(++cnt>=rand){
+                        curdis+=w[u][v];
+                        vis[v]=1;
+                        edge[u]=v;
+                        u=v;
+                        break;
+                    }
+                }
+            if(k==n-2){
+                curdis+=w[u][0];
+                edge[u]=0;
+            }
+        }
+//        for (int i = 0,u=0; i < n+1; ++i) {write(u," ");u=edge[u];}
+//        print();
+        if(q==0){
+            mindis=curdis;
+            //debug(mindis);
+            memcpy(bestedge,edge,(n+2)*sizeof(int));
+        }
+        while(1){
+            if(timecheck())break;
+            int change=0;
+            FOR(u0,n)FOR(u1,u0+1,n){
+                    if((u0 %4==0 && u1==u0+1) && timecheck())goto outtwoloop;
+                    int v0=edge[u0],v1=edge[u1];
+                    if(v0==u1 || v1==u0)continue;
+                    if(w[u0][v0]+w[u1][v1]>w[u0][u1]+w[v0][v1]){
+                        swapuv(u0,v0,u1,v1);
+                        curdis-=(w[u0][v0]+w[u1][v1]-(w[u0][u1]+w[v0][v1]));
+                        change=1;
+                    }
+                }
+            outtwoloop:;
+
+            if(change==0)break;
+            //break;
+        }
+        if(umin(mindis,curdis))
+            memcpy(bestedge,edge,(n+2)*sizeof(int));
+        //break;
+        if(timecheck())break;
+    }
+
+    debug(mindis);
+    for (int i = 0,u=0; i < n; ++i) {print(u);u=bestedge[u];}
 }
 int main() {
-    //print(set<int>({1,2,3}).size());
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
     //freopen("/home/csc/G/output.txt", "w", stdout);
-    //print(-11/2);
+    timebegin = clock();
     int t=1;
-    //read(t);
+//    read(t);
     FOR(t) {
         //write("Case #", i+1, ": ");
         solve();
     }
     return 0;
 }
-/*
-3 1
-1 2
- 2 3
- 3 4
-
-
-7 7 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
- 6 7
-
-7 6 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
- 6 7
-
- 6 6 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
-
-
-
-
-10 2 2
-9 7
-10 6
-3 2 4 8
-1 3
-1 6
-1 5
-1 10
-1 7
-0
-1 9
-0
-0
-
-7 2 1
-5 4
-6
-3 2 3 4
-1 5
-1 6
-1 7
-0
-0
-0
-
-
-RGBW
-WWWW
-WWWW
-RGBW
-
-RGBW
-WWWW
-WWWW
-RGWB
-
-
-
-
- 8 7
- 1 2 1
- 1 3 1
- 1 4 1
- 1 5 3
- 1 6 2
- 1 7 2
- 1 8 2
- 2 3 4 5 6 7 8
-
- 3 1
- 1 2 1
- 1 1 1 3 3 3 3
-
- 1 1
- 1 1 1
- 1 1 1 1 1 1 1
-
- 2 1
- 1 2 1
- 2 2 2 2 2 2 2
-
-
-  3 3
- 5 3 1
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
- 3 3
- 3 1 3
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
- 3 3
- 1 2 2
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
-
- 1
- 5 5
- 1 3 4 5 6
- 0 0 0 0
- 1 1 1 1 1
- 0 0 0 0
- 1 1 1 1 1
- 0 0 0 0
-
- * */

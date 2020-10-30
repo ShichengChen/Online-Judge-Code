@@ -59,10 +59,10 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /snap/clion/124/bin/cmake/linux/bin/cmake
+CMAKE_COMMAND = /snap/clion/129/bin/cmake/linux/bin/cmake
 
 # The command to remove a file.
-RM = /snap/clion/124/bin/cmake/linux/bin/cmake -E rm -f
+RM = /snap/clion/129/bin/cmake/linux/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
@@ -79,7 +79,7 @@ CMAKE_BINARY_DIR = /home/csc/Online-Judge-Code/G/cmake-build-debug
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/snap/clion/124/bin/cmake/linux/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/snap/clion/129/bin/cmake/linux/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -90,7 +90,7 @@ rebuild_cache/fast: rebuild_cache
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/snap/clion/124/bin/cmake/linux/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	/snap/clion/129/bin/cmake/linux/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -143,32 +143,32 @@ G/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/build
 .PHONY : G/fast
 
-main2.o: main2.cpp.o
+tsp-opt3.o: tsp-opt3.cpp.o
 
-.PHONY : main2.o
+.PHONY : tsp-opt3.o
 
 # target to build an object file
-main2.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/main2.cpp.o
-.PHONY : main2.cpp.o
+tsp-opt3.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/tsp-opt3.cpp.o
+.PHONY : tsp-opt3.cpp.o
 
-main2.i: main2.cpp.i
+tsp-opt3.i: tsp-opt3.cpp.i
 
-.PHONY : main2.i
+.PHONY : tsp-opt3.i
 
 # target to preprocess a source file
-main2.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/main2.cpp.i
-.PHONY : main2.cpp.i
+tsp-opt3.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/tsp-opt3.cpp.i
+.PHONY : tsp-opt3.cpp.i
 
-main2.s: main2.cpp.s
+tsp-opt3.s: tsp-opt3.cpp.s
 
-.PHONY : main2.s
+.PHONY : tsp-opt3.s
 
 # target to generate assembly for a file
-main2.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/main2.cpp.s
-.PHONY : main2.cpp.s
+tsp-opt3.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/tsp-opt3.cpp.s
+.PHONY : tsp-opt3.cpp.s
 
 # Help Target
 help:
@@ -179,9 +179,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... G"
-	@echo "... main2.o"
-	@echo "... main2.i"
-	@echo "... main2.s"
+	@echo "... tsp-opt3.o"
+	@echo "... tsp-opt3.i"
+	@echo "... tsp-opt3.s"
 .PHONY : help
 
 

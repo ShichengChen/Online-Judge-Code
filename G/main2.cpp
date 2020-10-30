@@ -127,9 +127,14 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-const int MAXN = 3e5+20;
+const int MAXN = 1e3+20;
 const int LOGMAXN = 18;
-ll const MOD=998244353;
+//ll const MOD=998244353;
+ll const MOD=1e9+7;
+
+using namespace std;
+
+const int INF = 1000000000;
 
 template <int MOD_> struct modnum {
     static constexpr int MOD = MOD_;
@@ -148,8 +153,7 @@ public:
     explicit operator int() const { return v; }
     friend std::ostream& operator << (std::ostream& out, const modnum& n) { return out << int(n); }
     friend std::istream& operator >> (std::istream& in, modnum& n) { ll v_; in >> v_; n = modnum(v_); return in; }
-    friend void print(modnum& n){cout << n << "\n";}
-
+    friend string to_string(modnum& n){return to_string(n.v);}
     friend bool operator == (const modnum& a, const modnum& b) { return a.v == b.v; }
     friend bool operator != (const modnum& a, const modnum& b) { return a.v != b.v; }
 
@@ -207,58 +211,31 @@ public:
     friend modnum operator * (const modnum& a, const modnum& b) { return modnum(a) *= b; }
     friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
 };
-/*
- void exgcd(const ll a, const ll b, ll &g, ll &x, ll &y) {
-    if (!b) g = a, x = 1, y = 0;
-    else exgcd(b, a % b, g, y, x), y -= x * (a / b);
+//using mint = modnum<MOD>;
+
+int n;
+int w[MAXN][MAXN];
+inline int dis(int a0,int a1,int b0,int b1){
+    return int(sqrt((a0-a1)*(a0-a1)+(b0-b1)*(b0-b1))+0.5);
 }
-inline ll inv(const ll num) {
-    ll g, x, y;
-    exgcd(num, MOD, g, x, y);
-    return ((x % MOD) + MOD) % MOD;
-}
- * */
-int n,k;
-void solve(){
-    using mint = modnum<MOD>;
-    read(n,k);
-    vector<vector<int>>arr(n,vector<int>(2,0));
-    vector<mint>d(n+1,0);
-    read(arr);
-    d[k]=1;
-    FOR(i,k+1,n+1)d[i]=((d[i-1]/(i-k))*i);
-    map<int,int>ri,li;
-    set<int>se;
-    FOR(i,0,sz(arr))li[arr[i][0]]++,ri[arr[i][1]+1]++,se.insert(arr[i][0]),se.insert(arr[i][1]+1);
-    ll cnt=0,used=0;
-    mint ans=0;
-    for (auto l:se) {
-        ll lv=0,rv=0;
-        if(li.count(l))lv=li[l];
-        if(ri.count(l))rv=ri[l];
-        used-=rv;
-        if(used<k)used=0;
-        cnt+=lv-rv;
-        if(lv && cnt>=k){
-            if(used==0){
-                ans=(ans+d[cnt]);
-            }else{
-                ans=(ans+d[cnt]-d[used]);
-            }
-            used=cnt;
-        }
+void solve() {
+    read(n);
+    vector<vector<int>>vec(n,vector<int>(2));
+    vector<vector<pair<int,int>>>arr(n);
+    read(vec);
+    FOR(n)FOR(j,n){
+        w[i][j]=dis(vec[i][0],vec[j][0],vec[i][1],vec[j][1]);
+        arr[i].push_back({});
     }
-    print(ans);
+
 }
 int main() {
-    //print(set<int>({1,2,3}).size());
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+//    ios::sync_with_stdio(false);
+//    cin.tie(nullptr);
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
     //freopen("/home/csc/G/output.txt", "w", stdout);
-    //print(-11/2);
     int t=1;
-    //read(t);
+//    read(t);
     FOR(t) {
         //write("Case #", i+1, ": ");
         solve();
@@ -266,132 +243,14 @@ int main() {
     return 0;
 }
 /*
-3 1
-1 2
- 2 3
- 3 4
+
+5 10
+2 2 2
+2 2 2
+2 2 2
+2 2 2
+2 2 2
 
 
-7 7 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
- 6 7
-
-7 6 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
- 6 7
-
- 6 6 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
-
-
-
-
-10 2 2
-9 7
-10 6
-3 2 4 8
-1 3
-1 6
-1 5
-1 10
-1 7
-0
-1 9
-0
-0
-
-7 2 1
-5 4
-6
-3 2 3 4
-1 5
-1 6
-1 7
-0
-0
-0
-
-
-RGBW
-WWWW
-WWWW
-RGBW
-
-RGBW
-WWWW
-WWWW
-RGWB
-
-
-
-
- 8 7
- 1 2 1
- 1 3 1
- 1 4 1
- 1 5 3
- 1 6 2
- 1 7 2
- 1 8 2
- 2 3 4 5 6 7 8
-
- 3 1
- 1 2 1
- 1 1 1 3 3 3 3
-
- 1 1
- 1 1 1
- 1 1 1 1 1 1 1
-
- 2 1
- 1 2 1
- 2 2 2 2 2 2 2
-
-
-  3 3
- 5 3 1
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
- 3 3
- 3 1 3
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
- 3 3
- 1 2 2
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
-
- 1
- 5 5
- 1 3 4 5 6
- 0 0 0 0
- 1 1 1 1 1
- 0 0 0 0
- 1 1 1 1 1
- 0 0 0 0
 
  * */

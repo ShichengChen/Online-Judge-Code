@@ -126,138 +126,109 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     EACH(a, v)vti(a, x, m);
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
+const int d2i[4]={-1, 0}, d2j[4]={0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
 const int MAXN = 3e5+20;
 const int LOGMAXN = 18;
 ll const MOD=998244353;
 
-template <int MOD_> struct modnum {
-    static constexpr int MOD = MOD_;
-    static_assert(MOD_ > 0, "MOD must be positive");
-private:
-    using ll = long long;
-    int v;
-    static int minv(int a, int m) {
-        a %= m;
-        assert(a);
-        return a == 1 ? 1 : int(m - ll(minv(m, a)) * ll(m) / a);
-    }
-public:
-    modnum() : v(0) {}
-    modnum(ll v_) : v(int(v_ % MOD)) { if (v < 0) v += MOD; }
-    explicit operator int() const { return v; }
-    friend std::ostream& operator << (std::ostream& out, const modnum& n) { return out << int(n); }
-    friend std::istream& operator >> (std::istream& in, modnum& n) { ll v_; in >> v_; n = modnum(v_); return in; }
-    friend string to_string(modnum& n){return to_string(n.v);}
-    friend bool operator == (const modnum& a, const modnum& b) { return a.v == b.v; }
-    friend bool operator != (const modnum& a, const modnum& b) { return a.v != b.v; }
 
-    modnum inv() const {
-        modnum res;
-        res.v = minv(v, MOD);
-        return res;
-    }
-    friend modnum inv(const modnum& m) { return m.inv(); }
-    modnum neg() const {
-        modnum res;
-        res.v = v ? MOD-v : 0;
-        return res;
-    }
-    friend modnum neg(const modnum& m) { return m.neg(); }
 
-    modnum operator- () const {
-        return neg();
+template<int N>struct KM {
+    const int INF = 0x3f3f3f3f;
+    int n;
+    vector<int> G[N];
+    int we[N][N];
+    int dx[N], dy[N];
+    int linker[N];
+    bool vx[N], vy[N];
+    void init(int nn) {
+        n = nn;
+        memset(we, 0, sizeof(we));
+        FOR(n) G[i].clear();
     }
-    modnum operator+ () const {
-        return modnum(*this);
+    void pushedge(int u, int v, int w) {
+        G[u].push_back(v);
+        we[u][v] = w;
     }
-
-    modnum& operator ++ () {
-        v ++;
-        if (v == MOD) v = 0;
-        return *this;
-    }
-    modnum& operator -- () {
-        if (v == 0) v = MOD;
-        v --;
-        return *this;
-    }
-    modnum& operator += (const modnum& o) {
-        v += o.v;
-        if (v >= MOD) v -= MOD;
-        return *this;
-    }
-    modnum& operator -= (const modnum& o) {
-        v -= o.v;
-        if (v < 0) v += MOD;
-        return *this;
-    }
-    modnum& operator *= (const modnum& o) {
-        v = int(ll(v) * ll(o.v) % MOD);
-        return *this;
-    }
-    modnum& operator /= (const modnum& o) {
-        return *this *= o.inv();
-    }
-    friend modnum operator ++ (modnum& a, int) { modnum r = a; ++a; return r; }
-    friend modnum operator -- (modnum& a, int) { modnum r = a; --a; return r; }
-    friend modnum operator + (const modnum& a, const modnum& b) { return modnum(a) += b; }
-    friend modnum operator - (const modnum& a, const modnum& b) { return modnum(a) -= b; }
-    friend modnum operator * (const modnum& a, const modnum& b) { return modnum(a) *= b; }
-    friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
-};
-/*
- void exgcd(const ll a, const ll b, ll &g, ll &x, ll &y) {
-    if (!b) g = a, x = 1, y = 0;
-    else exgcd(b, a % b, g, y, x), y -= x * (a / b);
-}
-inline ll inv(const ll num) {
-    ll g, x, y;
-    exgcd(num, MOD, g, x, y);
-    return ((x % MOD) + MOD) % MOD;
-}
- * */
-int n,k;
-void solve(){
-    using mint = modnum<MOD>;
-    read(n,k);
-    vector<vector<int>>arr(n,vector<int>(2,0));
-    vector<mint>d(n+1,0);
-    read(arr);
-    d[k]=1;
-    FOR(i,k+1,n+1)d[i]=((d[i-1]/(i-k))*i);
-    map<int,int>ri,li;
-    set<int>se;
-    FOR(i,0,sz(arr))li[arr[i][0]]++,ri[arr[i][1]+1]++,se.insert(arr[i][0]),se.insert(arr[i][1]+1);
-    ll cnt=0,used=0;
-    mint ans=0;
-    for (auto l:se) {
-        ll lv=0,rv=0;
-        if(li.count(l))lv=li[l];
-        if(ri.count(l))rv=ri[l];
-        used-=rv;
-        if(used<k)used=0;
-        cnt+=lv-rv;
-        if(lv && cnt>=k){
-            if(used==0){
-                ans=(ans+d[cnt]);
-            }else{
-                ans=(ans+d[cnt]-d[used]);
+    bool match(int u){
+        vx[u] = true;
+        EACH(v,G[u]) {
+            if (!vy[v] && we[u][v]==dx[u]+dy[v]){
+                vy[v] = true;
+                if (linker[v] == -1 || match(linker[v])){
+                    linker[v] = u;
+                    return true;
+                }
             }
-            used=cnt;
+        }
+        return false;
+    }
+    void update(){
+        int cur = INF;
+        FOR(u,n)if(vx[u])
+        EACH(v,G[u]) if(!vy[v]) cur = min(cur, dx[u]+dy[v] - we[u][v]);
+        FOR(n){
+            if(vy[i]) dy[i] += cur;
+            if(vx[i]) dx[i] -= cur;
         }
     }
-    print(ans);
+
+    int solver() {
+        FOR(n) {
+            dx[i] = *max_element(we[i], we[i]+n);
+            dy[i] = 0,linker[i] = -1;
+        }
+        FOR(u,n) {
+            while (1){
+                memset(vx,0,sizeof(vx));
+                memset(vy,0,sizeof(vy));
+                if(match(u)) break; else update();
+            }
+        }
+        int ans=0;
+        FOR(n)if(linker[i]!=-1)ans+=we[linker[i]][i];
+        return ans;
+    }
+};
+
+
+int n,m;
+void solve(){
+    vector<string>s(2);
+    vector<vector<int>>arr(2,vector<int>(26));
+    read(s);
+    FOR(l,2){
+        FOR(i,26){
+            if(s[l][i]=='A')arr[l][i]=12;
+            else if(s[l][i]=='K')arr[l][i]=11;
+            else if(s[l][i]=='Q')arr[l][i]=10;
+            else if(s[l][i]=='J')arr[l][i]=9;
+            else if(s[l][i]=='T')arr[l][i]=8;
+            else arr[l][i]=s[l][i]-'2';
+        }
+    }
+    //FOR(2)sort(all(arr[i]),greater<>());
+    FOR(2)sort(all(arr[i]));
+    //print(arr);
+    KM<60>solver;
+    solver.init(26);
+    FOR(i,26)FOR(j,26){
+        if(arr[1][i]==arr[0][j])
+            solver.pushedge(i,j,1);
+        else if(arr[1][i]>arr[0][j])
+            solver.pushedge(i,j,2);
+        else solver.pushedge(i,j,0);
+    }
+    print(solver.solver());
 }
 int main() {
-    //print(set<int>({1,2,3}).size());
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
+//    ios::sync_with_stdio(false);
+//    cin.tie(nullptr);
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
     //freopen("/home/csc/G/output.txt", "w", stdout);
-    //print(-11/2);
     int t=1;
-    //read(t);
+    read(t);
     FOR(t) {
         //write("Case #", i+1, ": ");
         solve();
@@ -265,10 +236,15 @@ int main() {
     return 0;
 }
 /*
+8 5
+A11111AA
+AA7B111A
+111BB111
+11BBB111
+11BBB11B
+
 3 1
-1 2
- 2 3
- 3 4
+A0B
 
 
 7 7 1 2 5
