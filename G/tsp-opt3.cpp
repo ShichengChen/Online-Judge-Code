@@ -101,7 +101,7 @@ template<class H, class... T> void DBG(H h, T... t) {
         cout << ", ";
     DBG(t...);
 }
-#define _DEBUG
+//#define _DEBUG
 #ifdef _DEBUG
 #define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
 #else
@@ -144,19 +144,22 @@ double vec[MAXN][2];
 pair<int,int> arr[MAXN][MAXN];
 ll bitdp[21][220000];
 int nextedge[21][220000];
-inline bool timecntcheck(){
-    timecnt++;
-    if(timecnt>=1e6){
-        timecnt=0;
-        return timecntcheck();
-    }
-    return false;
-}
+
 inline bool timecheck(){
     clock_t timeend = clock();
     double elapsed_secs = double(timeend - timebegin) / CLOCKS_PER_SEC;
     return elapsed_secs>=1.98;
 }
+inline bool timecntcheck(){
+    timecnt++;
+    if(timecnt>=1e4){
+        timecnt=0;
+        return timecheck();
+    }
+    return false;
+}
+
+
 inline int dis(double a0,double a1,double b0,double b1){
     return int(sqrt((a0-a1)*(a0-a1)+(b0-b1)*(b0-b1))+0.5);
 }
@@ -173,7 +176,7 @@ void dpforsmalldata(){
     for (int i = 0,u=0,s=0; i < n-1; ++i) {
         int v=nextedge[u][s];
         //print(v,bitdp[u][s],w[u][v]);
-        print(v);
+        print(v); 
         s|=(1<<v);
         u=v;
         //if(i==n-2)print(0,bitdp[u][s],w[u][0]);
@@ -269,7 +272,7 @@ void solve() {
         memset(vis,0,sizeof(int)*n);
         vis[0]=1;
         for (int k = 0,u=0; k < n-1; ++k){
-            int rand=randint(1,min(n-k-1,1));
+            int rand=randint(1,min(n-k-1,min(1,q+1)));
             //int rand=randint(1,1);
             int cnt=0;
             tour[0]=0,vertex2idx[0]=0;
@@ -305,8 +308,8 @@ void solve() {
                     if(DLB && !dlb2[c])continue;
                     if(timecntcheck())goto outtwoloop;
                     int j=vertex2idx[c],d=tour[(j+1)%n];
-                    if(i+1>=j || a==d || b==c)continue;
                     if(w[a][b]*2<acw)break;
+                    if(i+1>=j || (j+1)%n==i)continue;
                     int delta = opt2(i,j);
                     change+=bool(delta);
                     changei+=bool(delta);
@@ -315,10 +318,28 @@ void solve() {
                 if(!changei)dlb2[a]=0;
             }
 
+            if(n>100){
+                FOR(i,n-1){
+                    int a=tour[i];
+                    for(auto& [acw,c]:arr[a]){
+                        int j=vertex2idx[c];
+                        if(i+1>=j || (j+1)%n==i)continue;
+                        for(auto& [cew,e]:arr[c]){
+                            if(timecntcheck())goto outtwoloop;
+                            int k=vertex2idx[e];
+                            if(j+1>=k || (k+1)%n==i)continue;
+                            int delta=opt3(i,j,k);
+                            change+=bool(delta);
+                            curdis-=delta;
+                        }
+                    }
+                }
+            }
+
+
             FOR(i,n-1){
                 if(DLB && !dlb3[tour[i]])continue;
                 int changei=0;
-                //print(i);
                 FOR(j,i+2,n){
                     if(DLB && !dlb3[tour[j]])continue;
                     FOR(k,j+2,n){
@@ -342,6 +363,7 @@ void solve() {
     }
     debug(mindis);
     ll finaldis=0;
+
     FOR(n)finaldis+=w[besttour[i]][besttour[(i+1)%n]];
     assert(mindis==finaldis);
 #ifndef _DEBUG
@@ -354,11 +376,13 @@ int main() {
 #ifdef _DEBUG
     freopen("/home/csc/Online-Judge-Code/G/1000tsp.txt", "r", stdin);
 #endif
-    //1000tsp 48878406
-    //frs opt2 + opt3 48194255
-    //500tsp 34591799
+    //1000tsp 49295531
+    //opt2+2*opt3 = 48689614
+    //opt2+opt3 = 48796791
+
     //100tsp opt3 17375806
-    //speed up opt2 + opt3 17014981
+    //opt2+2*opt3 = 17206547
+    //opt2+opt3 = 17014981
     //50tsp 11514358
     //10tsp 276
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
@@ -372,3 +396,11 @@ int main() {
     }
     return 0;
 }
+
+/*
+
+
+
+
+
+ * */

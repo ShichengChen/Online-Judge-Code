@@ -84,7 +84,7 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/home/csc/Online-Judge-Code/G/tsp-opt3.cpp">
+		<Unit filename="/home/csc/Online-Judge-Code/G/tsp-mst.cpp">
 			<Option target="G"/>
 		</Unit>
 		<Unit filename="/home/csc/Online-Judge-Code/G/CMakeLists.txt">

@@ -143,32 +143,32 @@ G/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/build
 .PHONY : G/fast
 
-tsp-opt3.o: tsp-opt3.cpp.o
+tsp-mst.o: tsp-mst.cpp.o
 
-.PHONY : tsp-opt3.o
+.PHONY : tsp-mst.o
 
 # target to build an object file
-tsp-opt3.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/tsp-opt3.cpp.o
-.PHONY : tsp-opt3.cpp.o
+tsp-mst.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/tsp-mst.cpp.o
+.PHONY : tsp-mst.cpp.o
 
-tsp-opt3.i: tsp-opt3.cpp.i
+tsp-mst.i: tsp-mst.cpp.i
 
-.PHONY : tsp-opt3.i
+.PHONY : tsp-mst.i
 
 # target to preprocess a source file
-tsp-opt3.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/tsp-opt3.cpp.i
-.PHONY : tsp-opt3.cpp.i
+tsp-mst.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/tsp-mst.cpp.i
+.PHONY : tsp-mst.cpp.i
 
-tsp-opt3.s: tsp-opt3.cpp.s
+tsp-mst.s: tsp-mst.cpp.s
 
-.PHONY : tsp-opt3.s
+.PHONY : tsp-mst.s
 
 # target to generate assembly for a file
-tsp-opt3.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/tsp-opt3.cpp.s
-.PHONY : tsp-opt3.cpp.s
+tsp-mst.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/tsp-mst.cpp.s
+.PHONY : tsp-mst.cpp.s
 
 # Help Target
 help:
@@ -179,9 +179,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... G"
-	@echo "... tsp-opt3.o"
-	@echo "... tsp-opt3.i"
-	@echo "... tsp-opt3.s"
+	@echo "... tsp-mst.o"
+	@echo "... tsp-mst.i"
+	@echo "... tsp-mst.s"
 .PHONY : help
 
 
