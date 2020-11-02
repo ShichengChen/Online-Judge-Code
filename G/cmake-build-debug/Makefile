@@ -143,32 +143,32 @@ G/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/build
 .PHONY : G/fast
 
-tsp-mst.o: tsp-mst.cpp.o
+mwvc2.o: mwvc2.cpp.o
 
-.PHONY : tsp-mst.o
+.PHONY : mwvc2.o
 
 # target to build an object file
-tsp-mst.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/tsp-mst.cpp.o
-.PHONY : tsp-mst.cpp.o
+mwvc2.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/mwvc2.cpp.o
+.PHONY : mwvc2.cpp.o
 
-tsp-mst.i: tsp-mst.cpp.i
+mwvc2.i: mwvc2.cpp.i
 
-.PHONY : tsp-mst.i
+.PHONY : mwvc2.i
 
 # target to preprocess a source file
-tsp-mst.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/tsp-mst.cpp.i
-.PHONY : tsp-mst.cpp.i
+mwvc2.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/mwvc2.cpp.i
+.PHONY : mwvc2.cpp.i
 
-tsp-mst.s: tsp-mst.cpp.s
+mwvc2.s: mwvc2.cpp.s
 
-.PHONY : tsp-mst.s
+.PHONY : mwvc2.s
 
 # target to generate assembly for a file
-tsp-mst.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/tsp-mst.cpp.s
-.PHONY : tsp-mst.cpp.s
+mwvc2.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/G.dir/build.make CMakeFiles/G.dir/mwvc2.cpp.s
+.PHONY : mwvc2.cpp.s
 
 # Help Target
 help:
@@ -179,9 +179,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... G"
-	@echo "... tsp-mst.o"
-	@echo "... tsp-mst.i"
-	@echo "... tsp-mst.s"
+	@echo "... mwvc2.o"
+	@echo "... mwvc2.i"
+	@echo "... mwvc2.s"
 .PHONY : help
 
 

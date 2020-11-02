@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/G.dir/tsp-mst.cpp.o"
+  "CMakeFiles/G.dir/mwvc2.cpp.o"
   "G"
   "G.pdb"
 )

@@ -143,14 +143,14 @@ int vid[MAXN];
 struct Edges{
     int u,v;
     bool operator < (const Edges& c)const{
-        return abs(u-v)>abs(c.u-c.v);
+        return abs(w[u]-w[v])>abs(w[c.u]-w[c.v]);
     }
 }edges[MAXM];
 
 inline bool timecheck(){
     clock_t timeend = clock();
     double elapsed_secs = double(timeend - timebegin) / CLOCKS_PER_SEC;
-    return elapsed_secs>=1.98;
+    return elapsed_secs>=1.99;
 }
 inline void removeUeslessVertex(ll &curval,int u,int *cover){
     for(int &v:vec[u])if(!cover[v])return;
@@ -207,7 +207,7 @@ void solve() {
     }
     FOR(q,100000){
         //print(q);
-        if(q>=1 && q<=3)sort(edges,edges+m);
+        if(q>=0 && q<=3)sort(edges,edges+m);
         if(q>3)shuffle(edges,edges+m,std::default_random_engine(q));
         if(q%3==0)sort(vid,vid+n,[](int l,int r){return w[l]>w[r];});
         if(q%3==1)sort(vid,vid+n,[](int l,int r){return (ll)w[l]*inde[l]>(ll)w[r]*inde[r];});
@@ -238,7 +238,7 @@ void solve() {
                 //print(i);
                 int u=vid[i];
                 if(!curcover[u])continue;
-                if(n>2000 && q==0){
+                if(n>200000 && q==0){
                     ll dif = opt1(u,curcover);
                     if(dif<0)change=1;
                 }else{

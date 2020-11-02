@@ -166,7 +166,7 @@ void dfsMST(int u,int fa){
     //print('u',u);
     vertex2idx[u]=dfsMSTcnt++;
     for (int v:edge[u]) {
-        if(v==fa)continue;
+        if(v==fa)continue; 
         dfsMST(v,u);
     }
 }
