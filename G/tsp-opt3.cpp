@@ -101,7 +101,7 @@ template<class H, class... T> void DBG(H h, T... t) {
         cout << ", ";
     DBG(t...);
 }
-//#define _DEBUG
+#define _DEBUG
 #ifdef _DEBUG
 #define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
 #else
@@ -141,7 +141,7 @@ int tmptour[MAXN],tmpvertex2idx[MAXN];
 ll mindis=0,curdis=0;
 int vis[MAXN],timecnt;
 double vec[MAXN][2];
-pair<int,int> arr[MAXN][MAXN];
+int arr[MAXN][MAXN];
 ll bitdp[21][220000];
 int nextedge[21][220000];
 
@@ -204,6 +204,32 @@ inline int opt2(int i,int j){
     }
     return 0;
 }
+inline void opt2LocalOptimal(double localFactor=2,int maxneighbor=20){
+    while(1){
+        int change=0;
+        FOR(i,n-1){
+            int changei=0;
+            int a=tour[i],b=tour[(i+1)%n];
+            if(DLB && !dlb2[a])continue;
+            for(int jarr=0;jarr<min(n-1,maxneighbor);jarr++){
+                int c=arr[a][jarr];
+                int acw=w[a][c];
+                if(DLB && !dlb2[c])continue;
+                int j=vertex2idx[c],d=tour[(j+1)%n];
+                if(w[a][b]*localFactor<acw)break;
+                if(i+1>=j || (j+1)%n==i)continue;
+                int delta = opt2(i,j);
+                change+=bool(delta);
+                changei+=bool(delta);
+                curdis-=delta;
+            }
+            if(!changei)dlb2[a]=0;
+        }
+        if(!change)break;
+        if(timecntcheck())return;
+    }
+
+}
 inline int opt3(int i,int j,int k){
     int a=tour[i],b=tour[i+1],c=tour[j],d=tour[j+1],e=tour[k],f=tour[(k+1)%n];
     int d0=w[a][b]+w[c][d]+w[e][f];
@@ -211,8 +237,11 @@ inline int opt3(int i,int j,int k){
     int d2=w[a][b]+w[c][e]+w[d][f];
     int d3=w[a][d]+w[e][b]+w[c][f];
     int d4=w[f][b]+w[c][d]+w[e][a];
-    int d5=w[a][e]+w[d][b]+w[c][f];
+    int d5=w[a][e]+w[b][d]+w[c][f];
+    int d6=w[a][c]+w[b][e]+w[d][f];
+    int d7=w[a][d]+w[b][f]+w[c][k];
     //http://www.cs.ubc.ca/labs/beta/Courses/CPSC532D-05/Slides/tsp-camilo.pdf
+    //http://tsp-basics.blogspot.com/2017/03/3-opt-move.html
     //https://en.wikipedia.org/wiki/3-opt
     if(d0>d1){
         reversetour(i,j);
@@ -227,9 +256,10 @@ inline int opt3(int i,int j,int k){
         if(DLB)dlb3[a]=dlb3[b]=dlb3[e]=dlb3[f]=1;
         return d0-d4;
     }else if(d0>d3){
+        //abc->acb
         if(DLB)dlb3[a]=dlb3[b]=dlb3[c]=dlb3[d]=dlb3[e]=dlb3[f]=1;
-        memcpy(tmptour+i+1,tour+i+1,sizeof(int)*(j+1-(i+1)));
-        //memcpy(tmptour,tour,sizeof(int)*n);
+        //memcpy(tmptour+i+1,tour+i+1,sizeof(int)*(j+1-(i+1)));
+        memcpy(tmptour,tour,sizeof(int)*n);
         memcpy(tmpvertex2idx,vertex2idx,sizeof(int)*n);
         int m=i+1;
         for (int l = j+1; l <= k; ++l) tour[m]=tour[l],vertex2idx[tour[m]]=m,m++;
@@ -237,6 +267,7 @@ inline int opt3(int i,int j,int k){
         return d0-d3;
     }
     else if(d0>d5){
+        //abc->ac'b
         if(DLB)dlb3[a]=dlb3[b]=dlb3[c]=dlb3[d]=dlb3[e]=dlb3[f]=1;
         memcpy(tmptour,tour,sizeof(int)*n);
         memcpy(tmpvertex2idx,vertex2idx,sizeof(int)*n);
@@ -244,22 +275,60 @@ inline int opt3(int i,int j,int k){
         for (int l = k; l >= j+1; --l)tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;
         for (int l = i+1; l <= j; ++l)tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;
         return d0-d5;
+    }else if(d0>d6){
+        memcpy(tmptour,tour,sizeof(int)*n);
+        memcpy(tmpvertex2idx,vertex2idx,sizeof(int)*n);
+        int m=i+1;
+        for (int l = j; l >= i+1; --l) tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;
+        for (int l = k; l >= j+1; --l) tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;
+        return d0-d6;
+    }else if(d0>d7){
+        memcpy(tmptour,tour,sizeof(int)*n);
+        memcpy(tmpvertex2idx,vertex2idx,sizeof(int)*n);
+        int m=i+1;
+        for (int l = j+1; l <= k; ++l) tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;
+        for (int l = j; l >= i+1; --l) tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;
+        return d0-d7;
     }
     return 0;
+}
+inline void opt3LocalOptimal(int maxneighbor=20){
+    while(1){
+        int change=0;
+        FOR(i,n-1){
+            int a=tour[i];
+            for(int jarr=0;jarr<min(n-1,maxneighbor);jarr++){
+                int c=arr[a][jarr];
+                int j=vertex2idx[c];
+                if(i+1>=j || (j+1)%n==i)continue;
+                for(int karr=0;karr<min(n-1,maxneighbor);karr++){
+                    int e=arr[c][karr];
+                    if(timecntcheck())return;
+                    int k=vertex2idx[e];
+                    if(j+1>=k || (k+1)%n==i)continue;
+                    int delta=opt3(i,j,k);
+                    change+=bool(delta);
+                    curdis-=delta;
+                }
+            }
+        }
+        if(!change)break;
+        if(timecntcheck())return;
+    }
 }
 void solve() {
     read(n);
     FOR(n)FOR(j,2)read(vec[i][j]);
-    if(DLB)FOR(n)dlb3[i]=dlb2[i]=1;
+
     FOR(n){
         int k=0;
         FOR(j,n)if(i!=j){
             w[i][j]=dis(vec[i][0],vec[j][0],vec[i][1],vec[j][1]);
-            arr[i][k]={w[i][j],j};
+            arr[i][k]=j;
             k++;
         }
         //assert(k==n-1);
-        sort(arr[i],arr[i]+n-1);
+        sort(arr[i],arr[i]+n-1,[&](int l,int r){return w[i][l]<w[i][r];});
     }
     //FOR(n)FOR(j,n)assert(w[i][j]==w[j][i]);
     if(n<=16){
@@ -271,13 +340,14 @@ void solve() {
     FOR(q,1000000){
         memset(vis,0,sizeof(int)*n);
         vis[0]=1;
+        if(DLB)FOR(n)dlb3[i]=dlb2[i]=1;
         for (int k = 0,u=0; k < n-1; ++k){
             int rand=randint(1,min(n-k-1,min(1,q+1)));
             //int rand=randint(1,1);
             int cnt=0;
             tour[0]=0,vertex2idx[0]=0;
-            FOR(j,n-1)if(!vis[arr[u][j].second]){
-                    int v=arr[u][j].second;
+            FOR(j,n-1)if(!vis[arr[u][j]]){
+                    int v=arr[u][j];
                     if(++cnt>=rand){
                         curdis+=w[u][v];
                         vis[v]=1;
@@ -299,63 +369,11 @@ void solve() {
         timecnt=0;
         while(1){
             if(timecheck())break;
-            int change=0;
-            FOR(i,n-1){
-                int changei=0;
-                int a=tour[i],b=tour[(i+1)%n];
-                if(DLB && !dlb2[a])continue;
-                for(auto& [acw,c]:arr[a]){
-                    if(DLB && !dlb2[c])continue;
-                    if(timecntcheck())goto outtwoloop;
-                    int j=vertex2idx[c],d=tour[(j+1)%n];
-                    if(w[a][b]*2<acw)break;
-                    if(i+1>=j || (j+1)%n==i)continue;
-                    int delta = opt2(i,j);
-                    change+=bool(delta);
-                    changei+=bool(delta);
-                    curdis-=delta;
-                }
-                if(!changei)dlb2[a]=0;
-            }
-
-            if(n>100){
-                FOR(i,n-1){
-                    int a=tour[i];
-                    for(auto& [acw,c]:arr[a]){
-                        int j=vertex2idx[c];
-                        if(i+1>=j || (j+1)%n==i)continue;
-                        for(auto& [cew,e]:arr[c]){
-                            if(timecntcheck())goto outtwoloop;
-                            int k=vertex2idx[e];
-                            if(j+1>=k || (k+1)%n==i)continue;
-                            int delta=opt3(i,j,k);
-                            change+=bool(delta);
-                            curdis-=delta;
-                        }
-                    }
-                }
-            }
-
-
-            FOR(i,n-1){
-                if(DLB && !dlb3[tour[i]])continue;
-                int changei=0;
-                FOR(j,i+2,n){
-                    if(DLB && !dlb3[tour[j]])continue;
-                    FOR(k,j+2,n){
-                        if(DLB && !dlb3[tour[k]])continue;
-                        if(timecntcheck())goto outtwoloop;
-                        int delta=opt3(i,j,k);
-                        change+=bool(delta);
-                        changei+=bool(delta);
-                        curdis-=delta;
-                    }
-                }
-                if(!changei)dlb3[tour[i]]=0;
-            }
-            outtwoloop:;
-            if(change==0)break;
-            //break;
+            int maxneight=50;
+            opt2LocalOptimal(2,maxneight);
+            opt2LocalOptimal(10,maxneight);
+            opt3LocalOptimal(maxneight);
+            break;
         }
         if(umin(mindis,curdis))memcpy(besttour,tour,n*sizeof(int));
         //break;
@@ -379,6 +397,8 @@ int main() {
     //1000tsp 49295531
     //opt2+2*opt3 = 48689614
     //opt2+opt3 = 48796791
+    //opt2 til fail, opt3 til fail = 48532928
+    //opt2 til fail, complete opt3 til fail = 48492524
 
     //100tsp opt3 17375806
     //opt2+2*opt3 = 17206547

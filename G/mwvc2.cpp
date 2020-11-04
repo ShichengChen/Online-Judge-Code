@@ -207,11 +207,11 @@ void solve() {
     }
     FOR(q,100000){
         //print(q);
-        if(q>=0 && q<=3)sort(edges,edges+m);
-        if(q>3)shuffle(edges,edges+m,std::default_random_engine(q));
-        if(q%3==0)sort(vid,vid+n,[](int l,int r){return w[l]>w[r];});
-        if(q%3==1)sort(vid,vid+n,[](int l,int r){return (ll)w[l]*inde[l]>(ll)w[r]*inde[r];});
-        if(q%3==2)sort(vid,vid+n,[](int l,int r){return inde[l]>inde[r];});
+        if(q>=0 && q<=2)sort(edges,edges+m);
+        if(q>2)shuffle(edges,edges+m,std::default_random_engine(q));
+        if(q%3==0)sort(vid,vid+n,[&](int l,int r){return w[l]>w[r];});
+        if(q%3==1)sort(vid,vid+n,[&](int l,int r){return (ll)w[l]*inde[l]>(ll)w[r]*inde[r];});
+        if(q%3==2)sort(vid,vid+n,[&](int l,int r){return inde[l]>inde[r];});
 //        if(q==0){FOR(n)write(w[vid[i]]," ");print();}
 //        if(q==2){FOR(n)write(inde[vid[i]]," ");print();}
         memset(curcover,0,sizeof(int)*n);
