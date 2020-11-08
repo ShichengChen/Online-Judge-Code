@@ -232,29 +232,46 @@ void solve() {
         }
         while(1){
             if(timecheck())break;
-            int firstepoch=0;//(n>2000);
+            int unchangecnt=0;
             int change=0;
             FOR(n){
                 //print(i);
                 int u=vid[i];
                 if(!curcover[u])continue;
-                if(n>200000 && q==0){
-                    ll dif = opt1(u,curcover);
-                    if(dif<0)change=1;
-                }else{
-                    memcpy(tempCover, curcover, sizeof(int) * n);
-                    ll dif = opt2(u, tempCover);
-                    if (dif < min(q, 1)) {
-                        change = 1;
-                        curdis += dif;
-                        memcpy(curcover, tempCover, sizeof(int) * n);
-                    }
+//                if(0 && n>200000 && q==0){
+//                    ll dif = opt1(u,curcover);
+//                    if(dif<0)change=1;
+//                }else{}
+                memcpy(tempCover, curcover, sizeof(int) * n);
+                ll dif = opt2(u, tempCover);
+                if (dif < 0) {
+                    change = 1;
+                    unchangecnt=0;
+                    curdis += dif;
+                    memcpy(curcover, tempCover, sizeof(int) * n);
                 }
                 if(timecheck())break;
             }
-//            if(firstepoch && !change)firstepoch=0;
-//            else if(!change && !firstepoch)break;
-            if(!change)break;
+            //if(n<=1000 || unchangecnt>=2)break;
+            if(!change){
+                unchangecnt++;
+                if(umin(mindis,curdis))memcpy(bestcover,curcover,n*sizeof(int));
+                //{ll cc=0;FOR(n)if(bestcover[i])cc+=w[i];assert(cc==mindis);}
+                for (int i = 0,cc=0; i < 50&&cc<4; ++i) {
+                    int u=randint(0,n-1);
+                    if(!curcover[u])continue;
+                    cc++;
+                    memcpy(tempCover, curcover, sizeof(int) * n);
+                    ll dif = opt2(u, tempCover);
+                    curdis += dif;
+                    memcpy(curcover, tempCover, sizeof(int) * n);
+                    if(timecheck())break;
+                }
+                int rand=randint(0,2);
+                if(rand==0)sort(vid,vid+n,[&](int l,int r){return w[l]>w[r];});
+                else if(rand==1)sort(vid,vid+n,[&](int l,int r){return (ll)w[l]*inde[l]>(ll)w[r]*inde[r];});
+                else sort(vid,vid+n,[&](int l,int r){return inde[l]>inde[r];});
+            }
         }
         if(umin(mindis,curdis))memcpy(bestcover,curcover,n*sizeof(int));
         if(timecheck())break;
@@ -264,14 +281,25 @@ void solve() {
     FOR(n)if(bestcover[i])cur+=w[i];
     print(mindis);
     assert(cur==mindis);
+#if !defined(_DEBUG)
     FOR(n)if(bestcover[i])write(i," ");
+#endif
 }
 int main() {
+#if !defined(_DEBUG)
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-//#ifdef _DEBUG
-//freopen("/home/csc/Online-Judge-Code/G/4000WMVC.txt", "r", stdin);
-//#endif
+#endif
+#ifdef _DEBUG
+freopen("/home/csc/Online-Judge-Code/G/400WMVC.txt", "r", stdin);
+#endif
+//4000: 1916229798
+//4000: pertubation: 1916226333
+//400 192500067
+//400:pertubation 192441483
+//40: 17029624
+//40:pertubation 17029624
+
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
     //freopen("/home/csc/G/output.txt", "w", stdout);
     timebegin = clock();
