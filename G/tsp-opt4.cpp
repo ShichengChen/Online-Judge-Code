@@ -101,7 +101,7 @@ template<class H, class... T> void DBG(H h, T... t) {
         cout << ", ";
     DBG(t...);
 }
-#define _DEBUG
+//#define _DEBUG
 #ifdef _DEBUG
 #define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
 #else
@@ -182,7 +182,7 @@ void dpforsmalldata(){
     for (int i = 0,u=0,s=0; i < n-1; ++i) {
         int v=nextedge[u][s];
         //print(v,bitdp[u][s],w[u][v]);
-        print(v); 
+        print(v);
         s|=(1<<v);
         u=v;
         //if(i==n-2)print(0,bitdp[u][s],w[u][0]);
@@ -253,7 +253,7 @@ inline int opt3(int i,int j,int k){
     //https://en.wikipedia.org/wiki/3-opt
 
     if(DLB && d0>min({d4,d5,d6,d7}))dlb3[x1]=dlb3[x2]=dlb3[y1]=dlb3[y2]=dlb3[z1]=dlb3[z2]=1;
-     if(d0>d4){
+    if(d0>d4){
         //x1x2y1->x1y1x2
         //int d4=w[x1][y2]+w[x2][z1]+w[y1][z2];
         umax(maxneighbor,max({w[x1][y2],w[x2][z1],w[y1][z2]}));
@@ -317,11 +317,11 @@ inline void opt3LocalOptimal(int maxnumberneighbor=20){
                 int d1=w[x1][x2]+w[y1][y2]+maxneighbor;
                 if(d2+minneighbor>d1)continue;
 
-//                {// opt2 area in opt3
-//                    int delta = opt2(i,j);
-//                    change+=bool(delta);
-//                    curdis-=delta;
-//                }
+                {// opt2 area in opt3
+                    int delta = opt2(i,j);
+                    change+=bool(delta);
+                    curdis-=delta;
+                }
 
 
                 for(int karr=0;karr<min(n-1,maxnumberneighbor);karr++){
@@ -342,24 +342,190 @@ inline void opt3LocalOptimal(int maxnumberneighbor=20){
         if(timecntcheck())return;
     }
 }
-ll perturbation(int seed=-1,ll perdis=-1){
-    int ii=randint(1,n/4,seed);
-    int jj=randint(1,n/4,seed)+ii;
-    int kk=randint(1,n/4,seed)+jj;
-    //print(ii,jj,kk);
-    int m=0;
-    FOR(l,0,ii)tmptour[m++]=tour[l];
-    FOR(l,kk,n)tmptour[m++]=tour[l];
-    FOR(l,jj,kk)tmptour[m++]=tour[l];
-    FOR(l,ii,jj)tmptour[m++]=tour[l];
-    ll cur=0;
-    FOR(n)cur+=w[tmptour[i]][tmptour[(i+1)%n]];
-    if(perdis==-1 || cur<perdis){
-        memcpy(tour,tmptour,sizeof(int)*n);
-        FOR(n)vertex2idx[tour[i]]=i;
-        perdis=curdis=cur;
+#define BCD i,j,k,t,m
+inline void _B(int i,int j,int k,int t,int &m){for (int l = i+1; l <= j; ++l)tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;}
+inline void _b(int i,int j,int k,int t,int &m){for (int l = j; l >= i+1; --l)tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;}
+inline void _C(int i,int j,int k,int t,int &m){for (int l = j+1; l <= k; ++l)tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;}
+inline void _c(int i,int j,int k,int t,int &m){for (int l = k; l >= j+1; --l)tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;}
+inline void _D(int i,int j,int k,int t,int &m){for (int l = k+1; l <= t; ++l)tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;}
+inline void _d(int i,int j,int k,int t,int &m){for (int l = t; l >= k+1; --l)tour[m]=tmptour[l],vertex2idx[tour[m]]=m,m++;}
+inline void optmem(){memcpy(tmptour,tour,sizeof(int)*n);memcpy(tmpvertex2idx,vertex2idx,sizeof(int)*n);}
+inline int opt4(int i,int j,int k,int t){
+    //print("opt4");
+    int a1=tour[i],a2=tour[i+1],b1=tour[j],b2=tour[j+1],c1=tour[k],c2=tour[k+1],d1=tour[t],d2=tour[(t+1)%n];
+    int dis0=w[a1][a2]+w[b1][b2]+w[c1][c2]+w[d1][d2];
+    int dis1;
+
+    dis1=w[a1][c2]+w[a2][c1]+w[b1][d2]+w[b2][d1];
+    if(dis0>dis1){
+        optmem();
+        int m=i+1;_D(BCD);_C(BCD);_B(BCD);
+        return dis0-dis1;
     }
-    return perdis;
+    dis1=w[a1][c2]+w[a2][c1]+w[b1][d1]+w[b2][d2];
+    if(dis0>dis1){
+        optmem();
+        int m=i+1;_D(BCD);_b(BCD);_c(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][c1]+w[a2][c2]+w[b1][d2]+w[b2][d1];
+    if(dis0>dis1){
+        optmem();
+        int m=i+1;_c(BCD);_d(BCD);_B(BCD);
+        return dis0-dis1;
+    }//finish no sequence
+
+
+    dis1=w[a1][b1]+w[a2][c1]+w[b2][d1]+w[c2][d2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_b(BCD);_c(BCD);_d(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][b2]+w[a2][c1]+w[b1][d1]+w[c2][d2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_C(BCD);_B(BCD);_d(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][b2]+w[a2][d1]+w[b1][c1]+w[c2][d2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_C(BCD);_b(BCD);_d(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][c1]+w[a2][b2]+w[b1][d1]+w[c2][d2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_c(BCD);_B(BCD);_d(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][c2]+w[a2][d1]+w[b1][c1]+w[b2][d2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_D(BCD);_B(BCD);_c(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][c2]+w[a2][b2]+w[b1][d1]+w[c1][d2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_D(BCD);_b(BCD);_C(BCD);
+        return dis0-dis1;
+    }//finish 6
+
+    dis1=w[a1][d1]+w[a2][c2]+w[b1][c1]+w[b2][d2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_d(BCD);_B(BCD);_c(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][d1]+w[a2][b2]+w[b1][c2]+w[c1][d2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_d(BCD);_b(BCD);_C(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][d1]+w[a2][c1]+w[b1][c2]+w[b2][d2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_d(BCD);_b(BCD);_c(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][b1]+w[a2][c2]+w[b2][d1]+w[c1][d2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_b(BCD);_D(BCD);_C(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][b1]+w[a2][c2]+w[b2][d2]+w[c1][d1];
+    if(dis0>dis1){
+        optmem();int m=i+1;_b(BCD);_D(BCD);_c(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][b1]+w[a2][d1]+w[b2][c2]+w[c1][d2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_b(BCD);_d(BCD);_C(BCD);
+        return dis0-dis1;
+    }//finish 12
+
+    dis1=w[a1][b2]+w[a2][c2]+w[b1][d2]+w[c1][d1];
+    if(dis0>dis1){
+        optmem();int m=i+1;_C(BCD);_d(BCD);_B(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][b2]+w[a2][d2]+w[b1][c2]+w[c1][d1];
+    if(dis0>dis1){
+        optmem();int m=i+1;_C(BCD);_d(BCD);_b(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][c1]+w[a2][d1]+w[b1][d2]+w[b2][c2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_c(BCD);_D(BCD);_B(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][c1]+w[a2][d2]+w[b1][d1]+w[b2][c2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_c(BCD);_D(BCD);_b(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][c1]+w[a2][d2]+w[b1][c2]+w[b2][d1];
+    if(dis0>dis1){
+        optmem();int m=i+1;_c(BCD);_d(BCD);_b(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][c2]+w[a2][d2]+w[b1][c1]+w[b2][d1];
+    if(dis0>dis1){
+        optmem();int m=i+1;_D(BCD);_C(BCD);_b(BCD);
+        return dis0-dis1;
+    }//finish 18
+    dis1=w[a1][c2]+w[a2][b2]+w[b1][d2]+w[c1][d1];
+    if(dis0>dis1){
+        optmem();int m=i+1;_D(BCD);_c(BCD);_B(BCD);
+        return dis0-dis1;
+    }
+    dis1=w[a1][d1]+w[a2][c1]+w[b1][d2]+w[b2][c2];
+    if(dis0>dis1){
+        optmem();int m=i+1;_d(BCD);_C(BCD);_B(BCD);
+        return dis0-dis1;
+    }//finish 20
+
+
+
+    return 0;
+}
+inline void opt4LocalOptimal(int maxnumberneighbor=20){
+    if(timecheck())return;
+    while(1){
+        int change=0;
+        FOR(i,n-1){
+            int x1=tour[i];
+            for(int jarr=0;jarr<min(n-1,maxnumberneighbor);jarr++){
+                int y1=arr[x1][jarr];
+                int j=vertex2idx[y1];
+                if(i+1>=j || (j+1)%n==i)continue;
+                {// opt2 area in opt3
+                    int delta = opt2(i,j);
+                    change+=bool(delta);
+                    curdis-=delta;
+                }
+                for(int karr=0;karr<min(n-1,maxnumberneighbor);karr++){
+                    int z1=arr[x1][karr];
+                    int k=vertex2idx[z1];
+                    if(j+1>=k || (k+1)%n==i)continue;
+                    {
+                        {// opt2 area in opt3
+                            int delta = opt3(i,j,k);
+                            change+=bool(delta);
+                            curdis-=delta;
+                        }
+                    }
+                    for (int tarr = 0; tarr < (n-1,maxnumberneighbor); ++tarr) {
+                        int q1=arr[x1][tarr];
+                        if(timecntcheck())return;
+                        int t=vertex2idx[q1];
+                        if(k+1>=t || (t+1)%n==i)continue;
+                        //print("opt4");
+                        int delta=opt4(i,j,k,t);
+                        change+=bool(delta);
+                        curdis-=delta;
+                        //if(change)return;
+                    }
+                }
+            }
+        }
+        if(!change)break;
+        if(timecntcheck())return;
+    }
 }
 void solve(int kase) {
     timebegin = clock();
@@ -369,11 +535,11 @@ void solve(int kase) {
     FOR(n){
         int k=0;
         FOR(j,n)if(i!=j){
-            w[i][j]=dis(vec[i][0],vec[j][0],vec[i][1],vec[j][1]);
-            umin(minneighbor,w[i][j]);
-            arr[i][k]=j;
-            k++;
-        }
+                w[i][j]=dis(vec[i][0],vec[j][0],vec[i][1],vec[j][1]);
+                umin(minneighbor,w[i][j]);
+                arr[i][k]=j;
+                k++;
+            }
         //assert(k==n-1);
         sort(arr[i],arr[i]+n-1,[&](int l,int r){return w[i][l]<w[i][r];});
     }
@@ -407,28 +573,21 @@ void solve(int kase) {
     timecnt=0;
     FOR(seed,100000){
         if(timecheck())break;
+        //print(seed);1000 38 iteration
         int maxnumberneighbor=min(30,n/30);
         opt2LocalOptimal(1.2,maxnumberneighbor,false);
         opt2LocalOptimal(-1,maxnumberneighbor,false);
         opt3LocalOptimal(maxnumberneighbor);
-        if(mindis>curdis){
-            mindis=curdis;//new best
-            memcpy(besttour,tour,n*sizeof(int));
-        }
-        else if(curdis>mindis*1.5){
-            //new bad local optimal, change back to old good local optimal
-            curdis=mindis;
-            memcpy(tour,besttour,n*sizeof(int));
-        } 
+        //maxnumberneighbor=min(20,n/40);
+        opt4LocalOptimal(maxnumberneighbor);
+        if(umin(mindis,curdis))memcpy(besttour,tour,n*sizeof(int));
         if(timecheck())break;
-        //perturbation((seed+5)*2);
-        ll perdis=perturbation(seed*10,-1);
-        FOR(p,5)perdis=perturbation(seed*10+p,perdis);
         FOR(n)umax(maxneighbor,w[tour[i]][tour[(i+1)%n]]);
-    }
+    }//only 18 cry:(
     debug(mindis);
     ll finaldis=0;
     FOR(n)finaldis+=w[besttour[i]][besttour[(i+1)%n]];
+    //print(finaldis,mindis);
     assert(mindis==finaldis);
 #ifndef _DEBUG
     FOR(n)print(besttour[i]);
@@ -441,7 +600,7 @@ int main() {
     //freopen("/home/csc/Online-Judge-Code/G/1000tsp.txt", "r", stdin);
     //freopen("/home/csc/Online-Judge-Code/G/data2/bcl380.tsp", "r", stdin);//1670
     //freopen("/home/csc/Online-Judge-Code/G/data2/xit1083.tsp", "r", stdin);//3713
-    freopen("/home/csc/Online-Judge-Code/G/data2/dka1376.tsp", "r", stdin);//4886
+    //freopen("/home/csc/Online-Judge-Code/G/data2/dka1376.tsp", "r", stdin);//4886
 #else
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
