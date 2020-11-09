@@ -394,7 +394,7 @@ void solve(int kase) {
 //    read(n);
 //    FOR(n)FOR(j,2)read(vec[i][j]);
 //#endif
-    read(n);
+    read(n); 
     FOR(n)FOR(j,2)read(vec[i][j]);
     minneighbor=1e9;
     FOR(n){
