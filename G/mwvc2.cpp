@@ -138,6 +138,7 @@ int n,m;
 ll mindis=0,curdis=0;
 int curcover[MAXN],bestcover[MAXN],vis[MAXN],tempCover[MAXN];
 int w[MAXN],inde[MAXN];
+multiset<pair<ll,int>>se;
 vector<int>vec[MAXN];
 int vid[MAXN];
 struct Edges{
@@ -234,6 +235,8 @@ void solve() {
             if(timecheck())break;
             int unchangecnt=0;
             int change=0;
+            int purerandom=1;
+            if(!purerandom)se.clear();
             FOR(n){
                 //print(i);
                 int u=vid[i];
@@ -244,6 +247,7 @@ void solve() {
 //                }else{}
                 memcpy(tempCover, curcover, sizeof(int) * n);
                 ll dif = opt2(u, tempCover);
+                if(!purerandom)se.insert({-dif,u});
                 if (dif < 0) {
                     change = 1;
                     unchangecnt=0;
@@ -257,9 +261,21 @@ void solve() {
                 unchangecnt++;
                 if(umin(mindis,curdis))memcpy(bestcover,curcover,n*sizeof(int));
                 //{ll cc=0;FOR(n)if(bestcover[i])cc+=w[i];assert(cc==mindis);}
-                for (int i = 0,cc=0; i < 50&&cc<4; ++i) {
-                    int u=randint(0,n-1);
-                    if(!curcover[u])continue;
+                //bigger to small 32
+                //small to big 28
+                //pure random 4 33
+                for (int i = 0,cc=0; i < 200&&cc<min(5,n/400); ++i) {
+                    int u;
+                    if(purerandom || n<=40){
+                        u=randint(0,n-1);
+                        if(!curcover[u])continue;
+                    }else{
+                        int rand=randint(0,1);
+                        if(se.empty())break;
+                        u=se.begin()->second;
+                        se.erase(se.begin());
+                        if(!curcover[u] || rand==0)continue;
+                    }
                     cc++;
                     memcpy(tempCover, curcover, sizeof(int) * n);
                     ll dif = opt2(u, tempCover);
@@ -291,12 +307,12 @@ int main() {
     cin.tie(nullptr);
 #endif
 #ifdef _DEBUG
-freopen("/home/csc/Online-Judge-Code/G/400WMVC.txt", "r", stdin);
+freopen("/home/csc/Online-Judge-Code/G/4000WMVC.txt", "r", stdin);
 #endif
 //4000: 1916229798
-//4000: pertubation: 1916226333
+//4000: pertubation: 1916229798
 //400 192500067
-//400:pertubation 192441483
+//400:pertubation 192550153
 //40: 17029624
 //40:pertubation 17029624
 

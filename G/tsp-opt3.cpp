@@ -101,7 +101,7 @@ template<class H, class... T> void DBG(H h, T... t) {
         cout << ", ";
     DBG(t...);
 }
-#define _DEBUG
+//#define _DEBUG
 #ifdef _DEBUG
 #define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
 #else
@@ -132,7 +132,7 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-const int MAXN = 1e3+20;
+const int MAXN = 2e3+20;
 const int LOGMAXN = 18;
 //ll const MOD=998244353;
 ll const MOD=1e9+7;
@@ -203,7 +203,7 @@ inline void reversetour(int i,int j){
     }
 
 }
-inline int opt2(int i,int j,bool useDLB=false){
+inline int opt2(int i,int j){
     int x1=tour[i],x2=tour[(i+1)%n],y1=tour[j],y2=tour[(j+1)%n];
     int d0=w[x1][x2]+w[y1][y2];
     int d1=w[x1][y1]+w[x2][y2];
@@ -245,9 +245,9 @@ inline void opt2LocalOptimal(double localFactor=2,int maxnumberneighbor=20,bool 
 inline int opt3(int i,int j,int k){
     int x1=tour[i],x2=tour[i+1],y1=tour[j],y2=tour[j+1],z1=tour[k],z2=tour[(k+1)%n];
     int d0=w[x1][x2]+w[y1][y2]+w[z1][z2];
-    int d1=w[x1][y1]+w[x2][y2]+w[z1][z2];
-    int d2=w[x1][x2]+w[y1][z1]+w[y2][z2];
-    int d3=w[z2][x2]+w[y1][y2]+w[z1][x1];
+//    int d1=w[x1][y1]+w[x2][y2]+w[z1][z2];
+//    int d2=w[x1][x2]+w[y1][z1]+w[y2][z2];
+//    int d3=w[z2][x2]+w[y1][y2]+w[z1][x1];
 
     int d4=w[x1][y2]+w[x2][z1]+w[y1][z2];
     int d5=w[x1][z1]+w[x2][y2]+w[y1][z2];
@@ -334,6 +334,13 @@ inline void opt3LocalOptimal(int maxnumberneighbor=20){
                 int d1=w[x1][x2]+w[y1][y2]+maxneighbor;
                 if(d2+minneighbor>d1)continue;
 
+//                {// opt2 area in opt3
+//                    int delta = opt2(i,j);
+//                    change+=bool(delta);
+//                    curdis-=delta;
+//                }
+
+
                 for(int karr=0;karr<min(n-1,maxnumberneighbor);karr++){
                     int z1=arr[x1][karr];
                     if(timecntcheck())return;
@@ -357,12 +364,9 @@ ll perturbation(int seed=-1,ll perdis=-1){
     int jj=randint(1,n/4,seed)+ii;
     int kk=randint(1,n/4,seed)+jj;
     //print(ii,jj,kk);
-    //memcpy(tmptour,tour,sizeof(int)*n);
     int m=0;
     FOR(l,0,ii)tmptour[m++]=tour[l];
-//    memcpy(tmptour,tour,sizeof(int)*ii);
     FOR(l,kk,n)tmptour[m++]=tour[l];
-//    memcpy(tmptour+ii,tour+kk,sizeof(int)*(n-kk));
     FOR(l,jj,kk)tmptour[m++]=tour[l];
     FOR(l,ii,jj)tmptour[m++]=tour[l];
     ll cur=0;
@@ -374,7 +378,22 @@ ll perturbation(int seed=-1,ll perdis=-1){
     }
     return perdis;
 }
-void solve() {
+void solve(int kase) {
+    timebegin = clock();
+//#ifdef _DEBUG
+//    string flist[3]={"/home/csc/Online-Judge-Code/G/50tsp.txt",
+//                    "/home/csc/Online-Judge-Code/G/100tsp.txt",
+//                    "/home/csc/Online-Judge-Code/G/1000tsp.txt"};
+//    ifstream myfile;
+//    myfile.open (flist[kase]);
+//    myfile>>n;
+//    FOR(n)FOR(j,2)myfile>>vec[i][j];
+//    myfile.close();
+//
+//#else
+//    read(n);
+//    FOR(n)FOR(j,2)read(vec[i][j]);
+//#endif
     read(n);
     FOR(n)FOR(j,2)read(vec[i][j]);
     minneighbor=1e9;
@@ -396,61 +415,50 @@ void solve() {
         debug(bitdp[0][0]);
         return;
     }
-    FOR(q,1000000){
-        memset(vis,0,sizeof(int)*n);
-        vis[0]=1;
-        curdis=0;
-
-        for (int k = 0,u=0; k < n-1; ++k){
-            int rand=randint(1,min(n-k-1,min(2,q+1)));
-            //int rand=randint(1,1);
-            int cnt=0; 
-            int cnt=0;
-            int cnt=0;
-            tour[0]=0,vertex2idx[0]=0;
-            FOR(j,n-1)if(!vis[arr[u][j]]){
-                    int v=arr[u][j];
-                    if(++cnt>=rand){
-                        curdis+=w[u][v];
-                        vis[v]=1;
-                        tour[k+1]=v;
-                        vertex2idx[v]=k+1;
-                        u=v;
-                        break;
-                    }
-                }
-            if(k==n-2)curdis+=w[u][0];
-        }
-        maxneighbor=0;
-        FOR(n)umax(maxneighbor,w[tour[i]][tour[(i+1)%n]]);
-        if(q==0){
-            mindis=curdis;
-            //debug(mindis);
+    memset(vis,0,sizeof(int)*n);
+    vis[0]=1;
+    curdis=0;
+    for (int k = 0,u=0; k < n-1; ++k){
+        tour[0]=0,vertex2idx[0]=0;
+        FOR(j,n-1)if(!vis[arr[u][j]]){
+                int v=arr[u][j];
+                curdis+=w[u][v];
+                vis[v]=1;
+                tour[k+1]=v;
+                vertex2idx[v]=k+1;
+                u=v;
+                break;
+            }
+        if(k==n-2)curdis+=w[u][0];
+    }
+    maxneighbor=0;
+    FOR(n)umax(maxneighbor,w[tour[i]][tour[(i+1)%n]]);
+    mindis=curdis;
+    memcpy(besttour,tour,n*sizeof(int));
+    timecnt=0;
+    FOR(seed,100000){
+        if(timecheck())break;
+        int maxnumberneighbor=min(30,n/10);
+        opt2LocalOptimal(1.2,maxnumberneighbor,false);
+        opt2LocalOptimal(-1,maxnumberneighbor,false);
+        opt3LocalOptimal(maxnumberneighbor);
+        if(mindis>curdis){
+            mindis=curdis;//new best
             memcpy(besttour,tour,n*sizeof(int));
         }
-//        FOR(n)write(tour[i]," ");
-//        print();
-        timecnt=0;
-        FOR(seed,100000){
-            if(timecheck())break;
-            int maxnumberneighbor=min(30,n/10);
-            opt2LocalOptimal(1.2,maxnumberneighbor,false);
-            opt2LocalOptimal(-1,maxnumberneighbor,false);
-            opt3LocalOptimal(maxnumberneighbor);
-            if(umin(mindis,curdis))memcpy(besttour,tour,n*sizeof(int));
-            if(timecheck())break;
-            //perturbation((seed+5)*2);
-            ll perdis=perturbation(seed*10,-1);
-            FOR(p,5)perdis=perturbation(seed*10+p,perdis);
-
-        }
-
-        //break;
+        else if(curdis>mindis*1.5){
+            //new bad local optimal, change back to old good local optimal
+            curdis=mindis;
+            memcpy(tour,besttour,n*sizeof(int));
+        } 
         if(timecheck())break;
+        //perturbation((seed+5)*2);
+        ll perdis=perturbation(-1,-1);
+        FOR(p,5)perdis=perturbation(-1,perdis);
+        FOR(n)umax(maxneighbor,w[tour[i]][tour[(i+1)%n]]);
     }
     debug(mindis);
     ll finaldis=0;
-
     FOR(n)finaldis+=w[besttour[i]][besttour[(i+1)%n]];
     assert(mindis==finaldis);
 #ifndef _DEBUG
@@ -458,11 +466,18 @@ void solve() {
 #endif
 }
 int main() {
+
+#ifdef _DEBUG
+    freopen("/home/csc/Online-Judge-Code/G/10tsp.txt", "r", stdin);//276
+    //freopen("/home/csc/Online-Judge-Code/G/1000tsp.txt", "r", stdin);
+    //freopen("/home/csc/Online-Judge-Code/G/data2/bcl380.tsp", "r", stdin);//1647
+    //freopen("/home/csc/Online-Judge-Code/G/data2/xit1083.tsp", "r", stdin);//3701
+    //freopen("/home/csc/Online-Judge-Code/G/data2/dka1376.tsp", "r", stdin);//4914
+#else
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
-#ifdef _DEBUG
-    freopen("/home/csc/Online-Judge-Code/G/1000tsp.txt", "r", stdin);
 #endif
+
     //1000tsp 49295531
     //opt2+2*opt3 = 48689614
     //opt2+opt3 = 48796791
@@ -472,21 +487,23 @@ int main() {
     //opt2 til fail, complete opt3 til fail maxneibor=50 = 48039674
     //opt2 til fail, complete opt3 til fail maxneibor=100 = 47825325
     //opt2 til fail, complete opt3 til fail maxneibor=100, local factor1.2 = 47577737
-    //opt2 til fail, complete opt3 til fail maxneibor=100, local factor1.2, x1->y1,x1->z1 = 47555153
-    //opt2 til fail, complete opt3 til fail maxneibor=100, local factor1.2, x1->y1,x1->z1 = 47296138
+    //opt2 til fail, complete opt3 til fail maxneibor=100, local factor1.2, x1->y1,x1->z1 = 47594790
+    //opt2 til fail, complete opt3 til fail maxneibor=100, local factor1.2, x1->y1,x1->z1 = 47563225
+    //opt2 til fail, complete opt3 til fail maxneibor=100, local factor1.2, opt3 combine opt2 = 47458373
 
     //100tsp opt3 17375806
     //opt2+2*opt3 = 17206547
     //opt2+opt3 = 17014981
-    //50tsp 11514358
+    //2*opt2+opt3with2 = 16744227
+    //with accept ratio 16598027
+    //50tsp 11235912
     //10tsp 276
     //freopen("/home/csc/G/output.txt", "w", stdout);
-    timebegin = clock();
+
     int t=1;
 //    read(t);
     FOR(t) {
-        //write("Case #", i+1, ": ");
-        solve();
+        solve(i);
     }
     return 0;
 }

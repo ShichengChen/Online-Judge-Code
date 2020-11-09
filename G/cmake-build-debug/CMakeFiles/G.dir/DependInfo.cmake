@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/csc/Online-Judge-Code/G/mwvc2.cpp" "/home/csc/Online-Judge-Code/G/cmake-build-debug/CMakeFiles/G.dir/mwvc2.cpp.o"
+  "/home/csc/Online-Judge-Code/G/tsp-opt3.cpp" "/home/csc/Online-Judge-Code/G/cmake-build-debug/CMakeFiles/G.dir/tsp-opt3.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
