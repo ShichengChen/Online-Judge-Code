@@ -138,17 +138,13 @@ int n,m;
 ll mindis=0,curdis=0;
 int curcover[MAXN],bestcover[MAXN],vis[MAXN],tempCover[MAXN];
 int w[MAXN],inde[MAXN];
-ll childw[MAXN];
 multiset<pair<ll,int>>se;
 vector<int>vec[MAXN];
-vector<int>vecrg[MAXN];
 int vid[MAXN];
 struct Edges{
     int u,v;
     bool operator < (const Edges& c)const{
-        //return abs(w[u]-w[v])>abs(w[c.u]-w[c.v]);
-        //return max(childw[u]-w[u],childw[v]-w[v])>max(childw[c.u]-w[c.u],childw[c.v]-w[c.v]);
-        return min(w[u],w[v])<min(w[c.u],w[c.v]);
+        return abs(w[u]-w[v])>abs(w[c.u]-w[c.v]);
     }
 }edges[MAXM];
 
@@ -165,7 +161,7 @@ inline void removeUseless(ll &curval,int *cover){
     FOR(i,n)if(cover[vid[i]])
             removeUeslessVertex(curval,vid[i],cover);
 }
-inline ll optRemove(int u,int *cover){
+inline ll opt2(int u,int *cover){
     ll dif=-w[u];
     memset(vis,0,sizeof(int)*n);
     cover[u]=0;
@@ -184,16 +180,18 @@ inline ll optRemove(int u,int *cover){
     }
     return dif;
 }
-inline ll optAdd(int u,int *cover){
-    ll dif=w[u];
-    cover[u]=1;
+inline ll opt1(int u,int *cover){
+    ll dif=-w[u];
     for(int &v:vec[u]){
-        if(cover[v]){
-            removeUeslessVertex(dif,v,cover);
-            if(timecheck())return dif;
-        }
+        if(!cover[v])dif+=w[v];
+        if(dif>=0)return dif;
     }
-    return dif;
+    if(dif>=0)return dif;
+    memcpy(tempCover, cover, sizeof(int) * n);
+    ll dif2=opt2(u,tempCover);
+    curdis += dif2;
+    memcpy(cover, tempCover, sizeof(int) * n);
+    return dif2;
 }
 void solve() {
     read(n,m);
@@ -208,15 +206,11 @@ void solve() {
         inde[v]++,inde[u]++;
         edges[i]={u,v};
     }
-    FOR(u,n)for(int v:vec[u])childw[u]+=w[v];
     FOR(u,n)sort(all(vec[u]),[&](int l,int r){return w[l]>w[r];});
-    //FOR(u,n)sort(all(vec[u]),[&](int l,int r){return childw[l]-w[l]<childw[r]-w[r];});
-
     FOR(q,100000){
         //print(q);
         if(q>=0 && q<=2)sort(edges,edges+m);
         if(q>2)shuffle(edges,edges+m,std::default_random_engine(q));
-        //shuffle(edges,edges+m,std::default_random_engine(q));
         if(q%3==0)sort(vid,vid+n,[&](int l,int r){return w[l]>w[r];});
         if(q%3==1)sort(vid,vid+n,[&](int l,int r){return (ll)w[l]*inde[l]>(ll)w[r]*inde[r];});
         if(q%3==2)sort(vid,vid+n,[&](int l,int r){return inde[l]<inde[r];});
@@ -227,60 +221,40 @@ void solve() {
         FOR(m){
             int u=edges[i].u,v=edges[i].v;
             if(curcover[v] || curcover[u])continue;
-            int c;
-            if(childw[u]-w[u]>childw[v]-w[v])c=u;
-            else if(childw[u]-w[u] < childw[v]-w[v])c=v;
-            else if(inde[u]>inde[v])c=u;
-            else c=v;
-            curcover[c] = 1,curdis+=w[c];
-            for (int vc:vec[c]) childw[vc]-=w[c];
+            if(w[u]<w[v])curcover[u]=1,curdis+=w[u];
+            else if(w[u] > w[v])curcover[v]=1,curdis+=w[v];
+            else if(u < v)curcover[u] = 1,curdis+=w[u];
+            else curcover[v] = 1,curdis+=w[v];
         }
-
-//        FOR(m){
-//            int u=edges[i].u,v=edges[i].v;
-//            if(curcover[v] || curcover[u])continue;
-//            int c;
-//            if(w[u]<w[v])c=u;
-//            else if(w[u] > w[v])c=v;
-//            else if(inde[u] > inde[v])c=u;
-//            else c=v;
-//            curcover[c]=1,curdis+=w[c];
-//        }
         removeUseless(curdis,curcover);
         if(!q){
             //print(curdis);
             mindis=curdis;
             memcpy(bestcover,curcover,n*sizeof(int));
         }
-        int unchangecnt=0;
         while(1){
             if(timecheck())break;
-
+            int unchangecnt=0;
             int change=0;
             int purerandom=1;
             if(!purerandom)se.clear();
             FOR(n){
                 //print(i);
                 int u=vid[i];
-                if(!curcover[u]){
-                    memcpy(tempCover, curcover, sizeof(int) * n);
-                    ll dif = optAdd(u, tempCover);
-                    if (dif < 0) {
-                        change = 1;
-                        curdis += dif;
-                        memcpy(curcover, tempCover, sizeof(int) * n);
-                    }
-                }else{
-                    memcpy(tempCover, curcover, sizeof(int) * n);
-                    ll dif = optRemove(u, tempCover);
-                    if(!purerandom)se.insert({-dif,u});
-                    if (dif < 0) {
-                        change = 1;
-                        curdis += dif;
-                        memcpy(curcover, tempCover, sizeof(int) * n);
-                    }
+                if(!curcover[u])continue;
+//                if(0 && n>200000 && q==0){
+//                    ll dif = opt1(u,curcover);
+//                    if(dif<0)change=1;
+//                }else{}
+                memcpy(tempCover, curcover, sizeof(int) * n);
+                ll dif = opt2(u, tempCover);
+                if(!purerandom)se.insert({-dif,u});
+                if (dif < 0) {
+                    change = 1;
+                    unchangecnt=0;
+                    curdis += dif;
+                    memcpy(curcover, tempCover, sizeof(int) * n);
                 }
-
                 if(timecheck())break;
             }
             //if(n<=1000 || unchangecnt>=2)break;
@@ -305,9 +279,7 @@ void solve() {
                     }
                     cc++;
                     memcpy(tempCover, curcover, sizeof(int) * n);
-                    ll dif;//=optRemove(u, tempCover);
-                    if(curcover[u])dif=optRemove(u, tempCover);
-                    else dif=optAdd(u, tempCover);
+                    ll dif = opt2(u, tempCover);
                     curdis += dif;
                     memcpy(curcover, tempCover, sizeof(int) * n);
                     if(timecheck())break;
@@ -340,10 +312,6 @@ int main() {
 #endif
 //4000: 1916229798
 //4000: pertubation: 1916229798
-//4000: pertubation+add or remove 5: 1914386252
-//4000: pertubation 4 remove: 1910,v)<min(c.u,c.v) 1913842507
-//4000: childw[u]-w[u]>childw[v]-w[v] 1916293214,1916231182
-//4000: vector sort by childw[u]-w[u]<childw[v]-w[v] 1915503763
 //400 192500067
 //400:pertubation 192441483
 //40: 17029624
@@ -363,12 +331,8 @@ int main() {
 
 /*
 
-shuffle the number of variables follow unchange number is a bad idea, result is 33.1
 
-local very good, //4000: sort edge by min(u,v)<min(c.u,c.v) 1913842507 , kattis just 32.997952
-local very bad // if(childw[u]-w[u]>childw[v]-w[v])c=u; kattis is good 33.73205
-strange! remove decrease add increase did not imporve the kattis scroe is 33.108387
- score (32.26056) for random flip
- combine best with if(childw[u]-w[u]>childw[v]-w[v])c=u;, get lower score, strange!
-every time sort remove opt is very slow
+
+
+
  * */

@@ -101,7 +101,7 @@ template<class H, class... T> void DBG(H h, T... t) {
         cout << ", ";
     DBG(t...);
 }
-#define _DEBUG
+//#define _DEBUG
 #ifdef _DEBUG
 #define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
 #else
@@ -141,13 +141,13 @@ int w[MAXN],inde[MAXN];
 ll childw[MAXN];
 multiset<pair<ll,int>>se;
 vector<int>vec[MAXN];
-vector<int>vecrg[MAXN];
-int vid[MAXN];
+int vid[MAXN],iid[MAXN];
 struct Edges{
     int u,v;
     bool operator < (const Edges& c)const{
         //return abs(w[u]-w[v])>abs(w[c.u]-w[c.v]);
         //return max(childw[u]-w[u],childw[v]-w[v])>max(childw[c.u]-w[c.u],childw[c.v]-w[c.v]);
+        if(min(w[u],w[v])==min(w[c.u],w[c.v]))return w[u]+w[v] < w[c.u]+w[c.v];
         return min(w[u],w[v])<min(w[c.u],w[c.v]);
     }
 }edges[MAXM];
@@ -184,6 +184,19 @@ inline ll optRemove(int u,int *cover){
     }
     return dif;
 }
+inline ll opt1(int u,int *cover){
+    ll dif=-w[u];
+    for(int &v:vec[u]){
+        if(!cover[v])dif+=w[v];
+        if(dif>=0)return dif;
+    }
+    if(dif>=0)return dif;
+    memcpy(tempCover, cover, sizeof(int) * n);
+    ll dif2=optRemove(u,tempCover);
+    curdis += dif2;
+    memcpy(cover, tempCover, sizeof(int) * n);
+    return dif2;
+}
 inline ll optAdd(int u,int *cover){
     ll dif=w[u];
     cover[u]=1;
@@ -200,6 +213,7 @@ void solve() {
     FOR(n){
         read(w[i]);
         vid[i]=i;
+        iid[i]=i;
     }
     FOR(m){
         int u,v;read(u,v);
@@ -208,18 +222,17 @@ void solve() {
         inde[v]++,inde[u]++;
         edges[i]={u,v};
     }
-    FOR(u,n)for(int v:vec[u])childw[u]+=w[v];
     FOR(u,n)sort(all(vec[u]),[&](int l,int r){return w[l]>w[r];});
-    //FOR(u,n)sort(all(vec[u]),[&](int l,int r){return childw[l]-w[l]<childw[r]-w[r];});
-
+    FOR(u,n)for(int v:vec[u])childw[u]+=w[v];
     FOR(q,100000){
         //print(q);
         if(q>=0 && q<=2)sort(edges,edges+m);
         if(q>2)shuffle(edges,edges+m,std::default_random_engine(q));
-        //shuffle(edges,edges+m,std::default_random_engine(q));
-        if(q%3==0)sort(vid,vid+n,[&](int l,int r){return w[l]>w[r];});
-        if(q%3==1)sort(vid,vid+n,[&](int l,int r){return (ll)w[l]*inde[l]>(ll)w[r]*inde[r];});
-        if(q%3==2)sort(vid,vid+n,[&](int l,int r){return inde[l]<inde[r];});
+        sort(vid,vid+n,[&](int l,int r){return w[l]>w[r];});
+
+
+//        if(q%3==1)sort(vid,vid+n,[&](int l,int r){return (ll)w[l]*inde[l]>(ll)w[r]*inde[r];});
+//        if(q%3==2)sort(vid,vid+n,[&](int l,int r){return inde[l]<inde[r];});
 //        if(q==0){FOR(n)write(w[vid[i]]," ");print();}
 //        if(q==2){FOR(n)write(inde[vid[i]]," ");print();}
         memset(curcover,0,sizeof(int)*n);
@@ -235,17 +248,6 @@ void solve() {
             curcover[c] = 1,curdis+=w[c];
             for (int vc:vec[c]) childw[vc]-=w[c];
         }
-
-//        FOR(m){
-//            int u=edges[i].u,v=edges[i].v;
-//            if(curcover[v] || curcover[u])continue;
-//            int c;
-//            if(w[u]<w[v])c=u;
-//            else if(w[u] > w[v])c=v;
-//            else if(inde[u] > inde[v])c=u;
-//            else c=v;
-//            curcover[c]=1,curdis+=w[c];
-//        }
         removeUseless(curdis,curcover);
         if(!q){
             //print(curdis);
@@ -291,31 +293,20 @@ void solve() {
                 //bigger to small 32
                 //small to big 28
                 //pure random 4 33
-                for (int i = 0,cc=0; i < 200&&cc<5; ++i) {
-                    int u;
-                    if(purerandom || n<=40){
-                        u=randint(0,n-1);
-                        if(!curcover[u])continue;
-                    }else{
-                        int rand=randint(0,1);
-                        if(se.empty())break;
-                        u=se.begin()->second;
-                        se.erase(se.begin());
-                        if(!curcover[u] || rand==0)continue;
-                    }
-                    cc++;
-                    memcpy(tempCover, curcover, sizeof(int) * n);
-                    ll dif;//=optRemove(u, tempCover);
-                    if(curcover[u])dif=optRemove(u, tempCover);
-                    else dif=optAdd(u, tempCover);
-                    curdis += dif;
-                    memcpy(curcover, tempCover, sizeof(int) * n);
-                    if(timecheck())break;
+                FOR(cc,5){
+                    int u=randint(0,n-1);
+                    curcover[u]=1-curcover[u];
+                    if(curcover[u])curdis+=w[u];
+                    else curdis-=w[u];
                 }
-                int rand=randint(0,2);
-                if(rand==0)sort(vid,vid+n,[&](int l,int r){return w[l]>w[r];});
-                else if(rand==1)sort(vid,vid+n,[&](int l,int r){return (ll)w[l]*inde[l]>(ll)w[r]*inde[r];});
-                else sort(vid,vid+n,[&](int l,int r){return inde[l]<inde[r];});
+                FOR(m){
+                    int u=edges[i].u,v=edges[i].v;
+                    if(curcover[v] || curcover[u])continue;
+                    if(w[u]<w[v])curcover[u]=1,curdis+=w[u];
+                    else curcover[v] = 1,curdis+=w[v];
+                }
+                removeUseless(curdis,curcover);
+                if(timecheck())break;
             }
         }
         if(umin(mindis,curdis))memcpy(bestcover,curcover,n*sizeof(int));
@@ -336,14 +327,13 @@ int main() {
     cin.tie(nullptr);
 #endif
 #ifdef _DEBUG
-    freopen("/home/csc/Online-Judge-Code/G/4000WMVC.txt", "r", stdin);
+    freopen("/home/csc/Online-Judge-Code/G/40WMVC.txt", "r", stdin);
 #endif
 //4000: 1916229798
 //4000: pertubation: 1916229798
-//4000: pertubation+add or remove 5: 1914386252
-//4000: pertubation 4 remove: 1910,v)<min(c.u,c.v) 1913842507
-//4000: childw[u]-w[u]>childw[v]-w[v] 1916293214,1916231182
-//4000: vector sort by childw[u]-w[u]<childw[v]-w[v] 1915503763
+//4000: add or remove, pertubation is random flip: 1916091421
+//4000: pertubation 4 remove: 1916878504
+
 //400 192500067
 //400:pertubation 192441483
 //40: 17029624
@@ -365,10 +355,6 @@ int main() {
 
 shuffle the number of variables follow unchange number is a bad idea, result is 33.1
 
-local very good, //4000: sort edge by min(u,v)<min(c.u,c.v) 1913842507 , kattis just 32.997952
-local very bad // if(childw[u]-w[u]>childw[v]-w[v])c=u; kattis is good 33.73205
-strange! remove decrease add increase did not imporve the kattis scroe is 33.108387
- score (32.26056) for random flip
- combine best with if(childw[u]-w[u]>childw[v]-w[v])c=u;, get lower score, strange!
-every time sort remove opt is very slow
+
+
  * */

@@ -1,5 +1,5 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/G.dir/tsp-opt4.cpp.o"
+  "CMakeFiles/G.dir/tsp-opt3.cpp.o"
   "G"
   "G.pdb"
 )
