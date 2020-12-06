@@ -6,7 +6,9 @@
 
 # General
   - dp? binary search? math?
+  - try few small examples (for example, [Smallest Integer Divisible by K](https://leetcode.com/problems/smallest-integer-divisible-by-k/solution/), we can try k=1-10 for different length)
   - find the essentials in the problem instead of trying different samples
+  
 
 
 # XOR operation
