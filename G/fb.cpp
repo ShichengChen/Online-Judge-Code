@@ -23,7 +23,6 @@ template<class T> bool umax(T& a, const T& b) {return a<b?a=b, 1:0;}
 ll FIRSTTRUE(function<bool(ll)> f, ll lb, ll rb) {
     while(lb<rb) {
         ll mb=(lb+rb)/2;
-        //cout << mb << endl;
         f(mb)?rb=mb:lb=mb+1;
     }
     return lb;
@@ -71,15 +70,11 @@ template<size_t S> string to_string(bitset<S> b) {
     FOR(S)res+=char('0'+b[i]);
     return res;
 }
-
-template <class T> string to_string(T v) {
-    char c=' ';
-    if constexpr (std::is_same_v<T, vector<vector<ll>>>) c='\n';
-    if constexpr (std::is_same_v<T, vector<vector<int>>>) c='\n';
+template<class T> string to_string(T v) {
     bool f=1;
     string res;
     EACH(x, v) {
-        if(!f)res+=c;
+        if(!f)res+=' ';
         f=0;
         res+=to_string(x);
     }
@@ -87,13 +82,13 @@ template <class T> string to_string(T v) {
 }
 template<class A> void write(A x) {cout << to_string(x);}
 template<class H, class... T> void write(const H& h, const T&... t) {write(h);write(t...);}
-template<class H, class... T> void print(const H& h, const T&... t);
-void print() {write("\n");}
+void print();
 template<class H, class... T> void print(const H& h, const T&... t) {
     write(h);
     if(sizeof...(t))write(' ');
     print(t...);
 }
+void print(){write("\n");}
 void DBG() {cout << "]" << endl;}
 template<class H, class... T> void DBG(H h, T... t) {
     cout << to_string(h);
@@ -103,7 +98,7 @@ template<class H, class... T> void DBG(H h, T... t) {
 }
 #define _DEBUG
 #ifdef _DEBUG
-#define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [\n", DBG(__VA_ARGS__)
+#define debug(...) cout << "LINE(" << __LINE__ << ") -> [" << #__VA_ARGS__ << "]: [", DBG(__VA_ARGS__)
 #else
 #define debug(...) 0
 #endif
@@ -127,20 +122,74 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-const int MAXN = 8e3+20;
+const int MAXN = 4e6+20;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
-int n;
-double d[MAXN][MAXN];
+int n,m,k;
+vector<ll>vec[3];
+vector<ll>param[3];
+bool f(ll v){
+    for (int l = 0,p=0; l < m; ++l) {
+        if(p==n)return false;
+//        print(l,p);
+//        print(vec[1][l],vec[0][p]);
+        //int used=0;
+        while(l<m && vec[0][p]<=vec[1][l] && vec[0][p]+v>=vec[1][l])l++;//,used=1;
+        if(l==m)return true;
+//        print(vec[1][l],vec[0][p]);
+        //if(used)l--;
+        //if(vec[0][p]+v>=vec[1][l])
+        while(p<n && vec[0][p]+v<vec[1][l])p++;
+
+        if(p==n)return false;
+//        print(vec[1][l],vec[0][p]);
+
+        if(vec[1][l]<vec[0][p]){
+            if(vec[0][p]-vec[1][l]>v)return false;
+            else{
+                ll extra=max((v-(vec[0][p]-vec[1][l]))/2,v-(vec[0][p]-vec[1][l])*2);
+//                print(extra+vec[0][p]);
+                int idx=lower_bound(all(vec[1]),extra+vec[0][p])-vec[1].begin();
+                if(idx==sz(vec[1]))return true;
+                if(extra+vec[0][p]<vec[1][idx])idx--;
+                l=idx;p++;
+            }
+        }
+    }
+    return true;
+}
 void solve() {
-    read(n);
-    memset(d,0,sizeof(d));
-    
+    int z;
+    read(n,m,k,z);
+    FOR(2)vec[i].clear(),vec[i]=vector<ll>(k);
+    FOR(2)param[i].clear(),param[i]=vector<ll>(4);
+    FOR(2){read(vec[i]);read(param[i]);}
+    FOR(j,k,n)
+    vec[0].push_back((param[0][0]*vec[0][sz(vec[0])-2]+param[0][1]*vec[0][sz(vec[0])-1]+param[0][2])%param[0][3]+1);
+    FOR(j,k,m)
+        vec[1].push_back((param[1][0]*vec[1][sz(vec[1])-2]+param[1][1]*vec[1][sz(vec[1])-1]+param[1][2])%param[1][3]+1);
+    FOR(2)sort(all(vec[i]));
+    vec[1].erase(unique(all(vec[1])),vec[1].end());
+    m=vec[1].size();
+//    print(vec[0]);
+//    print(vec[1]);
+    ll l=0,r=1e18;
+//    f(21);
+
+    while (l<r){
+        ll mid=(l+r)/2;
+        if(f(mid))r=mid;
+        else l=mid+1;
+    }
+    print(l);
 }
 int main() {
+//    vector<int>cur={2,4,6,8};
+//    print(lower_bound(all(cur),3)-cur.begin());
+//    print(lower_bound(all(cur),9)-cur.begin());
 //    ios::sync_with_stdio(0);
 //    cin.tie(0);
-    freopen("/home/csc/Downloads/capastaty_input.txt", "r", stdin);
+    freopen("/home/csc/Downloads/dislodging_logs_input (1).txt", "r", stdin);
     freopen("/home/csc/Online-Judge-Code/G/output.txt", "w", stdout);
     int t, i=1;
     read(t);

@@ -167,7 +167,7 @@ template<int N>struct KM {
     void update(){
         int cur = INF;
         FOR(u,n)if(vx[u])
-        EACH(v,G[u]) if(!vy[v]) cur = min(cur, dx[u]+dy[v] - we[u][v]);
+                EACH(v,G[u]) if(!vy[v]) cur = min(cur, dx[u]+dy[v] - we[u][v]);
         FOR(n){
             if(vy[i]) dy[i] += cur;
             if(vx[i]) dx[i] -= cur;
@@ -214,12 +214,12 @@ void solve(){
     KM<60>solver;
     solver.init(26);
     FOR(i,26)FOR(j,26){
-        if(arr[1][i]==arr[0][j])
-            solver.pushedge(i,j,1);
-        else if(arr[1][i]>arr[0][j])
-            solver.pushedge(i,j,2);
-        else solver.pushedge(i,j,0);
-    }
+            if(arr[1][i]==arr[0][j])
+                solver.pushedge(i,j,1);
+            else if(arr[1][i]>arr[0][j])
+                solver.pushedge(i,j,2);
+            else solver.pushedge(i,j,0);
+        }
     print(solver.solver());
 }
 int main() {
@@ -235,138 +235,3 @@ int main() {
     }
     return 0;
 }
-/*
-8 5
-A11111AA
-AA7B111A
-111BB111
-11BBB111
-11BBB11B
-
-3 1
-A0B
-
-
-7 7 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
- 6 7
-
-7 6 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
- 6 7
-
- 6 6 1 2 5
-1 2
-2 3
- 2 5
- 3 4
- 5 6
-
-
-
-
-10 2 2
-9 7
-10 6
-3 2 4 8
-1 3
-1 6
-1 5
-1 10
-1 7
-0
-1 9
-0
-0
-
-7 2 1
-5 4
-6
-3 2 3 4
-1 5
-1 6
-1 7
-0
-0
-0
-
-
-RGBW
-WWWW
-WWWW
-RGBW
-
-RGBW
-WWWW
-WWWW
-RGWB
-
-
-
-
- 8 7
- 1 2 1
- 1 3 1
- 1 4 1
- 1 5 3
- 1 6 2
- 1 7 2
- 1 8 2
- 2 3 4 5 6 7 8
-
- 3 1
- 1 2 1
- 1 1 1 3 3 3 3
-
- 1 1
- 1 1 1
- 1 1 1 1 1 1 1
-
- 2 1
- 1 2 1
- 2 2 2 2 2 2 2
-
-
-  3 3
- 5 3 1
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
- 3 3
- 3 1 3
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
- 3 3
- 1 2 2
- 0 0 0 0
- 1 2 4
- 0 0 0 0
- 1 3 4
- 0 0 0 0
-
-
- 1
- 5 5
- 1 3 4 5 6
- 0 0 0 0
- 1 1 1 1 1
- 0 0 0 0
- 1 1 1 1 1
- 0 0 0 0
-
- * */

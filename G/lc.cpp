@@ -148,37 +148,18 @@ struct TreeNode {
 };
 class Solution {
 public:
-    int d[1048576];
-    int num[30];
-    int tot,mx;
-    bool dfs(int acc,int bi,int player){
-        if(d[bi]!=-1)return d[bi];
-        if(acc>=tot)return 0;
-        for (int i=1;i<=mx;i++) {
-            if(num[i]){
-                num[i]=0;
-                int out=dfs(acc+i,bi+(1<<(i-1)),1-player);
-                num[i]=1;
-                if(!out){
-                    d[bi]=1;
-                    return 1;
-                }
-            }
+    int vis[1e5+7];
+    int smallestRepunitDivByK(int k) {
+        memset(vis,0,sizeof(vis));
+        if(k==1)return 1;
+        int m=1;
+        for (int i = 0; i < k+1; ++i) {
+            m=(m*10+1)%k;
+            if(m==0)return i+1;
+            if(vis[m])return -1;
+            vis[m]=1;
         }
-        d[bi]=0;
-        return 0;
-    }
-    bool canIWin(int maxChoosableInteger, int desiredTotal) {
-        if(desiredTotal==0)return 1;
-        tot=desiredTotal;mx=maxChoosableInteger;
-        int acc=0;
-        for (int i = 0; i < mx; ++i) {
-            num[i+1]=1;
-            acc+=i+1;
-        }
-        if(acc<tot)return 0;
-        memset(d,-1,sizeof(d));
-        return dfs(0,0,1);
+        assert(false);
     }
 };
 int main(){

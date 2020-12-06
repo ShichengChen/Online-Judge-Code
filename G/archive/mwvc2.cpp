@@ -371,4 +371,6 @@ strange! remove decrease add increase did not imporve the kattis scroe is 33.108
  score (32.26056) for random flip
  combine best with if(childw[u]-w[u]>childw[v]-w[v])c=u;, get lower score, strange!
 every time sort remove opt is very slow
+
+ //vec and grvec is 34.20
  * */

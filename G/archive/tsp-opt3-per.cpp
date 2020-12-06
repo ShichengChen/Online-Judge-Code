@@ -182,7 +182,7 @@ void dpforsmalldata(){
     for (int i = 0,u=0,s=0; i < n-1; ++i) {
         int v=nextedge[u][s];
         //print(v,bitdp[u][s],w[u][v]);
-        print(v); 
+        print(v);
         s|=(1<<v);
         u=v;
         //if(i==n-2)print(0,bitdp[u][s],w[u][0]);
@@ -191,22 +191,29 @@ void dpforsmalldata(){
 inline void reversetour(int a,int b,int len){
     for (int i=0; i<len; a=(a+1)%n,b=(b-1+n)%n,i++){
 #ifdef _DEBUG
+        print(tour[a],a,vertex2idx[tour[a]]);
+        print(tour[b],b,vertex2idx[tour[b]]);
         assert(vertex2idx[tour[a]]==a);
         assert(vertex2idx[tour[b]]==b);
 #endif
         swap(vertex2idx[tour[a]],vertex2idx[tour[b]]);
         swap(tour[a],tour[b]);
+
 #ifdef _DEBUG
         assert(vertex2idx[tour[a]]==a);
         assert(vertex2idx[tour[b]]==b);
 #endif
     }
+#ifdef _DEBUG
+    assert(abs((a+n-b)%n<=1));
+#endif
 }
-inline int opt2(int i,int j){
+inline int opt2(int i,int j,bool takebest=0){
     int x1=tour[i],x2=tour[(i+1)%n],y1=tour[j],y2=tour[(j+1)%n];
     int d0=w[x1][x2]+w[y1][y2];
     int d1=w[x1][y1]+w[x2][y2];
     if(d0>d1){
+        if(takebest)return d0-d1;
         umax(maxneighbor,max(w[x1][y1],w[x2][y2]));
         int len=(j-(i+1)%n+1+n)%n;
         //reversetour((i+1)%n,j,len/2);
@@ -216,7 +223,8 @@ inline int opt2(int i,int j){
     }
     return 0;
 }
-inline bool opt2LocalOptimal(int i,double localFactor=2,int maxnumberneighbor=20,bool useDLB=false){
+struct BestOpt3{int i,j,k;ll v;}bo3;
+inline bool opt2LocalOptimal(int i,double localfactor=2,int maxnumberneighbor=20,bool useDLB=false,bool takebest=0){
 //    FOR(direction,1){
 //        if(direction==1)i=(i-1+n)%n;
     int x1=tour[i],x2=tour[(i+1)%n];
@@ -226,40 +234,53 @@ inline bool opt2LocalOptimal(int i,double localFactor=2,int maxnumberneighbor=20
         //if(direction==1)swap(y1,y2);
         if((x1 == y1) || (x2 == y1) || (y2 == x1))continue;
         if(w[x1][y1]+minneighbor>w[x1][x2]+maxneighbor)break;
-        if(localFactor>0 && w[x1][y1]>w[x1][x2]*localFactor)continue;
-        int delta = opt2(i,j);
-        if(useDLB && delta)dlb2[x1]=dlb2[x2]=dlb2[y1]=dlb2[y2]=false;
-        curdis-=delta;
-        if(delta)return true;
+        if(localfactor>0 && w[x1][y1]>w[x1][x2]*localfactor)continue;
+        int delta = opt2(i,j,takebest);
+        if(takebest){
+            if(delta>bo3.v)bo3={i,j,-1,delta};
+        }else{
+            if(useDLB && delta)dlb2[x1]=dlb2[x2]=dlb2[y1]=dlb2[y2]=false;
+            curdis-=delta;
+            if(delta)return true;
+        }
         if(timecntcheck())return false;
     }
 //    }
 
     return false;
 }
-inline void opt2Base(double localFactor=2,int maxnumberneighbor=20,bool useDLB=false){
+inline void opt2Base(double localfactor=2,int maxnumberneighbor=20,bool useDLB=false,bool takebest=0){
     if(timecheck())return;
     if(useDLB)memset(dlb2,0,sizeof(bool)*n);
     while(1){
         int change=0;
+        bo3={0,0,0,-1};
         FOR(i,n){
             if(useDLB && dlb2[tour[i]])continue;
-            bool improve=opt2LocalOptimal(i,localFactor,maxnumberneighbor,useDLB);
+            bool improve=opt2LocalOptimal(i,localfactor,maxnumberneighbor,useDLB);
             if(improve)change=1;
             else dlb2[tour[i]]=true;
             if(timecntcheck())return;
+        }
+        if(takebest && bo3.v>0){
+            change=1;
+            int delta=opt2(bo3.i,bo3.j,false);
+            assert(delta>0);
+            curdis-=delta;
         }
         if(!change)break;
         if(timecntcheck())return;
     }
 }
 
-inline int opt3(int i,int j,int k){
+inline int opt3(int i,int j,int k,bool takebest=0){
+    if(k==-1)return opt2(i,j,takebest);
     int x1=tour[i],x2=tour[(i+1)%n],y1=tour[j],y2=tour[(j+1)%n],z1=tour[k],z2=tour[(k+1)%n];
     int d0=w[x1][x2]+w[y1][y2]+w[z1][z2];
     int d4=w[x1][y1]+w[x2][z1]+w[y2][z2];
     int d7=w[x1][y2]+w[x2][z1]+w[y1][z2];
-    if(d0>d4){
+    if((d0>d4 && d4<=d7)){
+        if(takebest)return d0-d4;
         //int d7=w[x1][y2]+w[x2][z2]+w[y1][z1];
         umax(maxneighbor,max({w[x1][y1],w[x2][z1],w[y2][z2]}));
         reversetour((j+1)%n,k,((k-j+n)%n)/2);
@@ -267,6 +288,7 @@ inline int opt3(int i,int j,int k){
         return d0-d4;
     }
     if(d0>d7){
+        if(takebest)return d0-d7;
         //x1x2y1->x1y1x2
         //int d4=w[x1][y2]+w[x2][z1]+w[y1][z2];
         umax(maxneighbor,max({w[x1][y2],w[x2][z1],w[y1][z2]}));
@@ -284,7 +306,8 @@ inline bool between(int i,int j,int k){
         return j>i || j<k;
     return false;
 }
-inline bool opt3LocalOptimal(int i,int maxnumberneighbor=20){
+
+inline bool opt3LocalOptimal(int i,double localfactor,int maxnumberneighbor=20,bool takebest=0){
     if(timecheck())return false;
     int x1=tour[i],x2=tour[(i+1)%n];
     for(int jarr=0;jarr<min(n-1,maxnumberneighbor);jarr++){
@@ -293,10 +316,15 @@ inline bool opt3LocalOptimal(int i,int maxnumberneighbor=20){
         int y2=tour[(j+1)%n];
 
         if((x1 == y1) || (x2 == y1) || (y2 == x1))continue;
-        if(w[x1][y1]+minneighbor>w[x1][x2]+maxneighbor)break;
-        int delta = opt2(i,j);
-        curdis-=delta;
-        if(delta)return true;
+        if(localfactor>0 && w[x1][y1]>w[x1][x2]*localfactor)continue;
+        //if(w[x1][y1]+minneighbor>w[x1][x2]+maxneighbor)break;
+        int delta = opt3(i,j,-1,takebest);
+        if(takebest){
+            if(delta>bo3.v)bo3={i,j,-1,delta};
+        }else{
+            curdis-=delta;
+            if(delta)return true;
+        }
         if(timecntcheck())return false;
 
 
@@ -315,54 +343,70 @@ inline bool opt3LocalOptimal(int i,int maxnumberneighbor=20){
             int k=vertex2idx[z1];
             int z2=tour[(k+1)%n];
 
-            if(!between(i,j,k))continue;
-            if(x1==z1|| z2==x1 || y1==z1 || y2==z1)continue;
+            if(x2==z1 || x1==z1|| x1==z2 ||y1==z1 || y2==z1 || y1==z2)continue;
             //if d2 + distance(Y1, Z1) > d1:break
             if(d2+w[y1][z1]>d1)break;
-            int delta=opt3(i,j,k);
-            curdis-=delta;
+            int jj=j,kk=k;
+            //if(!between(i,j,k))jj = k,kk = j;
+            if(!between(i,j,k))continue;
+
+            int delta=opt3(i,jj,kk,takebest);
+            if(takebest){
+                if(delta>bo3.v)bo3={i,j,k,delta};
+            }else{
+                curdis-=delta;
+                if(delta)return true;
+            }
+
+
+//            curdis-=delta;
+//            if(delta)return true;
 //            print(i,j,k);
 //            ll cc=0;
 //            FOR(p,n)cc+=w[tour[p]][tour[(p+1)%n]];
 //            print(curdis,cc);
 //            assert(curdis==cc);
 
-            if(delta)return true;
+
         }
     }
     return false;
 }
-inline void opt3Base(int maxnumberneighbor=20){
+inline void opt3Base(double localfactor,int maxnumberneighbor=20,bool takebest=0){
     while(1){
         int change=0;
+        bo3={0,0,0,-1};
         FOR(i,n-1){
-            bool improve=opt3LocalOptimal(i,maxnumberneighbor);
+            bool improve=opt3LocalOptimal(i,localfactor,maxnumberneighbor,takebest);
             if(improve)change=1;
+        }
+        if(takebest && bo3.v>0){
+            change=1;
+            int delta=opt3(bo3.i,bo3.j,bo3.k,0);
+            assert(delta>0);
+            curdis-=delta;
         }
         if(!change)break;
         if(timecntcheck())return;
     }
 }
-ll perturbation(int seed=-1,ll perdis=-1){
-    int ii=randint(1,n/4,seed);
-    int jj=randint(1,n/4,seed)+ii;
-    int kk=randint(1,n/4,seed)+jj;
-    //print(ii,jj,kk);
-    int m=0;
-    FOR(l,0,ii)tmptour[m++]=tour[l];
-    FOR(l,kk,n)tmptour[m++]=tour[l];
-    FOR(l,jj,kk)tmptour[m++]=tour[l];
-    FOR(l,ii,jj)tmptour[m++]=tour[l];
-    ll cur=0;
-    FOR(n)cur+=w[tmptour[i]][tmptour[(i+1)%n]];
-    if(perdis==-1 || cur<perdis){
-        memcpy(tour,tmptour,sizeof(int)*n);
-        FOR(n)vertex2idx[tour[i]]=i;
-        perdis=curdis=cur;
-    }
-    return perdis;
+void perturbation(int seed=-1){
+    vector<int>ivec(4);
+    FOR(4)ivec[i]=randint(0,n-2);
+    sort(all(ivec));
+    if(abs(ivec[1]-ivec[0])<=1 ||
+       abs(ivec[2]-ivec[1])<=1||
+       abs(ivec[3]-ivec[2])<=1)return;
+    print(ivec);
+    FOR(4)
+        reversetour((ivec[i]+1)%n,ivec[(i+1)%4],((ivec[(i+1)%4]-ivec[i]+n)%n)/2);
+
+    int d0=w[ivec[0]][ivec[0]+1]+w[ivec[1]][ivec[1]+1]+w[ivec[2]][ivec[2]+1]+w[ivec[3]][ivec[3]+1];
+    int d1=w[ivec[0]][ivec[2]+1]+w[ivec[0]+1][ivec[2]]+w[ivec[1]][ivec[3]+1]+w[ivec[1]+1][ivec[3]];
+    curdis-=(d0-d1);
+    FOR(n)vertex2idx[tour[i]]=i;
 }
-void solve(int kase) {
+void solve() {
     timebegin = clock();
     read(n);
     FOR(n)FOR(j,2)read(vec[i][j]);
@@ -370,11 +414,11 @@ void solve(int kase) {
     FOR(n){
         int k=0;
         FOR(j,n)if(i!=j){
-            w[i][j]=dis(vec[i][0],vec[j][0],vec[i][1],vec[j][1]);
-            umin(minneighbor,w[i][j]);
-            arr[i][k]=j;
-            k++;
-        }
+                w[i][j]=dis(vec[i][0],vec[j][0],vec[i][1],vec[j][1]);
+                umin(minneighbor,w[i][j]);
+                arr[i][k]=j;
+                k++;
+            }
         sort(arr[i],arr[i]+n-1,[&](int l,int r){return w[i][l]<w[i][r];});
     }
     if(n<=16){
@@ -407,35 +451,32 @@ void solve(int kase) {
     FOR(seed,100000){
         if(timecheck())break;
         int maxnumberneighbor=20;
-        //opt2LocalOptimal(1.2,maxnumberneighbor,false);
-        opt2Base(1.2,maxnumberneighbor,false);
-        opt2Base(-1,maxnumberneighbor,false);
-        opt3Base(maxnumberneighbor);
+        opt2Base(1.2,maxnumberneighbor,false,0);
+//        opt2Base(-1,maxnumberneighbor,false,0);
+        opt3Base(-1,maxnumberneighbor,0);
         if(mindis>curdis){
             mindis=curdis;//new best
             memcpy(besttour,tour,n*sizeof(int));
         }
         else if(curdis>mindis*1.5){
             //new bad local optimal, change back to old good local optimal
-//            curdis=mindis;
-//            memcpy(tour,besttour,n*sizeof(int));
-        } 
+            curdis=mindis;
+            memcpy(tour,besttour,n*sizeof(int));
+        }
         if(timecheck())break;
-        //perturbation((seed+5)*2);
-
+            //perturbation((seed+5)*2);
 #ifdef _DEBUG
-        ll perdis=perturbation(seed*10,-1);
-        FOR(p,5)perdis=perturbation(seed*10+p+1,perdis);
+        FOR(p,5)perturbation(seed*10+p+1);
         FOR(n)umax(maxneighbor,w[tour[i]][tour[(i+1)%n]]);
 #else
-        ll perdis=perturbation(-1,-1);
-        FOR(p,5)perdis=perturbation(-1,perdis);
+        FOR(p,5)perturbation(-1);
         FOR(n)umax(maxneighbor,w[tour[i]][tour[(i+1)%n]]);
 #endif
     }
-    debug(mindis);
+
     ll finaldis=0;
     FOR(n)finaldis+=w[besttour[i]][besttour[(i+1)%n]];
+    debug(mindis,finaldis);
     assert(mindis==finaldis);
 #ifndef _DEBUG
     int start=0;for(;besttour[start];start++){}
@@ -447,11 +488,21 @@ int main() {
 
 #ifdef _DEBUG
     //freopen("/home/csc/Online-Judge-Code/G/10tsp.txt", "r", stdin);//276
-    //freopen("/home/csc/Online-Judge-Code/G/1000tsp.txt", "r", stdin);//47254603,47297589
-    //freopen("/home/csc/Online-Judge-Code/G/data2/bcl380.tsp", "r", stdin);//1633
-    //freopen("/home/csc/Online-Judge-Code/G/data2/xit1083.tsp", "r", stdin);//3700
-    //freopen("/home/csc/Online-Judge-Code/G/data2/dka1376.tsp", "r", stdin);//4863
-    freopen("/home/csc/Online-Judge-Code/G/data2/xql662.tsp", "r", stdin);//2581
+    //freopen("/home/csc/Online-Judge-Code/G/1000tsp.txt", "r", stdin);
+    //47254603,47297589
+    //take best 47484509
+    //freopen("/home/csc/Online-Judge-Code/G/data2/bcl380.tsp", "r", stdin);
+    //1640
+    //take best 1644
+    //freopen("/home/csc/Online-Judge-Code/G/data2/xit1083.tsp", "r", stdin);
+    //3723
+    //take best 3739
+    //freopen("/home/csc/Online-Judge-Code/G/data2/dka1376.tsp", "r", stdin);
+    // 4853
+    //take best 4865
+    freopen("/home/csc/Online-Judge-Code/G/data2/xql662.tsp", "r", stdin);
+    //2583
+    //take best 2596
 #else
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
@@ -482,7 +533,7 @@ int main() {
     int t=1;
 //    read(t);
     FOR(t) {
-        solve(i);
+        solve();
     }
     return 0;
 }

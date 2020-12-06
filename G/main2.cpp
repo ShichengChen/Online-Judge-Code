@@ -20,21 +20,21 @@ using namespace __gnu_pbds;
 #define EACH(x, a) for (auto& x: a)
 template<class T> bool umin(T& a, const T& b) {return b<a?a=b, 1:0;}
 template<class T> bool umax(T& a, const T& b) {return a<b?a=b, 1:0;}
-ll FIRSTTRUE(function<bool(ll)> f, ll lb, ll rb) {
-    while(lb<rb) {
-        ll mb=(lb+rb)/2;
-        //cout << mb << endl;
-        f(mb)?rb=mb:lb=mb+1;
-    }
-    return lb;
-}
-ll LASTTRUE(function<bool(ll)> f, ll lb, ll rb) {
-    while(lb<rb) {
-        ll mb=(lb+rb+1)/2;
-        f(mb)?lb=mb:rb=mb-1;
-    }
-    return lb;
-}
+//ll FIRSTTRUE(function<bool(ll)> f, ll lb, ll rb) {
+//    while(lb<rb) {
+//        ll mb=(lb+rb)/2;
+//        //cout << mb << endl;
+//        f(mb)?rb=mb:lb=mb+1;
+//    }
+//    return lb;
+//}
+//ll LASTTRUE(function<bool(ll)> f, ll lb, ll rb) {
+//    while(lb<rb) {
+//        ll mb=(lb+rb+1)/2;
+//        f(mb)?lb=mb:rb=mb-1;
+//    }
+//    return lb;
+//}
 
 template<class A> void read(vt<A>& v);
 template<class A, size_t S> void read(array<A, S>& a);
@@ -129,13 +129,10 @@ const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
 const int MAXN = 1e3+20;
 const int LOGMAXN = 18;
-//ll const MOD=998244353;
-ll const MOD=1e9+7;
+ll const MOD=998244353;
+//ll const MOD=1e9+7;
 
 using namespace std;
-
-const int INF = 1000000000;
-
 template <int MOD_> struct modnum {
     static constexpr int MOD = MOD_;
     static_assert(MOD_ > 0, "MOD must be positive");
@@ -211,31 +208,124 @@ public:
     friend modnum operator * (const modnum& a, const modnum& b) { return modnum(a) *= b; }
     friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
 };
-//using mint = modnum<MOD>;
+using mint = modnum<MOD>;
 
-int n;
-int w[MAXN][MAXN];
-inline int dis(int a0,int a1,int b0,int b1){
-    return int(sqrt((a0-a1)*(a0-a1)+(b0-b1)*(b0-b1))+0.5);
+template<int N>struct KM {
+    const double INF = 1e8;
+    int n;
+    vector<int> G[N];
+    double we[N][N];
+    double dx[N], dy[N];
+    int linker[N];
+    bool vx[N], vy[N];
+    void init(int nn) {
+        n = nn;
+        memset(we, 0, sizeof(we));
+        FOR(n) G[i].clear();
+    }
+    void pushedge(int u, int v, double w) {
+        G[u].push_back(v);
+        we[u][v] = w;
+    }
+    bool match(int u){
+        vx[u] = true;
+        EACH(v,G[u]) {
+            if (!vy[v] && fabs(we[u][v]-dx[u]-dy[v])<1e-6){
+                vy[v] = true;
+                if (linker[v] == -1 || match(linker[v])){
+                    linker[v] = u;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    void update(){
+        double cur = INF;
+        FOR(u,n)if(vx[u])
+                EACH(v,G[u]) if(!vy[v]) cur = min(cur, dx[u]+dy[v] - we[u][v]);
+        FOR(n){
+            if(vy[i]) dy[i] += cur;
+            if(vx[i]) dx[i] -= cur;
+        }
+    }
+
+    double solver() {
+        FOR(n) {
+            dx[i] = *max_element(we[i], we[i]+n);
+            dy[i] = 0,linker[i] = -1;
+        }
+        FOR(u,n) {
+            while (1){
+                memset(vx,0,sizeof(vx));
+                memset(vy,0,sizeof(vy));
+                if(match(u)) break; else update();
+            }
+        }
+        double ans=0;
+        FOR(n)if(linker[i]!=-1)ans+=we[linker[i]][i];
+        FOR(n)print(i,linker[i]);
+        return ans;
+    }
+};
+
+
+
+double cx,cy;
+double dis(vector<double>a){
+    return sqrt((a[0]-cx)*(a[0]-cx)+(a[1]-cy)*(a[1]-cy));
 }
-void solve() {
+double dis(vector<double>a,vector<double>b){
+    return sqrt((a[0]-b[0])*(a[0]-b[0])+(a[1]-b[1])*(a[1]-b[1]));
+}
+KM<42>km; 
+int lp[22],rp[22];
+double w[22][22];
+double minn;
+void dy(int n,int r){
+    for (int i = 1; i < (1<<n); ++i) {
+
+        if(__builtin_popcount(i)==n/2){
+            km.init(n/2);
+            int lc=0,rc=0;
+            for (int j = 0; j < n; ++j) {
+                if(i&(1<<j))lp[lc++]=j+(j>=r);
+                else rp[rc++]=j+(j>=r);
+            }
+            assert(lc==n/2 && rc==n/2);
+            FOR(ii,n/2)FOR(jj,n/2){
+                int ci=lp[ii],cj=rp[jj];
+                assert(ci<n+(r<=n) && cj<n+(r<=n));
+                double cw=w[ci][cj];
+                //print("ci,cj,cw",ci,cj,cw);
+                assert(ci!=cj && ci!=r && cj!=r);
+                km.pushedge(ii,jj,-cw);
+            }
+            //print(i);
+            umin(minn,-km.solver());
+            //print(r,minn,i);
+        }
+    }
+}
+int n;
+void solve(){
     read(n);
-    vector<vector<int>>vec(n,vector<int>(2));
-    vector<vector<pair<int,int>>>arr(n);
-    read(vec);
-    FOR(n)FOR(j,n){
-        w[i][j]=dis(vec[i][0],vec[j][0],vec[i][1],vec[j][1]);
-        arr[i].push_back({});
+    for (int i = 2; i < n; ++i) {
+        if(n%i==0){print(i);}
     }
 
 }
 int main() {
+//    double cur[]={1.5,2.4};
+//    print(cur[0],cur[1]);
+//    memset(cur,0,sizeof(cur));
+//    print(cur[0],cur[1]);
 //    ios::sync_with_stdio(false);
 //    cin.tie(nullptr);
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
     //freopen("/home/csc/G/output.txt", "w", stdout);
     int t=1;
-//    read(t);
+    read(t);
     FOR(t) {
         //write("Case #", i+1, ": ");
         solve();
@@ -243,6 +333,14 @@ int main() {
     return 0;
 }
 /*
+5.000000 5.000000
+5
+5.000000 6.000000
+10.000000 5.000000
+11.000000 5.000000
+5.000000 10.000000
+5.000000 11.000000
+
 
 5 10
 2 2 2

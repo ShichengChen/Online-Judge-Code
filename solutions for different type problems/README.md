@@ -5,29 +5,31 @@
 - [Two types of elements very large weights Knapsack problem](#two-types-of-elements-very-large-weights-knapsack-problem)
 
 # General
-  - dp? binary search? math?
-  - find the essentials in the problem instead of trying different samples
+- dp? binary search? math?
+- try few small examples ([Smallest Integer Divisible by K](https://leetcode.com/problems/smallest-integer-divisible-by-k/solution/), we can try k=1-10 for different length)
+- find the essentials in the problem instead of trying different samples
+
 
 
 # XOR operation
-  - think the problem one byte by one byte.[GameGame](https://codeforces.com/contest/1383/problem/B)
-  - manipulation formulas.
-  
+- think the problem one byte by one byte.[GameGame](https://codeforces.com/contest/1383/problem/B)
+- manipulation formulas.
+
 # Array A to Array B
-  - how to make A become B (thinking from A)
-  - how to get B from A (thinking from B). [String Transformation 1](https://codeforces.com/contest/1383/problem/A)
-  
+- how to make A become B (thinking from A)
+- how to get B from A (thinking from B). [String Transformation 1](https://codeforces.com/contest/1383/problem/A)
+
 # Operations on an Array
-  - try to iterate the array from the first index to the end.
-  - list different forms of equations.[C. Good Subarrays](https://codeforces.com/contest/1398/problem/C)
-  - have for different indices 1<=i<j<k<l<=n, try iterate over (i,j),(i,k),(i,l),(j,k),(j,l) or (k,l)[D. Zigzags](https://codeforces.com/contest/1400/problem/D)  
+- try to iterate the array from the first index to the end.
+- list different forms of equations.[C. Good Subarrays](https://codeforces.com/contest/1398/problem/C)
+- have for different indices 1<=i<j<k<l<=n, try iterate over (i,j),(i,k),(i,l),(j,k),(j,l) or (k,l)[D. Zigzags](https://codeforces.com/contest/1400/problem/D)
 
 # Segmentation Coverage Problem
-   - compress coordinate [Yet Another Segments Subset](https://codeforces.com/contest/1399/problem/F)
-   - enumerate all situations
-  
+- compress coordinate [Yet Another Segments Subset](https://codeforces.com/contest/1399/problem/F)
+- enumerate all situations
+
 # Two types of elements very large weights Knapsack problem
-  - cannot use dp, enumerate the number of first elements and find corresponding number of second elements
+- cannot use dp, enumerate the number of first elements and find corresponding number of second elements
 
 # Implementation Problem
-  - list all sitations!! and then write code. 
+- list all sitations!! and then write code. 
