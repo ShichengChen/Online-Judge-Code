@@ -148,18 +148,8 @@ struct TreeNode {
 };
 class Solution {
 public:
-    int vis[1e5+7];
-    int smallestRepunitDivByK(int k) {
-        memset(vis,0,sizeof(vis));
-        if(k==1)return 1;
-        int m=1;
-        for (int i = 0; i < k+1; ++i) {
-            m=(m*10+1)%k;
-            if(m==0)return i+1;
-            if(vis[m])return -1;
-            vis[m]=1;
-        }
-        assert(false);
+    int lengthOfLongestSubstring(string s) {
+        map<char,>
     }
 };
 int main(){
