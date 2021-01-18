@@ -51,6 +51,7 @@ void read(long double& d) {
     d=stold(t);
 }
 template<class H, class T> void read(pair<H,T>&c){read(c.first);read(c.second);}
+
 template<class H, class... T> void read(H& h, T&... t) {read(h);read(t...);}
 template<class A> void read(vector<A>& x) {EACH(a, x)read(a);}
 template<class A, size_t S> void read(array<A, S>& x) {EACH(a, x)read(a);}
@@ -127,7 +128,7 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-const int MAXN = 1e3+20;
+const int MAXN = 2e5+20;
 const int LOGMAXN = 18;
 ll const MOD=998244353;
 //ll const MOD=1e9+7;
@@ -151,6 +152,7 @@ public:
     friend std::ostream& operator << (std::ostream& out, const modnum& n) { return out << int(n); }
     friend std::istream& operator >> (std::istream& in, modnum& n) { ll v_; in >> v_; n = modnum(v_); return in; }
     friend string to_string(modnum& n){return to_string(n.v);}
+    friend void read(int &n){cin>>n;}
     friend bool operator == (const modnum& a, const modnum& b) { return a.v == b.v; }
     friend bool operator != (const modnum& a, const modnum& b) { return a.v != b.v; }
 
@@ -208,9 +210,9 @@ public:
     friend modnum operator * (const modnum& a, const modnum& b) { return modnum(a) *= b; }
     friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
 };
-//using mint = modnum<MOD>;
-vector<int>p;
-void solve(ll num){
+using mint = modnum<MOD>;
+vector<ll>p;
+void primes(ll num){
     p.clear();
     for(ll i=2; i*i<=num; i++){
         if(num%i==0){
@@ -218,23 +220,40 @@ void solve(ll num){
             while(num%i==0) num/=i;
         }
     }
-    if(num>1)
-        p.push_back(num);
+    if(num>1)p.push_back(num);
 }
-
-
-ll n,m;
 void solve(){
-    read(n);
+    ll n,q;read(n,q);
+    primes(n);
+    vt<mint>d(70,1);
+    FOR(i,1,70){d[i]=d[i-1]*mint(i);}
+    while (q--){
+        ll a,c;read(a,c);
+        map<ll,int>ma[3];FOR(3)ma[i].clear();
+        vt<mint>cnt(2,0);
+        vt<mint>ans(2,1);
+        for (ll i:p) {
+            while(a%i==0)ma[0][i]++,a/=i;
+            while(c%i==0)ma[2][i]++,c/=i;
+            ma[1][i]=min(ma[0][i],ma[2][i]);
+            mint dif[]={(ma[0][i]-ma[1][i]),(ma[2][i]-ma[1][i])};
+            FOR(j,2){
+                cnt[j]+=dif[j];
+                ans[j]/=d[int(dif[j])];
+            }
+        }
+        FOR(2)ans[i]*=d[int(cnt[i])];
+        print(ans[0]*ans[1]);
+    }
 }
-
 int main() {
-//    ios::sync_with_stdio(false);
-//    cin.tie(nullptr);
+
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
     //freopen("/home/csc/G/output.txt", "w", stdout);
     int t=1;
-//    read(t);
+    //read(t);
     FOR(t) {
         //write("Case #", i+1, ": ");
         solve();
@@ -243,24 +262,24 @@ int main() {
 }
 /*
 
- 3
-4
-6 8 4 2
-1
-0
-9
-12 3 20 5 80 1 1 1 1
-3
-0
- 1
- 2
- 10
-12 3 20 5 80 1 1 1 1 1
-3
-0
- 1
- 2
 
+20000
+11
+9 1
+1 2
+7 1
+4 10
+8 5
+4 6
+4 2
+7 5
+2 5
+3 1
+11 6
+
+ 99
+ 5
+ 1 5 2 3 6
 
 99
  5

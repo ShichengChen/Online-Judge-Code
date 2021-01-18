@@ -210,7 +210,7 @@ public:
 };
 //using mint = modnum<MOD>;
 vector<int>p;
-void solve(ll num){
+void primes(ll num){
     p.clear();
     for(ll i=2; i*i<=num; i++){
         if(num%i==0){
