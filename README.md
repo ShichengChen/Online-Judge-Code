@@ -117,7 +117,8 @@
 	- not only try different samples, I should try to think or guess patterns
 - [Directing Edges](https://codeforces.com/contest/1385/problem/E)
 	- topological sort for creating no directed cycles graphs.
-
+- [Checksum](https://codingcompetitions.withgoogle.com/kickstart/round/0000000000436140/000000000068c2c3#problem)
+	- innovation in graph conversion
 
 # How to win myself
 - never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.(do easy problem such as leetcode daily problem.)

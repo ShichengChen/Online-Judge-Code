@@ -20,21 +20,21 @@ using namespace __gnu_pbds;
 #define EACH(x, a) for (auto& x: a)
 template<class T> bool umin(T& a, const T& b) {return b<a?a=b, 1:0;}
 template<class T> bool umax(T& a, const T& b) {return a<b?a=b, 1:0;}
-//ll FIRSTTRUE(function<bool(ll)> f, ll lb, ll rb) {
-//    while(lb<rb) {
-//        ll mb=(lb+rb)/2;
-//        //cout << mb << endl;
-//        f(mb)?rb=mb:lb=mb+1;
-//    }
-//    return lb;
-//}
-//ll LASTTRUE(function<bool(ll)> f, ll lb, ll rb) {
-//    while(lb<rb) {
-//        ll mb=(lb+rb+1)/2;
-//        f(mb)?lb=mb:rb=mb-1;
-//    }
-//    return lb;
-//}
+ll FIRSTTRUE(function<bool(ll)> f, ll lb, ll rb) {
+    while(lb<rb) {
+        ll mb=(lb+rb)/2;
+        //cout << mb << endl;
+        f(mb)?rb=mb:lb=mb+1;
+    }
+    return lb;
+}
+ll LASTTRUE(function<bool(ll)> f, ll lb, ll rb) {
+    while(lb<rb) {
+        ll mb=(lb+rb+1)/2;
+        f(mb)?lb=mb:rb=mb-1;
+    }
+    return lb;
+}
 
 template<class A> void read(vt<A>& v);
 template<class A, size_t S> void read(array<A, S>& a);
@@ -51,6 +51,7 @@ void read(long double& d) {
     d=stold(t);
 }
 template<class H, class T> void read(pair<H,T>&c){read(c.first);read(c.second);}
+
 template<class H, class... T> void read(H& h, T&... t) {read(h);read(t...);}
 template<class A> void read(vector<A>& x) {EACH(a, x)read(a);}
 template<class A, size_t S> void read(array<A, S>& x) {EACH(a, x)read(a);}
@@ -73,8 +74,8 @@ template<size_t S> string to_string(bitset<S> b) {
 
 template <class T> string to_string(T v) {
     char c=' ';
-    //if constexpr (std::is_same_v<T, vector<vector<ll>>>) c='\n';
-    //if constexpr (std::is_same_v<T, vector<vector<int>>>) c='\n';
+    if constexpr (std::is_same_v<T, vector<vector<ll>>>) c='\n';
+    if constexpr (std::is_same_v<T, vector<vector<int>>>) c='\n';
     bool f=1;
     string res;
     EACH(x, v) {
@@ -127,14 +128,10 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-//const int MAXN = 2e5+20;
+
 const int LOGMAXN = 18;
 //ll const MOD=998244353;
 ll const MOD=1e9+7;
-
-using namespace std;
-
-const int INF = 1000000000;
 
 //template <int MOD_> struct modnum {
 //    static constexpr int MOD = MOD_;
@@ -154,6 +151,7 @@ const int INF = 1000000000;
 //    friend std::ostream& operator << (std::ostream& out, const modnum& n) { return out << int(n); }
 //    friend std::istream& operator >> (std::istream& in, modnum& n) { ll v_; in >> v_; n = modnum(v_); return in; }
 //    friend string to_string(modnum& n){return to_string(n.v);}
+//    //friend void read(int &n){cin>>n;}
 //    friend bool operator == (const modnum& a, const modnum& b) { return a.v == b.v; }
 //    friend bool operator != (const modnum& a, const modnum& b) { return a.v != b.v; }
 //
@@ -211,45 +209,32 @@ const int INF = 1000000000;
 //    friend modnum operator * (const modnum& a, const modnum& b) { return modnum(a) *= b; }
 //    friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
 //};
-typedef long long ll;
-const int MAXN =1e5+20;
-vector<int>vec;
-ll sum[2][MAXN];
-int n,m;
-void solve() {
-    read(n,m);
-    vec.clear();
-    sum[0][0]=sum[1][0]=0;
-    vec=vector<int>(n);
-    read(vec);
-    offset(-1,vec);
-    sort(all(vec));
-    vec.insert(vec.begin(),0);
-    FOR(n){
-        sum[0][i+1]=sum[0][i]+vec[i+1];
-        sum[1][i+1]=sum[1][i]+m-vec[i+1];
+//
+//using mint = modnum<MOD>;
+//const int MAXN = 2e6+20;
+const int MAXN = 505;
+int f[MAXN*2];
+int findf(int i){return f[i]==i?i:f[i]=findf(f[i]);}
+bool merge(int a,int b){
+    if(findf(a)==findf(b))return false;
+    else{
+        f[f[a]]=f[b];
+        return true;
     }
-    sum[0][n+1]=sum[0][n];
-    sum[1][n+1]=sum[1][n];
-    ll ans=1e18;
-    for (int i = 1,li=1,ri=1; i <= n; ++i) {
-        ll cur=0;
-        ll a=vec[i];
-        ll l=a-m/2,r=a+m/2;
-        while(li<i && vec[li]<l)li++;
-        while(ri<=n && vec[ri]<=r)ri++;
-        //debug(li,ri);
-        cur+=sum[0][li-1]+(li-1)*(m-a);
-        //debug(cur);
-        cur+=(sum[1][i-1]-sum[1][li-1])-(i-li)*(m-a);
-
-        //debug(cur);
-
-        cur+=(sum[0][ri-1]-sum[0][i])-(ri-1-i)*a;
-        cur+=sum[1][n]-sum[1][ri-1]+(n-ri+1)*a;
-
-        //print(i,cur);
-        umin(ans,cur);
+}
+void solve() {
+    int n;read(n);int ans=0;
+    vt<array<int,3>>edge;
+    vt<vt<int>> s(n, vt<int>(n));
+    vt<vt<int>> cost(n, vt<int>(n));
+    read(s,cost);
+    FOR(i,n)FOR(j,n)if(s[i][j]==-1)edge.push_back({cost[i][j],i,n+j}),ans+=cost[i][j];
+    sort(all(edge));
+    reverse(all(edge));
+    {int cur;FOR(n)read(cur);FOR(n)read(cur);}
+    FOR(2*n)f[i]=i;
+    FOR(sz(edge)){
+        if(merge(edge[i][1],edge[i][2]))ans-=edge[i][0];
     }
     print(ans);
 }
@@ -264,8 +249,7 @@ int main() {
         ++i;
     }
     return 0;
-}
-/*
+}/*
 
 99
 8 10

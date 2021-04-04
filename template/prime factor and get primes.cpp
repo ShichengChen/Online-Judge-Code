@@ -221,7 +221,15 @@ void primes(ll num){
     if(num>1)
         p.push_back(num);
 }
-
+bool isprime[30100];
+void getPrimes(){
+    memset(isprime, true, sizeof(isprime));
+    for (int i = 2; i <= 30000; i++){
+        if (isprime[i])
+            for (ll j = 2; j * i <= 30000; j++)
+                isprime[j * i] = false;
+    }
+}
 
 ll n,m;
 void solve(){
