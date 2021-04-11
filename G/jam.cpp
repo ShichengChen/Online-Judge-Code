@@ -128,7 +128,7 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-
+inline bool inboard(int y,int x,int n,int m){return y>=0 && x >=0 && y<n && x<m;}
 const int LOGMAXN = 18;
 //ll const MOD=998244353;
 ll const MOD=1e9+7;
