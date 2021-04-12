@@ -249,11 +249,13 @@ void evicted2disk(int key){
     pageLocation[key]=disk;
 }
 int main(){
-    char c;int seq,num;
+    char c,cc;int seq,num;
     freopen("/home/csc/Downloads/A0215003A-assign4-input.dat", "r", stdin);
     int lines=0;
-    while(scanf("%c   %d    %d\n",&c,&seq,&num)){
+    while(scanf("%c   %d    %d",&c,&seq,&num)){
         printf("%c %d %d\n",c,seq,num);
+        cc=getchar();//get '\n' char
+        if(cc!='\n')break;
         //X	282	3
         lines++;
         debug(active.cnt,inactive.cnt,buddy.cnt,lines);
@@ -310,7 +312,7 @@ int main(){
             }else if(pageLocation[key]==disk){}
             pageLocation[key]=unused;
         }else assert(false);
-        if(c=='X' && seq==282 && num==3)break;
+        //if(c=='X' && seq==282 && num==3)break;
     }
 
     Vector v=buddy.v;
