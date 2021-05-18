@@ -8,6 +8,8 @@
   - dp? binary search? math?
   - find the essentials in the problem instead of trying different samples 
   - abstract the problem so that I write condensed code.
+  - changed variables vs unchanged variables
+  - formulate the problem by math notations
 
 
 # XOR operation

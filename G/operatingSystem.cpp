@@ -1,7 +1,5 @@
-//#include "bits/stdc++.h"
-#include "stdio.h"
-#include "string.h"
-#include "assert.h"
+#include "bits/stdc++.h"
+using namespace  std;
 typedef long long ll;
 #define F_OR(i, a, b, s) for (int (i)=(a); (s)>0?(i)<(b):(i)>(b); (i)+=(s))
 #define F_OR1(e) F_OR(i, 0, e, 1)
@@ -26,19 +24,28 @@ struct LRUCache {
 public:
     int cap,first,last,cnt;
     static const int MAXN=11000;
-    bool vis[MAXN];
+    int vis[MAXN];
     int info[MAXN];
     struct Node{int a,b;};
     Node list[MAXN];
-    int NUL=-2,UNUSED=-1;
+    int NUL=-1;
     LRUCache(int capacity) {
         cap=capacity;
-        first=last=UNUSED;
+        first=last=NUL;
         cnt=0;
-        memset(vis,false,sizeof vis);
-        memset(list,UNUSED,sizeof list);
+        memset(vis,0,sizeof vis);
+        memset(list,NUL,sizeof list);
     }
     int get(int key) {
+//        vector<int>arr;
+//        for (int i = 0; i < cnt/2; ++i) {
+//            arr.push_back(removelast());
+//        }
+//        reverse(arr.begin(),arr.end());
+//        for (int i = 0; i < arr.size(); ++i) {
+//            put(arr[i],info[arr[i]]);
+//        }
+
         if(vis[key]){
             update(key);
             return info[key];
@@ -50,14 +57,14 @@ public:
     //first one is the one for evicted
     void appendlast(int key) {
         cnt++;
-        if(first==UNUSED){
+        vis[key]=1;
+        if(cnt==1){
             first=last=key;
-            vis[key]=true;
             list[key].b=NUL;
             list[key].a=NUL;
             return;
         }
-        assert(list[last].a!=UNUSED);assert(list[last].b==NUL);
+        assert(vis[last]);assert(list[last].b==NUL);
         list[last].b=key;
         list[key].a=last;
         list[key].b=NUL;
@@ -65,72 +72,70 @@ public:
 
     }
     void update(int key){
-        if(key==last || cap==1)return;
-        if(first==key)first=list[key].b;
+        assert(vis[key]==1);
         removemid(key);
         appendlast(key);
     }
-    void removemid(int key){
+    int removemid(int key){
+        assert(vis[key]);//must exist
+        //if cap==1
+        int removed=key;
         int pre=list[key].a;
         int nex=list[key].b;
-        if(pre>=0)list[pre].b=nex;
-        if(nex>=0)list[nex].a=pre;
-        list[key]={UNUSED,UNUSED};
+        if(cnt==1){
+            assert(pre==NUL && nex==NUL);
+            first=last=NUL;
+        }else if(first==key){
+            assert(pre==NUL && nex!=NUL);
+            list[nex].a=pre;
+            first=nex;
+        }else if(last==key){
+            assert(pre!=NUL && nex==NUL);
+            list[pre].b=nex;
+            last=pre;
+        }else{
+            assert(pre!=NUL && nex!=NUL);
+            list[pre].b=nex;
+            list[nex].a=pre;
+        }
+        vis[key]=0;
+        list[key]={NUL,NUL};
         cnt--;
+        return removed;
     }
     int removelast(){
         //promote
         //last is the newest one
-        cnt--;
-        assert(list[last].b!=UNUSED);assert(list[last].b==NUL);
+        assert(vis[last]);assert(list[last].b==NUL);
         int promoted=last;
-        if(first==last){first=last=UNUSED;}
-        else{
-            int llast=list[last].a;
-            list[llast].b=NUL;
-            last=llast;
-        }
-        vis[promoted]=false;
-        list[promoted]={UNUSED,UNUSED};
-        //info[evicted]=UNUSED; keep info[evicted], no harm
+        removemid(last);
         return promoted;
     }
     int removefirst(){
-        cnt--;
-        assert(list[first].a!=UNUSED);assert(list[first].a==NUL);
+        //evict page
+        assert(vis[first]);assert(list[first].a==NUL);
         int evicted=first;
-        if(first==last){first=last=UNUSED;}
-        else{
-            int nfirst=list[first].b;
-            list[nfirst].a=NUL;
-            first=nfirst;
-        }
-        vis[evicted]=false;
-        list[evicted]={UNUSED,UNUSED};
-        info[evicted]=UNUSED;
+        removemid(first);
         return evicted;
     }
+    int evict(){return removefirst();}
+    int promote(){return removelast();}
     int put(int key, int value) {
         info[key]=value;
-        if(cnt==cap){
-            if(!vis[key]){
-                int evicted=removefirst();
-
+        if(vis[key])update(key);
+        else{
+            if (cnt == cap) {
+                int evicted = evict();
                 appendlast(key);
-                vis[key]=true;
                 return evicted;
-            }else{
-                update(key);
-                vis[key]=true;
+            } else {
+                appendlast(key);
             }
-        }else{
-            if(vis[key])update(key);
-            else appendlast(key);
-            vis[key]=true;
         }
         return -1;
     }
 };
+
 const int PAGENUM=512;
 struct Vector{
     //v1,v2,v4,v8,v16;
@@ -180,11 +185,11 @@ struct BuddyList{
         FOR(n)if(arr[i]>0)v.push_back(ma[arr[i]],i);
         assert(PAGENUM==v.checkSz()+cnt);
     }
-    bool continousMalloc(int &msize,int *address,int &cadd){
-        if(!msize)return true;
+    int continousMalloc(int &msize,int *address,int &cadd){
+        if(!msize)return 1;
         int order=-1;
         FOR(i,ma[msize],5)if(v.sz(i)){order=i;break;}
-        if(order==-1)return false;
+        if(order==-1)return 0;
         int block=(1<<order);
         //int left=(1<<order)-msize;
         int idx=v.pop_back(order);
@@ -195,7 +200,7 @@ struct BuddyList{
         FOR(_,idx,idx+msize)arr[_]=-1,address[cadd++]=_,cnt++;
         FOR(_,idx+msize,idx+block)v.push_back(0,_),arr[_]=1;//, debug(v.checkSz());
         msize=0;
-        return true;
+        return 1;
     }
     void discontinuousMalloc(int &msize,int *address,int &cadd){
         if(!msize)return;
@@ -294,7 +299,7 @@ int main(){
                 active.update(key);
             }else{
                 assert(pageLocation[key]!=unused);
-                assert(false);
+                assert(0);
             }
         }else if(c=='F'){
             assert(num<=multi);
@@ -311,7 +316,7 @@ int main(){
                 printf("inactive F %d %d\n",key/multi,key%multi);
             }else if(pageLocation[key]==disk){}
             pageLocation[key]=unused;
-        }else assert(false);
+        }else assert(0);
         //if(c=='X' && seq==282 && num==3)break;
     }
 
@@ -323,11 +328,11 @@ int main(){
         printf("\n");
     }
     puts("active list\n key: ");
-    for (int i = active.first; i != active.NUL && i!=active.UNUSED; i=active.list[i].b) {
+    for (int i = active.first; i != active.NUL; i=active.list[i].b) {
         printf("seqno:%d num:%d\n",i/multi,i%multi+1);
     }
     puts("inactive list\n key: ");
-    for (int i = inactive.first; i != inactive.NUL && i!=inactive.UNUSED; i=inactive.list[i].b) {
+    for (int i = inactive.first; i != inactive.NUL; i=inactive.list[i].b) {
         printf("seqno:%d num:%d\n",i/multi,i%multi+1);
     }
 }

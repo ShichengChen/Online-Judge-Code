@@ -87,13 +87,13 @@ struct ListNode {
     ListNode(int x) : val(x), next(nullptr) {}
     ListNode(int x, ListNode *next) : val(x), next(next) {}
 };
-class Node {
-public:
-    int val;
-    Node* prev;
-    Node* next;
-    Node* child;
-};
+//class Node {
+//public:
+//    int val;
+//    Node* prev;
+//    Node* next;
+//    Node* child;
+//};
 struct TreeNode {
   int val;
   TreeNode *left;
@@ -102,7 +102,33 @@ struct TreeNode {
   TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
   TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
 };
+class Node {
+public:
+    int val;
+    vector<Node*> children;
 
+    Node() {}
+
+    Node(int _val) {
+        val = _val;
+    }
+
+    Node(int _val, vector<Node*> _children) {
+        val = _val;
+        children = _children;
+    }
+};
+class NestedInteger {
+public:
+// Return true if this NestedInteger holds a single integer, rather than a nested list.
+bool isInteger() const;
+// Return the single integer that this NestedInteger holds, if it holds a single integer
+// The result is undefined if this NestedInteger holds a nested list
+int getInteger() const;
+// Return the nested list that this NestedInteger holds, if it holds a nested list
+// The result is undefined if this NestedInteger holds a single integer
+const vector<NestedInteger> &getList() const;
+};
 class Solution {
 //class LRUCache {
     typedef long long ll;
@@ -117,6 +143,7 @@ class Solution {
 #define GET5(a, b, c, d, e, ...) e
 #define F_ORC(...) GET5(__VA_ARGS__, F_OR4, F_OR3, F_OR2, F_OR1)
 #define FOR(...) F_ORC(__VA_ARGS__)(__VA_ARGS__)
+#define EACH(x, a) for (auto& x: a)
     template<class T> bool umin(T& a, const T& b) {return b<a?a=b, 1:0;}
     template<class T> bool umax(T& a, const T& b) {return a<b?a=b, 1:0;}
     string to_string(int v){
@@ -168,29 +195,28 @@ class Solution {
         return y>=0 && x >=0 && y<n && x<m;
     }
 public:
-    int maxn,ans;
-    void dfs(TreeNode* cur,int d){
-        umax(maxn,d);
-        if(!cur)return;
-        if(cur->left)dfs(cur->left,d+1);
-        if(cur->right)dfs(cur->right,d+1);
-    }
-    void dfs2(TreeNode* cur,int d){
-        if(!cur)return;
-        if(d==maxn)ans+=cur->val;
-        if(cur->left)dfs(cur->left,d+1);
-        if(cur->right)dfs(cur->right,d+1);
-    }
-    int deepestLeavesSum(TreeNode* root) {
-        maxn=0,ans=0;
-        if(!root)return 0;
-        dfs(root,1);
-        dfs2(root,1);
+    int scheduleCourse(vector<vector<int>>& arr) {
+        sort(all(arr),[](vt<int>&a,vt<int>&b){return a[1]<b[1];});
+        multiset<int,greater<>>se;
+        int ans=0,day=0;
+        FOR(sz(arr)){
+            if(arr[i][1]-arr[i][0]>day){
+                ans++,day+=arr[i][0];
+                se.insert(arr[i][0]);
+            }else{
+                int a=*(se.begin());
+                if(a>arr[i][0]){
+                    se.erase(se.begin());
+                    se.insert(arr[i][0]);
+                }
+            }
+        }
         return ans;
     }
 };
 int main() {
     Solution s;
+    s.numSubmatrixSumTarget({1,2,3},4);
 //    vector<int>arr={1,1,2,2,2,3};
 //    int idx=max_element(arr.begin(),arr.end())-arr.begin();
 //    int maxn=arr[idx?0:1];

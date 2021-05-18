@@ -12,6 +12,7 @@
   - re-read the code
   - create some samples
   - go through each variables!
+  - draw graphs!
 
 # Implementation problem
   - use function to do boundry check or set values to avoid missing details
@@ -31,9 +32,6 @@
 # Tree structure
   - the leaf node will not execute for (int v:vec[u]) {if(v==fa)continue;dfssum(v,u);sum[u]+=sum[v];***happy[u]=(sum[u]+hidx[u])/2;***}
   - if a tree only have two nodes, root node and left node all have one next edge
-    
-# Geometry problems
-  - draw graphs!
 
 # Modulo operation
   - It can influence the results of sort[D. Maximum Distributed Tree](https://codeforces.com/contest/1401/problem/D)

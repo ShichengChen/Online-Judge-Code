@@ -119,6 +119,8 @@
 	- topological sort for creating no directed cycles graphs.
 - [Checksum](https://codingcompetitions.withgoogle.com/kickstart/round/0000000000436140/000000000068c2c3#problem)
 	- innovation in graph conversion
+- [Broken Clock](https://codingcompetitions.withgoogle.com/codejam/round/0000000000435baf/00000000007ae694)
+	- linear congruence
 
 # How to win myself
 - never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.(do easy problem such as leetcode daily problem.)

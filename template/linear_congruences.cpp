@@ -209,56 +209,90 @@ public:
     friend modnum operator * (const modnum& a, const modnum& b) { return modnum(a) *= b; }
     friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
 };
+ll exgcd( ll a, ll b, ll &x, ll &y ){
+    if ( b==0 ) { x = 1; y = 0; return a; } ll re = exgcd(b,a%b,y,x); y -= x*(a/b); return re;
+}
 
+ll getni( ll a, ll b ){
+    ll x,y,gcd=exgcd(a,b,x,y); if ( gcd==1 ) { if ( x<0 ) return x%b+b; else return x%b; } else return -1;
+}
 using mint = modnum<MOD>;
 const int MAXN = 2e6+20;
-void getnum(string &s,vt<int>& arr){
-    arr.push_back(1);
-    for (int i = 1; i < sz(s); ++i) {
-        if(s[i]!=s[i-1])arr.push_back(1);
-        else arr[sz(arr)-1]++;
-    }
-    if(sz(s)>1)arr[sz(arr)-1]++;
+ll na=1e9;
+ll tick2deg=(12ll*10'000'000'000ll);
+ll circle=tick2deg*360ll;
+enum contype{eh=0,em=1,es=2};
+vt<ll>aim;
+ll tick2v(int type,ll v){
+    if(type==eh)return (v/tick2deg)%360/30;
+    if(type==em)return (v/tick2deg)%360/6;
+    if(type==es)return (v/tick2deg)%360/6;
+    assert(0);
 }
-int cmatch(string &s0,vt<int>& arr0,string &s1,vt<int>& arr1){
-    if(sz(arr0)==1){
-        if(sz(arr1)>1)return -1;
-
-    }else{
-
-    }
+ll modmin(ll a,ll b){
+    return (a-b+circle)%circle;
 }
-void solve() {
-    string s0,s1;
-    read(s0,s1);
-    vt<int>arr0,arr1;
-    getnum(s0,arr0);
-    getnum(s1,arr1);
-    if(s0.back()=='1')arr0.push_back(0);
-    if(sz(arr0)==1){
-        if(sz(arr1)>1){
-            print("IMPOSSIBLE");
-            return;
-        }else if(s0[0]=='0'){
-            if(s0!=s1){
-                print("IMPOSSIBLE");
-                return;
-            }else{
-                print("0");
-                return;
-            }
-        }else{
-            if(s0[0]!=s1[0]){
-                print(sz())
-            }
+ll gcdEx(ll a,ll b,ll &x,ll&y) {
+    if(b!=0){
+        ll r = gcdEx(b,a%b,x,y);
+        ll t = x;
+        x= y;
+        y= t - a/b*y;
+        return r;
+    }else {
+        x= 1;
+        y= 0;
+        return a;
+    }
+
+}
+void linear_congruences(ll a,ll b,ll n){
+    //ax = b (mod n)
+    //am = 1 (mod n)
+    //max = mb (mod n)
+    //x = mb (mod n)
+    if(b% gcd(a,n) == 0){
+        ll x,y,d,c,re;
+        if(n>a) {
+            c= a;
+            a= n;
+            n= c;
+            d= gcdEx(a,n,x,y);
+            re= y*b/d;
+            cout<<"s";
+            cout<<"通解"<<re<<" + Z*"<<a/d<<endl;
+        }else {
+            d= gcdEx(a,n,x,y);
+            re= x*b/d;
+            cout<<"通解"<<re<<" + Z*"<<n/d<<endl;
         }
+    }else {
+        cout<<("Noresult")<<endl;
     }
+
+}
+__int64_t inv11=15709090909091ll;
+void solve() {
+    aim=vt<ll>(3);read(aim);
+    do {
+        ll n=(__int64_t)((__int128)(aim[1]-aim[0])*inv11%circle);
+        n=(n%circle+circle)%circle;
+        ll th=n;
+        ll tm=12ll*n%circle;
+        ll ts=720ll*n%circle;
+        if((708ll*n)%circle==(aim[2]-aim[1]+circle)%circle){
+            print(tick2v(eh,th),tick2v(em,tm), tick2v(es,ts),n%na);
+            //print(cura);
+            return;
+        }
+    } while (next_permutation(all(aim)));
+    assert(0);
 }
 int main() {
 //    ios::sync_with_stdio(0);
 //    cin.tie(0);
-//print(1<<setBitNumber(3));
-//    print(~3);
+    //linear_congruences(11,1,circle);
+    //15709090909091LL
     int t, i=1;
     read(t);
     while(t--) {
@@ -269,15 +303,9 @@ int main() {
     return 0;
 }/*
 
-3
- 2 6
- 1 6
-
- 2 7
- 1 7
-
- 1 7
- 1
+99
+8 10
+1 1 2 2 3 3 9 9
 
 
 

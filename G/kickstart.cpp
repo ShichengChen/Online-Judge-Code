@@ -240,6 +240,10 @@ void solve() {
 }
 
 int main() {
+    int (*a)[3];
+    print(sizeof(a));
+
+
 //    ios::sync_with_stdio(0);
 //    cin.tie(0);
 
