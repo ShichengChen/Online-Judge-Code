@@ -214,8 +214,6 @@ public:
 using mint = modnum<MOD>;
 int n,k;
 void solve() {
-
-
     int i = 2048;
     i <<= 28;
     print(i);

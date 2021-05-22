@@ -146,11 +146,8 @@ class Solution {
 #define EACH(x, a) for (auto& x: a)
     template<class T> bool umin(T& a, const T& b) {return b<a?a=b, 1:0;}
     template<class T> bool umax(T& a, const T& b) {return a<b?a=b, 1:0;}
-    string to_string(int v){
-        std::ostringstream ss;
-        ss << v;
-        return ss.str();
-    }
+    string to_string(int v){std::ostringstream ss;ss << v;return ss.str();}
+    string to_string(ll v){std::ostringstream ss;ss << v;return ss.str();}
     string to_string(char c) {return string(1, c);}
     string to_string(bool b) {return b?"true":"false";}
     string to_string(const char* s) {return string(s);}
@@ -195,23 +192,8 @@ class Solution {
         return y>=0 && x >=0 && y<n && x<m;
     }
 public:
-    int scheduleCourse(vector<vector<int>>& arr) {
-        sort(all(arr),[](vt<int>&a,vt<int>&b){return a[1]<b[1];});
-        multiset<int,greater<>>se;
-        int ans=0,day=0;
-        FOR(sz(arr)){
-            if(arr[i][1]-arr[i][0]>day){
-                ans++,day+=arr[i][0];
-                se.insert(arr[i][0]);
-            }else{
-                int a=*(se.begin());
-                if(a>arr[i][0]){
-                    se.erase(se.begin());
-                    se.insert(arr[i][0]);
-                }
-            }
-        }
-        return ans;
+    bool isPossible(vt<int>& arr) {
+
     }
 };
 int main() {

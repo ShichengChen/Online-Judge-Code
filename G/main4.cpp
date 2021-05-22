@@ -201,33 +201,39 @@ int km(int n)
     return ans;
 }
 
-int n,m;
-void solve(){
-    vector<string>s(2);
-    vector<vector<int>>arr(2,vector<int>(26));
-    read(s);
-    FOR(l,2){
-        FOR(i,26){
-            if(s[l][i]=='A')arr[l][i]=12;
-            else if(s[l][i]=='K')arr[l][i]=11;
-            else if(s[l][i]=='Q')arr[l][i]=10;
-            else if(s[l][i]=='J')arr[l][i]=9;
-            else if(s[l][i]=='T')arr[l][i]=8;
-            else arr[l][i]=s[l][i]-'2';
-        }
+int n;
+string slims(string &s){
+    vector<int>num(26,0);
+    for (int i = 0; i < (int)s.length(); ++i) {
+        num[s[i]-'a']++;
     }
-    //FOR(2)sort(all(arr[i]),greater<>());
-    FOR(2)sort(all(arr[i]));
-    print(arr);
-    memset(w,0,sizeof(w));
-    FOR(i,26)FOR(j,26){
-            if(arr[1][i]==arr[0][j])
-                w[i][j]=1;
-            else if(arr[1][i]>arr[0][j])
-                w[i][j]=2;
-            else w[i][j]=0;
-        }
-    print(km(n));
+    string ans;
+    for (int i = 0; i < 26; ++i) {
+        if(num[i])ans+=('a'+i);
+    }
+    return ans;
+}
+void solve(){
+    freopen("/home/csc/Downloads/love.txt", "r", stdin);
+    string cur;cin>>cur;
+    string a=slims(cur);
+    print(a);
+    vector<string>vec;
+    while(cin>>cur){
+        vec.push_back(slims(cur));
+    }
+    print(vec);
+    sort(vec.begin(),vec.end());
+    print(vec);
+    int idx1 = upper_bound(vec.begin(),vec.end(),a)-vec.begin();
+    int idx0 = lower_bound(vec.begin(),vec.end(),a)-vec.begin();
+    cout << idx1 << " " << idx0 << endl;
+    cout << idx1-idx0 << endl;
+    /*
+ love
+velo low vole lovee volvell lowly lower lover levo loved love lovee lowe lowes lovey lowan lowa evolve loves volvelle lowed love
+elov low elov elov  elov    lowy  elorw elorv elov delov elov elov  elow elosw elovy alnow alow elov   elosv elov     delow elov
+ * */
 }
 int main() {
 //    ios::sync_with_stdio(false);
@@ -235,7 +241,7 @@ int main() {
     //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
     //freopen("/home/csc/G/output.txt", "w", stdout);
     int t=1;
-    read(t);
+    //read(t);
     FOR(t) {
         //write("Case #", i+1, ": ");
         solve();
