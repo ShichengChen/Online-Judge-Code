@@ -122,66 +122,28 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
 }
 const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
 const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-const int MAXN = 4e6+20;
+const int MAXN = 8e3+10;
 const int LOGMAXN = 18;
 ll const MOD=1e9+7;
-int n,m,k;
-vector<ll>vec[3];
-vector<ll>param[3];
-bool f(ll v){
-    for (int l = 0,p=0; l < m; ++l) {
-        if(p==n)return false;
-//        print(l,p);
-//        print(vec[1][l],vec[0][p]);
-        //int used=0;
-        while(l<m && vec[0][p]<=vec[1][l] && vec[0][p]+v>=vec[1][l])l++;//,used=1;
-        if(l==m)return true;
-//        print(vec[1][l],vec[0][p]);
-        //if(used)l--;
-        //if(vec[0][p]+v>=vec[1][l])
-        while(p<n && vec[0][p]+v<vec[1][l])p++;
-
-        if(p==n)return false;
-//        print(vec[1][l],vec[0][p]);
-
-        if(vec[1][l]<vec[0][p]){
-            if(vec[0][p]-vec[1][l]>v)return false;
-            else{
-                ll extra=max((v-(vec[0][p]-vec[1][l]))/2,v-(vec[0][p]-vec[1][l])*2);
-//                print(extra+vec[0][p]);
-                int idx=lower_bound(all(vec[1]),extra+vec[0][p])-vec[1].begin();
-                if(idx==sz(vec[1]))return true;
-                if(extra+vec[0][p]<vec[1][idx])idx--;
-                l=idx;p++;
-            }
-        }
-    }
-    return true;
+int n;double p;
+inline double Q(int a){return (double)a*(a-1)/2;}
+double dfs(vt<vt<double>>&d,int a,int b){
+    if(a<0||b<0)return 0;
+    if(d[a][b]>0)return d[a][b];
+    if(a+b==1)return d[a][b]=1;
+    double all=Q(a+b+1);
+    double l0=p*b/all;
+    double l1=(1-p)*a/all;
+    double p0=Q(a)/all+p*(b+1)*a/all;
+    double p1=Q(b)/all+(1-p)*(a+1)*b/all;
+    return d[a][b]=p0*(dfs(d,a-1,b)+1)+p1*(dfs(d,a,b-1)+1)+l0+l1;
 }
 void solve() {
-    int z;
-    read(n,m,k,z);
-    FOR(2)vec[i].clear(),vec[i]=vector<ll>(k);
-    FOR(2)param[i].clear(),param[i]=vector<ll>(4);
-    FOR(2){read(vec[i]);read(param[i]);}
-    FOR(j,k,n)
-    vec[0].push_back((param[0][0]*vec[0][sz(vec[0])-2]+param[0][1]*vec[0][sz(vec[0])-1]+param[0][2])%param[0][3]+1);
-    FOR(j,k,m)
-        vec[1].push_back((param[1][0]*vec[1][sz(vec[1])-2]+param[1][1]*vec[1][sz(vec[1])-1]+param[1][2])%param[1][3]+1);
-    FOR(2)sort(all(vec[i]));
-    vec[1].erase(unique(all(vec[1])),vec[1].end());
-    m=vec[1].size();
-//    print(vec[0]);
-//    print(vec[1]);
-    ll l=0,r=1e18;
-//    f(21);
-
-    while (l<r){
-        ll mid=(l+r)/2;
-        if(f(mid))r=mid;
-        else l=mid+1;
-    }
-    print(l);
+    read(n,p);
+    vt<vt<double>>d(n,vt<double>(n,0));
+    FOR(n)dfs(d,i,n-i-1);
+    cout.precision(8);
+    FOR(n)print(d[i][n-i-1]);
 }
 int main() {
 //    vector<int>cur={2,4,6,8};
@@ -189,7 +151,7 @@ int main() {
 //    print(lower_bound(all(cur),9)-cur.begin());
 //    ios::sync_with_stdio(0);
 //    cin.tie(0);
-    freopen("/home/csc/Downloads/dislodging_logs_input (1).txt", "r", stdin);
+    freopen("/home/csc/Downloads/elimination_input.txt", "r", stdin);
     freopen("/home/csc/Online-Judge-Code/G/output.txt", "w", stdout);
     int t, i=1;
     read(t);

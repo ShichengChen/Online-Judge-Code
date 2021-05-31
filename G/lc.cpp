@@ -192,8 +192,14 @@ class Solution {
         return y>=0 && x >=0 && y<n && x<m;
     }
 public:
-    bool isPossible(vt<int>& arr) {
-
+    int minMoves2(vector<int>& nums) {
+        sort(all(nums));
+        int len= sz(nums);
+        int ans=0;
+        for (int i:nums) {
+            ans+= abs(i-nums[len/2]);
+        }
+        return ans;
     }
 };
 int main() {

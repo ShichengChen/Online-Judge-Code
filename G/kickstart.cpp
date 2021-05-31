@@ -74,8 +74,12 @@ template<size_t S> string to_string(bitset<S> b) {
 
 template <class T> string to_string(T v) {
     char c=' ';
-    if constexpr (std::is_same_v<T, vector<vector<ll>>>) c='\n';
-    if constexpr (std::is_same_v<T, vector<vector<int>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<ll>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<int>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<double>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<vt<int>>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<vt<ll>>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<vt<double>>>>) c='\n';
     bool f=1;
     string res;
     EACH(x, v) {
@@ -211,50 +215,66 @@ ll const MOD=1e9+7;
 //};
 //
 //using mint = modnum<MOD>;
-//const int MAXN = 2e6+20;
-const int MAXN = 505;
-int f[MAXN*2];
-int findf(int i){return f[i]==i?i:f[i]=findf(f[i]);}
-bool merge(int a,int b){
-    if(findf(a)==findf(b))return false;
-    else{
-        f[f[a]]=f[b];
-        return true;
-    }
+const int MAXN = 2e6+20;
+double w,e;
+double reward(vt<int>arr,int idx){
+    int sum= accumulate(all(arr),0);
+    vt<double>p;
+    FOR(3)p.push_back(arr[i]*1.0/sum);
+    //print(p);
+    return e*p[(idx-1+3)%3]+w*p[(idx-2+3)%3];
 }
+const int alen=60;
 void solve() {
-    int n;read(n);int ans=0;
-    vt<array<int,3>>edge;
-    vt<vt<int>> s(n, vt<int>(n));
-    vt<vt<int>> cost(n, vt<int>(n));
-    read(s,cost);
-    FOR(i,n)FOR(j,n)if(s[i][j]==-1)edge.push_back({cost[i][j],i,n+j}),ans+=cost[i][j];
-    sort(all(edge));
-    reverse(all(edge));
-    {int cur;FOR(n)read(cur);FOR(n)read(cur);}
-    FOR(2*n)f[i]=i;
-    FOR(sz(edge)){
-        if(merge(edge[i][1],edge[i][2]))ans-=edge[i][0];
+    read(w,e);
+    string out[3]={"R","P","S"};
+    vt<vt<vt<double>>>d(alen,vt<vt<double>>(alen,vt<double>(alen,0)));
+    vt<vt<vt<int>>>pre(alen,vt<vt<int>>(alen,vt<int>(alen,-1)));
+    d[1][0][0]=d[0][1][0]=d[0][0][1]=w/3+e/3;
+    pre[1][0][0]=0;pre[0][1][0]=1;pre[0][0][1]=2;
+    vt<vt<int>>id={{1,0,0},{0,1,0},{0,0,1}};
+    FOR(i,alen)FOR(j,alen)FOR(k,alen){
+                if(i+j+k<=1)continue;
+                FOR(l,3){
+                    if(i-id[l][0]<0 || j-id[l][1]<0 || k-id[l][2]<0)continue;
+                    if(umax(d[i][j][k],d[i-id[l][0]][j-id[l][1]][k-id[l][2]]+
+                    reward({i-id[l][0],j-id[l][1],k-id[l][2]},l)))
+                        pre[i][j][k]=l;
+                }
     }
-    print(ans);
+    double maxn=0;vt<int>idx={0,0,0};
+    FOR(i,alen)FOR(j,alen)FOR(k,alen){
+        if(i+j+k==alen)
+            if(umax(maxn,d[i][j][k]))
+                idx={i,j,k};
+    }
+    //print(maxn);
+    vt<int>ans;
+    while(accumulate(all(idx),0)){
+        int i=pre[idx[0]][idx[1]][idx[2]];
+        //print(idx,i);
+        //print(idx,i);
+        ans.push_back(i);
+        FOR(j,3)idx[j]-=id[i][j];
+    }
+    //print(ans);
+    reverse(all(ans));
+    //print(ans);
+    FOR(alen)write(out[ans[i]]);
+    print();
 }
 
 int main() {
-    int (*a)[3];
-    print(sizeof(a));
-
-
 //    ios::sync_with_stdio(0);
 //    cin.tie(0);
 
-
-//    int t, i=1;
-//    read(t);
-//    while(t--) {
-//        cout << "Case #" << i << ": ";
-//        solve();
-//        ++i;
-//    }
+    int t, i=1;
+    read(t);
+    while(t--) {
+        cout << "Case #" << i << ": ";
+        solve();
+        ++i;
+    }
     return 0;
 }/*
 

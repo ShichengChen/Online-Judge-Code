@@ -121,6 +121,8 @@
 	- innovation in graph conversion
 - [Broken Clock](https://codingcompetitions.withgoogle.com/codejam/round/0000000000435baf/00000000007ae694)
 	- linear congruence
+- [Elimination](https://www.facebook.com/codingcompetitions/hacker-cup/2020/round-2/problems/B)
+    - dp from expectation directly instead from probability 
 
 # How to win myself
 - never stop thinking, like workout, train my brain every single day, at least a few minutes for each day.(do easy problem such as leetcode daily problem.)
