@@ -1,10 +1,13 @@
+- [General](#general)
 - [XOR operation](#xor-operation)
 - [Array A to Array B](#array-a-to-array-b)
 - [Operations on an Array](#operations-on-an-array)
 - [Segmentation Coverage Problem](#segmentation-coverage-problem)
 - [Two types of elements very large weights Knapsack problem](#two-types-of-elements-very-large-weights-knapsack-problem)
 
+
 # General
+  - listen to instrumental songs only.
   - dp? binary search? math?
   - find the essentials in the problem instead of trying different samples
   - solving the problem from forward and backward directions.[Construct Target Array With Multiple Sums](https://leetcode.com/explore/featured/card/may-leetcoding-challenge-2021/599/week-2-may-8th-may-14th/3737/)
