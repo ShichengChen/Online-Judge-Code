@@ -36,4 +36,6 @@
 # Modulo operation
   - It can influence the results of sort[D. Maximum Distributed Tree](https://codeforces.com/contest/1401/problem/D)
   
+# Bit operations
+  - (bits[y][x]&state) instead of (bits[y][x]&state)==1
   
