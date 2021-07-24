@@ -214,32 +214,10 @@ public:
 using mint = modnum<MOD>;
 int n,k;
 void solve() {
-    int i = 2048;
-    i <<= 28;
-    print(i);
-    read(n);
-    string s;read(s);
-    s+=s[static_cast<unsigned long>(n - 1)];
-    vt<int>vec;vec.push_back(0);
-    for (int i = 1; i <= n; ++i) {
-        if(s[i]==s[i-1])vec.push_back(i);
-    }
-    vt<int>ans;
-    FOR(n+1){
-        int c=0;
-        if(i!=n && s[i]=='R'){
-            int idx=lower_bound(all(vec),i+1)-vec.begin();
-            c+=vec[idx]-i;
-        }
-        if(i && s[i-1]=='L'){
-            int idx=lower_bound(all(vec),i-1)-vec.begin();
-            while(idx>0 && vec[idx]>i)idx--;
-            if(i && s[i-1]=='L')c+=i-vec[idx];
-        }
 
-        ans.push_back(c);
-    }
-    print(ans);
+}
+int solution(vector<int>&vec){
+
 }
 int main() {
 

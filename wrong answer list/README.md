@@ -11,7 +11,8 @@
   - re-read the problem
   - re-read the code
   - create some samples
-  - go through each variables!
+  - go through each variable!
+  - check boundary situations
   - draw graphs!
 
 # Implementation problem

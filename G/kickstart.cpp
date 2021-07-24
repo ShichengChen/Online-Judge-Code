@@ -23,7 +23,6 @@ template<class T> bool umax(T& a, const T& b) {return a<b?a=b, 1:0;}
 ll FIRSTTRUE(function<bool(ll)> f, ll lb, ll rb) {
     while(lb<rb) {
         ll mb=(lb+rb)/2;
-        //cout << mb << endl;
         f(mb)?rb=mb:lb=mb+1;
     }
     return lb;
@@ -137,137 +136,174 @@ const int LOGMAXN = 18;
 //ll const MOD=998244353;
 ll const MOD=1e9+7;
 
-//template <int MOD_> struct modnum {
-//    static constexpr int MOD = MOD_;
-//    static_assert(MOD_ > 0, "MOD must be positive");
-//private:
-//    using ll = long long;
-//    int v;
-//    static int minv(int a, int m) {
-//        a %= m;
-//        assert(a);
-//        return a == 1 ? 1 : int(m - ll(minv(m, a)) * ll(m) / a);
-//    }
-//public:
-//    modnum() : v(0) {}
-//    modnum(ll v_) : v(int(v_ % MOD)) { if (v < 0) v += MOD; }
-//    explicit operator int() const { return v; }
-//    friend std::ostream& operator << (std::ostream& out, const modnum& n) { return out << int(n); }
-//    friend std::istream& operator >> (std::istream& in, modnum& n) { ll v_; in >> v_; n = modnum(v_); return in; }
-//    friend string to_string(modnum& n){return to_string(n.v);}
-//    //friend void read(int &n){cin>>n;}
-//    friend bool operator == (const modnum& a, const modnum& b) { return a.v == b.v; }
-//    friend bool operator != (const modnum& a, const modnum& b) { return a.v != b.v; }
-//
-//    modnum inv() const {
-//        modnum res;
-//        res.v = minv(v, MOD);
-//        return res;
-//    }
-//    friend modnum inv(const modnum& m) { return m.inv(); }
-//    modnum neg() const {
-//        modnum res;
-//        res.v = v ? MOD-v : 0;
-//        return res;
-//    }
-//    friend modnum neg(const modnum& m) { return m.neg(); }
-//
-//    modnum operator- () const {
-//        return neg();
-//    }
-//    modnum operator+ () const {
-//        return modnum(*this);
-//    }
-//
-//    modnum& operator ++ () {
-//        v ++;
-//        if (v == MOD) v = 0;
-//        return *this;
-//    }
-//    modnum& operator -- () {
-//        if (v == 0) v = MOD;
-//        v --;
-//        return *this;
-//    }
-//    modnum& operator += (const modnum& o) {
-//        v += o.v;
-//        if (v >= MOD) v -= MOD;
-//        return *this;
-//    }
-//    modnum& operator -= (const modnum& o) {
-//        v -= o.v;
-//        if (v < 0) v += MOD;
-//        return *this;
-//    }
-//    modnum& operator *= (const modnum& o) {
-//        v = int(ll(v) * ll(o.v) % MOD);
-//        return *this;
-//    }
-//    modnum& operator /= (const modnum& o) {
-//        return *this *= o.inv();
-//    }
-//    friend modnum operator ++ (modnum& a, int) { modnum r = a; ++a; return r; }
-//    friend modnum operator -- (modnum& a, int) { modnum r = a; --a; return r; }
-//    friend modnum operator + (const modnum& a, const modnum& b) { return modnum(a) += b; }
-//    friend modnum operator - (const modnum& a, const modnum& b) { return modnum(a) -= b; }
-//    friend modnum operator * (const modnum& a, const modnum& b) { return modnum(a) *= b; }
-//    friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
-//};
-//
-//using mint = modnum<MOD>;
-const int MAXN = 2e6+20;
-double w,e;
-double reward(vt<int>arr,int idx){
-    int sum= accumulate(all(arr),0);
-    vt<double>p;
-    FOR(3)p.push_back(arr[i]*1.0/sum);
-    //print(p);
-    return e*p[(idx-1+3)%3]+w*p[(idx-2+3)%3];
+template <int MOD_> struct modnum {
+    static constexpr int MOD = MOD_;
+    static_assert(MOD_ > 0, "MOD must be positive");
+private:
+    using ll = long long;
+    int v;
+    static int minv(int a, int m) {
+        a %= m;
+        assert(a);
+        return a == 1 ? 1 : int(m - ll(minv(m, a)) * ll(m) / a);
+    }
+public:
+    modnum() : v(0) {}
+    modnum(ll v_) : v(int(v_ % MOD)) { if (v < 0) v += MOD; }
+    explicit operator int() const { return v; }
+    friend std::ostream& operator << (std::ostream& out, const modnum& n) { return out << int(n); }
+    friend std::istream& operator >> (std::istream& in, modnum& n) { ll v_; in >> v_; n = modnum(v_); return in; }
+    friend string to_string(modnum& n){return to_string(n.v);}
+    //friend void read(int &n){cin>>n;}
+    friend bool operator == (const modnum& a, const modnum& b) { return a.v == b.v; }
+    friend bool operator != (const modnum& a, const modnum& b) { return a.v != b.v; }
+
+    modnum inv() const {
+        modnum res;
+        res.v = minv(v, MOD);
+        return res;
+    }
+    friend modnum inv(const modnum& m) { return m.inv(); }
+    modnum neg() const {
+        modnum res;
+        res.v = v ? MOD-v : 0;
+        return res;
+    }
+    friend modnum neg(const modnum& m) { return m.neg(); }
+
+    modnum operator- () const {
+        return neg();
+    }
+    modnum operator+ () const {
+        return modnum(*this);
+    }
+
+    modnum& operator ++ () {
+        v ++;
+        if (v == MOD) v = 0;
+        return *this;
+    }
+    modnum& operator -- () {
+        if (v == 0) v = MOD;
+        v --;
+        return *this;
+    }
+    modnum& operator += (const modnum& o) {
+        v += o.v;
+        if (v >= MOD) v -= MOD;
+        return *this;
+    }
+    modnum& operator -= (const modnum& o) {
+        v -= o.v;
+        if (v < 0) v += MOD;
+        return *this;
+    }
+    modnum& operator *= (const modnum& o) {
+        v = int(ll(v) * ll(o.v) % MOD);
+        return *this;
+    }
+    modnum& operator /= (const modnum& o) {
+        return *this *= o.inv();
+    }
+    friend modnum operator ++ (modnum& a, int) { modnum r = a; ++a; return r; }
+    friend modnum operator -- (modnum& a, int) { modnum r = a; --a; return r; }
+    friend modnum operator + (const modnum& a, const modnum& b) { return modnum(a) += b; }
+    friend modnum operator - (const modnum& a, const modnum& b) { return modnum(a) -= b; }
+    friend modnum operator * (const modnum& a, const modnum& b) { return modnum(a) *= b; }
+    friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
+};
+
+template<class F>
+struct fHelper:F{
+    explicit fHelper(F&& f):F(forward<F>(f)){}
+    template<typename... Args>
+    decltype(auto) operator()(Args&&... args) const{
+        return F::operator()(*this,forward<Args>(args)...);
+    }
+};
+template<class F>
+inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
+
+using mint = modnum<MOD>;
+const int MAXN = 8e5+20;
+//ll bits[MAXN][MAXN*MAXN];
+valarray<ll> sum[MAXN*4];
+ll arr[MAXN];
+ll m,p,ep;
+int n;
+ll getv(ll val){
+    int i=0;
+    for (;val>0 && val%p==0; ++i) {val/=p;}
+    return i;
 }
-const int alen=60;
-void solve() {
-    read(w,e);
-    string out[3]={"R","P","S"};
-    vt<vt<vt<double>>>d(alen,vt<vt<double>>(alen,vt<double>(alen,0)));
-    vt<vt<vt<int>>>pre(alen,vt<vt<int>>(alen,vt<int>(alen,-1)));
-    d[1][0][0]=d[0][1][0]=d[0][0][1]=w/3+e/3;
-    pre[1][0][0]=0;pre[0][1][0]=1;pre[0][0][1]=2;
-    vt<vt<int>>id={{1,0,0},{0,1,0},{0,0,1}};
-    FOR(i,alen)FOR(j,alen)FOR(k,alen){
-                if(i+j+k<=1)continue;
-                FOR(l,3){
-                    if(i-id[l][0]<0 || j-id[l][1]<0 || k-id[l][2]<0)continue;
-                    if(umax(d[i][j][k],d[i-id[l][0]][j-id[l][1]][k-id[l][2]]+
-                    reward({i-id[l][0],j-id[l][1],k-id[l][2]},l)))
-                        pre[i][j][k]=l;
-                }
+void updateIdx(int l,int cnt){
+    sum[cnt]={0,0,0,0};
+    if(arr[l]<p)return;
+    if(arr[l]%p==0)sum[cnt][0]=getv(arr[l]);
+    else{
+        sum[cnt][1]=getv(arr[l]-arr[l]%p);
+        sum[cnt][2]=getv(arr[l]+arr[l]%p)-1;
+        sum[cnt][3]=1;
     }
-    double maxn=0;vt<int>idx={0,0,0};
-    FOR(i,alen)FOR(j,alen)FOR(k,alen){
-        if(i+j+k==alen)
-            if(umax(maxn,d[i][j][k]))
-                idx={i,j,k};
+}
+void build(int l,int r,int cnt){
+    if(l==r){
+        updateIdx(l,cnt);
+        return;
     }
-    //print(maxn);
-    vt<int>ans;
-    while(accumulate(all(idx),0)){
-        int i=pre[idx[0]][idx[1]][idx[2]];
-        //print(idx,i);
-        //print(idx,i);
-        ans.push_back(i);
-        FOR(j,3)idx[j]-=id[i][j];
-    }
-    //print(ans);
-    reverse(all(ans));
-    //print(ans);
-    FOR(alen)write(out[ans[i]]);
-    print();
+    int mid=(l+r)/2;
+    build(l,mid,lcnt);
+    build(mid+1,r,rcnt);
+    sum[cnt]=sum[lcnt]+sum[rcnt];
 }
 
+void update(int ql,ll val,int l,int r,int cnt){
+    if(l==r && l==ql){
+        arr[l]=val;
+        updateIdx(l,cnt);
+        return;
+    }
+    int mid=(l+r)/2;
+    if(ql<=mid)update(ql,val,l,mid,lcnt);
+    else update(ql,val,mid+1,r,rcnt);
+    sum[cnt]=sum[lcnt]+sum[rcnt];
+}
+valarray<ll> query(int ql,int qr,int l,int r,int cnt){
+    if(qr<l || ql>r)return {0,0,0,0};
+    if(ql<=l && r<=qr)return sum[cnt];
+    int mid=(l+r)/2;
+    auto a=query(ql,qr,l,mid,lcnt);
+    auto b=query(ql,qr,mid+1,r,rcnt);
+    return a+b;
+}
+void solve() {
+    read(n,m,p);
+    FOR(i,1,n+1) read(arr[i]);
+    build(1,n,1);
+    FOR(m){
+        int type,pos,ql,qr;
+        ll val;
+        read(type);
+        //print(type,i);
+        if(type==1){
+            read(pos,val);
+            update(pos,val,1,n,1);
+        }
+        else{
+            read(ep,ql,qr);
+            auto cur=query(ql,qr,1,n,1);
+            ll ans=cur[0]*ep+cur[1]+cur[3]*getv(ep);
+            if(ep%2==0 && p==2)ans+=cur[2];
+            write(ans," ");
+        }
+    }
+    print();
+}
 int main() {
 //    ios::sync_with_stdio(0);
 //    cin.tie(0);
-
+//set<int>se={1,3,5,7};
+//    print(*lower_bound(all(se),2));
     int t, i=1;
     read(t);
     while(t--) {
@@ -278,9 +314,33 @@ int main() {
     return 0;
 }/*
 
-99
-8 10
-1 1 2 2 3 3 9 9
+1
+5 5
+90 30 40 60
+3 1
+ 3 2
+ 3 3
+ 3 4
+ 3 5
+
+ ##32451
+
+ 1
+5 99
+9 4 3 6
+3 1
+ 3 2
+ 3 3
+ 3 4
+ 3 5
+#3 4 2 5 1
+ 1
+ 10 99
+6 2 4 5 9 30 7 1 8
+ 3 5
+
+
+ #1
 
 
 
