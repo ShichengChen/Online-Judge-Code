@@ -224,86 +224,74 @@ struct fHelper:F{
 template<class F>
 inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
 
+// Recur([&](auto dfs, int u,int f)->void{dfs(f,u);})(0,-1);
 using mint = modnum<MOD>;
-const int MAXN = 8e5+20;
-//ll bits[MAXN][MAXN*MAXN];
-valarray<ll> sum[MAXN*4];
-ll arr[MAXN];
-ll m,p,ep;
-int n;
-ll getv(ll val){
-    int i=0;
-    for (;val>0 && val%p==0; ++i) {val/=p;}
-    return i;
-}
-void updateIdx(int l,int cnt){
-    sum[cnt]={0,0,0,0};
-    if(arr[l]<p)return;
-    if(arr[l]%p==0)sum[cnt][0]=getv(arr[l]);
-    else{
-        sum[cnt][1]=getv(arr[l]-arr[l]%p);
-        sum[cnt][2]=getv(arr[l]+arr[l]%p)-1;
-        sum[cnt][3]=1;
-    }
-}
-void build(int l,int r,int cnt){
-    if(l==r){
-        updateIdx(l,cnt);
-        return;
-    }
-    int mid=(l+r)/2;
-    build(l,mid,lcnt);
-    build(mid+1,r,rcnt);
-    sum[cnt]=sum[lcnt]+sum[rcnt];
-}
-
+const int MAXN = 2e5+20;
+ll sum[MAXN*4];
 void update(int ql,ll val,int l,int r,int cnt){
     if(l==r && l==ql){
-        arr[l]=val;
-        updateIdx(l,cnt);
+        sum[cnt]+=val;
         return;
     }
-    int mid=(l+r)/2;
+    int mid=l+r>>1;
     if(ql<=mid)update(ql,val,l,mid,lcnt);
     else update(ql,val,mid+1,r,rcnt);
-    sum[cnt]=sum[lcnt]+sum[rcnt];
+    sum[cnt]= gcd(sum[lcnt],sum[rcnt]);
 }
-valarray<ll> query(int ql,int qr,int l,int r,int cnt){
-    if(qr<l || ql>r)return {0,0,0,0};
+ll query(int ql,int qr,int l,int r,int cnt){
+    if(qr<l || ql>r)return 0;
     if(ql<=l && r<=qr)return sum[cnt];
-    int mid=(l+r)/2;
-    auto a=query(ql,qr,l,mid,lcnt);
-    auto b=query(ql,qr,mid+1,r,rcnt);
-    return a+b;
+    int mid=l+r>>1;
+    ll a=query(ql,qr,l,mid,lcnt);
+    ll b=query(ql,qr,mid+1,r,rcnt);
+    return gcd(a,b);
 }
+
 void solve() {
-    read(n,m,p);
-    FOR(i,1,n+1) read(arr[i]);
-    build(1,n,1);
-    FOR(m){
-        int type,pos,ql,qr;
-        ll val;
-        read(type);
-        //print(type,i);
-        if(type==1){
-            read(pos,val);
-            update(pos,val,1,n,1);
+    int n,m;
+    read(n,m);
+    vt<vt<tuple<int,int,ll>>>vec(n);
+    vt<vt<int>>qu(n);
+    vt<pair<int,int>>ques;
+    FOR(n-1){
+        int u,v,l;
+        ll a;
+        read(u,v,l,a);u--,v--;
+        vec[u].pb({v,l,a});
+        vec[v].pb({u,l,a});
+    }
+    while (m--){
+        int c,w;
+        read(c,w);
+        qu[c-1].push_back(w);
+        ques.emplace_back(c-1,w);
+    }
+    int N=2e5+1;
+    memset(sum,0,sizeof sum);
+    map<pair<int,int>,ll>ans;
+    Recur([&](auto dfs, int u,int f)->void{
+        for (auto ql:qu[u]) {
+            ll out=query(1,ql,1,N,1);
+            ans[{u,ql}]=out;
         }
-        else{
-            read(ep,ql,qr);
-            auto cur=query(ql,qr,1,n,1);
-            ll ans=cur[0]*ep+cur[1]+cur[3]*getv(ep);
-            if(ep%2==0 && p==2)ans+=cur[2];
-            write(ans," ");
+        for (auto &[v,l,a]:vec[u]) {
+            if(v==f)continue;
+            update(l,a,1,N,1);
+            dfs(v,u);
+            update(l,-a,1,N,1);
         }
+    })(0,-1);
+    for (auto &[i, j]:ques) {
+        write(ans[{i,j}]," ");
     }
     print();
 }
 int main() {
 //    ios::sync_with_stdio(0);
 //    cin.tie(0);
-//set<int>se={1,3,5,7};
-//    print(*lower_bound(all(se),2));
+//print(gcd(5,0));
+//print(gcd(0,0));
+//print(gcd(10,0));
     int t, i=1;
     read(t);
     while(t--) {
@@ -312,53 +300,42 @@ int main() {
         ++i;
     }
     return 0;
-}/*
+}
+/*
+re-read the problem
+re-read the code
+create some samples
+go through each variable!
+check boundary situations
+draw graphs!
 
-1
-5 5
-90 30 40 60
-3 1
- 3 2
- 3 3
- 3 4
- 3 5
-
- ##32451
-
- 1
-5 99
-9 4 3 6
-3 1
- 3 2
- 3 3
- 3 4
- 3 5
-#3 4 2 5 1
- 1
- 10 99
-6 2 4 5 9 30 7 1 8
- 3 5
+listen to instrumental songs only.
+dp? binary search? math?
+find the essentials in the problem instead of trying different samples
+solving the problem from forward and backward directions.
+abstract the problem so that I can write condensed code.
+changed variables vs unchanged variables
+formulate the problem by math notations
+ */
 
 
- #1
 
-
+/*
 
 99
-2 1 1 1
-2 2 1 1
-2 2 2 2
-2 1 2 1
-5 2 2 2
-5 3 3 3
-5 5 5 5
+7
+1 2 3 4 4 6 7
+6
+ 1 2 3 4 4 6
+ 6
+ 0 2 3 4 5 6
+ 6
+ 0 2 2 4 5 6
+ 6
+ 0 2 2 3 4 5
+ 3 1 2 2
+ 3 1 2 4
 
 
- 1 1 1
-H
-H H H H H H H H H H H H H H H H H H H H H H H H H H H H M
-M H M H M H M H M H M H M H M H M H M H M H M H M H H M M H M
-M M M M M M M M M M M M M M M M M M M M M M M M M M M M
-M M M M M M M M M M M M M M M M M M M M M M M M M M M M M M
-H H H H C
+
  * */

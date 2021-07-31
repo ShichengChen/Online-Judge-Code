@@ -38,3 +38,9 @@
 
 # Implementation Problem
   - list all sitations!! and then write code. 
+
+# Range GCD with limitations [Round B Kick Start 2021 Truck Delivery](https://codingcompetitions.withgoogle.com/kickstart/round/0000000000435a5b/000000000077a885#problem)
+  - Segment tree can get GCD for multiple values with a certain range
+  - Each road i has a toll which charges amount Ai if the weight of the load is greater than or equal to a load-limit Li. 
+  - When Lq>=load>=Li,Lj,Lk, we need to get gcd(Ai,Aj,Ak).
+  - 
