@@ -227,71 +227,24 @@ inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
 // Recur([&](auto dfs, int u,int f)->void{dfs(f,u);})(0,-1);
 using mint = modnum<MOD>;
 const int MAXN = 2e5+20;
-ll sum[MAXN*4];
-void update(int ql,ll val,int l,int r,int cnt){
-    if(l==r && l==ql){
-        sum[cnt]+=val;
-        return;
-    }
-    int mid=l+r>>1;
-    if(ql<=mid)update(ql,val,l,mid,lcnt);
-    else update(ql,val,mid+1,r,rcnt);
-    sum[cnt]= gcd(sum[lcnt],sum[rcnt]);
-}
-ll query(int ql,int qr,int l,int r,int cnt){
-    if(qr<l || ql>r)return 0;
-    if(ql<=l && r<=qr)return sum[cnt];
-    int mid=l+r>>1;
-    ll a=query(ql,qr,l,mid,lcnt);
-    ll b=query(ql,qr,mid+1,r,rcnt);
-    return gcd(a,b);
-}
+
 
 void solve() {
-    int n,m;
-    read(n,m);
-    vt<vt<tuple<int,int,ll>>>vec(n);
-    vt<vt<int>>qu(n);
-    vt<pair<int,int>>ques;
-    FOR(n-1){
-        int u,v,l;
-        ll a;
-        read(u,v,l,a);u--,v--;
-        vec[u].pb({v,l,a});
-        vec[v].pb({u,l,a});
-    }
-    while (m--){
-        int c,w;
-        read(c,w);
-        qu[c-1].push_back(w);
-        ques.emplace_back(c-1,w);
-    }
-    int N=2e5+1;
-    memset(sum,0,sizeof sum);
-    map<pair<int,int>,ll>ans;
-    Recur([&](auto dfs, int u,int f)->void{
-        for (auto ql:qu[u]) {
-            ll out=query(1,ql,1,N,1);
-            ans[{u,ql}]=out;
-        }
-        for (auto &[v,l,a]:vec[u]) {
-            if(v==f)continue;
-            update(l,a,1,N,1);
-            dfs(v,u);
-            update(l,-a,1,N,1);
-        }
-    })(0,-1);
-    for (auto &[i, j]:ques) {
-        write(ans[{i,j}]," ");
-    }
-    print();
+    int n,m,k,r0,r1,c0,c1;
+    read(n,m,k);
+    read(r0,c0,r1,c1);
+    int ans=min({r0-1,c0-1,n-r1,m-c1});
+    ans+=(r1-r0+1)*(c1-c0+2);
+    if(c0==1)ans-=(r1-r0+1);
+    if(c1==m)ans-=(r1-r0+1);
+    ans+=(c1-c0+1)*(r1-r0+2);
+    if(r0==1)ans-=(c1-c0+1);
+    if(r1==n)ans-=(c1-c0+1);
+    print(ans);
 }
 int main() {
 //    ios::sync_with_stdio(0);
 //    cin.tie(0);
-//print(gcd(5,0));
-//print(gcd(0,0));
-//print(gcd(10,0));
     int t, i=1;
     read(t);
     while(t--) {
@@ -323,19 +276,14 @@ formulate the problem by math notations
 /*
 
 99
-7
-1 2 3 4 4 6 7
-6
- 1 2 3 4 4 6
- 6
- 0 2 3 4 5 6
- 6
- 0 2 2 4 5 6
- 6
- 0 2 2 3 4 5
- 3 1 2 2
- 3 1 2 4
+3 5 1
+2 2 3 4
 
+ 1 1 1
+1 1 1 1
+
+ 5 4 1
+ 2 2 3 3
 
 
  * */

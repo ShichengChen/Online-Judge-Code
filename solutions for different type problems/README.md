@@ -43,4 +43,6 @@
   - Segment tree can get GCD for multiple values with a certain range
   - Each road i has a toll which charges amount Ai if the weight of the load is greater than or equal to a load-limit Li. 
   - When Lq>=load>=Li,Lj,Lk, we need to get gcd(Ai,Aj,Ak).
-  - 
+
+# Use the biggest value to represent a group of values [Problem C: Quarantine](https://www.facebook.com/codingcompetitions/hacker-cup/2020/round-1/problems/C)
+  - use one value to represent a group of values

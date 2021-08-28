@@ -15,6 +15,9 @@
   - check boundary situations
   - draw graphs!
 
+# Encounter a bug
+  - **reading** the code directly is the most efficient way instead of **printing** intermediate results
+
 # Implementation problem
   - use function to do boundry check or set values to avoid missing details
   - while loop, check if it is a infinite loop

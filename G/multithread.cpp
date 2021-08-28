@@ -214,8 +214,8 @@ public:
 };
 
 template<class F>
-    struct fHelper:F{
-        explicit fHelper(F&& f):F(forward<F>(f)){}
+struct fHelper:F{
+    explicit fHelper(F&& f):F(forward<F>(f)){}
     template<typename... Args>
     decltype(auto) operator()(Args&&... args) const{
         return F::operator()(*this,forward<Args>(args)...);
@@ -227,48 +227,25 @@ inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
 // Recur([&](auto dfs, int u,int f)->void{dfs(f,u);})(0,-1);
 using mint = modnum<MOD>;
 const int MAXN = 1e6+20;
-
-void solve() {
-    string s;
-    int k;
-    read(s,k);
-    vt<string>arr(k);
-    read(arr);
-    if(s.length()==1){
-        print(0);return;
-    }else{
-        vt<vt<int>>w(26,vt<int>(26,10000));
-        FOR(26)w[i][i]=0;
-        int minn= 10000;
-        FOR(k)w[arr[i][0]-'A'][arr[i][1]-'A']=1;
-        FOR(q,26)FOR(i,26)FOR(j,26)w[i][j]=min(w[i][q]+w[q][j],w[i][j]);
-        FOR(v,26){
-            int cur=0;
-            FOR(j, sz(s)){
-                int u=s[j]-'A';
-                cur+=w[u][v];
-            }
-            umin(minn,cur);
-        }
-        print(minn==10000?-1:minn);
+template<typename E>
+class BlockQue{
+public:
+    void push(E i){
+        print("push",i);
     }
-}
+    void pop(){
+        print("pop");
+    }
+};
 int main() {
-//    vector<int>cur={2,4,6,8};
-//    print(lower_bound(all(cur),3)-cur.begin());
-//    print(lower_bound(all(cur),9)-cur.begin());
-//    ios::sync_with_stdio(0);
-//    cin.tie(0);
-freopen("/home/csc/Downloads/consistency_chapter_2_input.txt", "r", stdin);
-freopen("/home/csc/Downloads/output.txt", "w", stdout);
-//freopen("/home/csc/Online-Judge-Code/G/output.txt", "w", stdout);
-    int t, i=1;
-    read(t);
-    while(t--) {
-        cout << "Case #" << i << ": ";
-        solve();
-        ++i;
-    }
+
+    print(thread::hardware_concurrency());
+    BlockQue<int>que;
+    thread t1(&BlockQue<int>::push,&que,7);
+    thread t2(&BlockQue<int>::pop,&que);
+
+    t1.join();
+    t2.join();
     return 0;
 }
 /*
