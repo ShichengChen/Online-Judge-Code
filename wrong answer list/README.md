@@ -1,10 +1,10 @@
 - [General](#general)
+- [Encounter a bug](#encounter-a-bug)
 - [Dynamic programming](#dynamic-programming)
 - [STL container](#stl-container)
   * [Associative containers](#associative-containers)
   * [Sequence containers](#sequence-containers)
 - [Tree structure](#tree-structure)
-- [Geometry problems](#geometry-problems)
 - [Modulo operation](#modulo-operation)
 
 # General
