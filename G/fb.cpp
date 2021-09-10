@@ -229,38 +229,104 @@ using mint = modnum<MOD>;
 const int MAXN = 1e6+20;
 
 void solve() {
-    string s;
-    int k;
-    read(s,k);
-    vt<string>arr(k);
-    read(arr);
-    if(s.length()==1){
-        print(0);return;
-    }else{
-        vt<vt<int>>w(26,vt<int>(26,10000));
-        FOR(26)w[i][i]=0;
-        int minn= 10000;
-        FOR(k)w[arr[i][0]-'A'][arr[i][1]-'A']=1;
-        FOR(q,26)FOR(i,26)FOR(j,26)w[i][j]=min(w[i][q]+w[q][j],w[i][j]);
-        FOR(v,26){
-            int cur=0;
-            FOR(j, sz(s)){
-                int u=s[j]-'A';
-                cur+=w[u][v];
-            }
-            umin(minn,cur);
-        }
-        print(minn==10000?-1:minn);
+    int n;
+    read(n);
+    vt<int>w(n);
+    vt<ll>d(n,0);
+    vt<vt<int>>vec(n);
+    read(w);
+    FOR(n-1){
+        int u,v;
+        read(u,v);
+        vec[u-1].push_back(v-1);
+        vec[v-1].push_back(u-1);
     }
+    if(n==1){print(w[0]);return;}
+    auto DFS=Recur([&](auto dfs, int u,int f)->void{
+        d[u]=w[u];
+        ll maxn=0;
+        EACH(v,vec[u])if(v!=f){
+            dfs(v,u);
+            umax(maxn,d[v]);
+        }
+        d[u]+=maxn;
+    });
+    multiset<ll,greater<>>se={0,0};
+    EACH(v,vec[0]){
+        DFS(v,0);
+        se.insert(d[v]);
+    }
+    auto it=se.begin();it++;
+    print(*se.begin()+w[0]+*it);
+}
+struct Point {
+    double x, y;
+    Point(double x=0, double y=0):x(x),y(y) { }
+};
+const double eps = 1e-8;
+int dcmp(double x) {
+    if(fabs(x) < eps) return 0; else return x < 0 ? -1 : 1;
+}
+bool operator == (const Point& a, const Point &b) {
+    return dcmp(a.x-b.x) == 0 && dcmp(a.y-b.y) == 0;
+}
+typedef Point Vector;
+Vector operator + (const Vector& A, const Vector& B) { return Vector(A.x+B.x, A.y+B.y); }
+Vector operator - (const Point& A, const Point& B) { return Vector(A.x-B.x, A.y-B.y); }
+Vector operator * (const Vector& A, double p) { return Vector(A.x*p, A.y*p); }
+Vector operator / (const Vector& A, double p) { return Vector(A.x/p, A.y/p); }
+double Cross(const Vector& A, const Vector& B) { return A.x*B.y - A.y*B.x; }
+double Dot(const Vector& A, const Vector& B) { return A.x*B.x + A.y*B.y; }
+bool SegmentProperIntersection(const Point& a1, const Point& a2, const Point& b1, const Point& b2) {
+    double c1 = Cross(a2-a1,b1-a1), c2 = Cross(a2-a1,b2-a1),
+            c3 = Cross(b2-b1,a1-b1), c4=Cross(b2-b1,a2-b1);
+    return dcmp(c1)*dcmp(c2)<0 && dcmp(c3)*dcmp(c4)<0;
+}
+bool OnSegment(const Point& p, const Point& a1, const Point& a2) {
+    return dcmp(Cross(a1-p, a2-p)) == 0 && dcmp(Dot(a1-p, a2-p)) < 0;
+}
+
+bool InTriangle2D(vector<double> point, vector<vector<double>> triangle) {
+    Point cpoint(point[0],point[1]);
+    vector<Point>cpoints;
+    for (int i = 0; i < (int)triangle.size(); ++i)
+        cpoints.emplace_back(triangle[i][0],triangle[i][1]);
+    cpoint+(cpoint-cpoints[2])*1000
+    bool c01= SegmentProperIntersection(cpoint,cpoints[2],cpoints[1],cpoints[0]);
+    bool c02= SegmentProperIntersection(cpoint,cpoints[1],cpoints[2],cpoints[0]);
+    bool c12= SegmentProperIntersection(cpoint,cpoints[0],cpoints[1],cpoints[2]);
+    bool d01 = OnSegment(cpoint,cpoints[0],cpoints[1]);
+    bool d02 = OnSegment(cpoint,cpoints[0],cpoints[2]);
+    bool d12 = OnSegment(cpoint,cpoints[1],cpoints[2]);
+    bool e01 = OnSegment(cpoints[0],cpoint,cpoints[1])||OnSegment(cpoints[1],cpoint,cpoints[0]);
+    bool e02 = OnSegment(cpoints[0],cpoint,cpoints[2])||OnSegment(cpoints[2],cpoint,cpoints[0]);
+    bool e12 = OnSegment(cpoints[1],cpoint,cpoints[2])||OnSegment(cpoints[2],cpoint,cpoints[1]);
+    bool notClick=true;
+    for (int i = 0; i < (int)triangle.size(); ++i)
+        notClick=notClick&&(!(cpoints[i]==cpoint));
+    bool noIntersection=((!c01)&&(!c02)&&(!c12));
+    bool notOnLines=(!d01)&&(!d02)&&(!d12);
+    bool notGeneralLines=(!e01)&&(!e02)&&(!e12);
+    //return (d01||d02||d12)||((!c01)&&(!c02)&&(!c12));
+    return noIntersection&&notOnLines&&notGeneralLines&&notClick;
 }
 int main() {
-//    vector<int>cur={2,4,6,8};
-//    print(lower_bound(all(cur),3)-cur.begin());
-//    print(lower_bound(all(cur),9)-cur.begin());
+/*
+2
+0
+1
+3
+2
+0 0
+0 2
+2 0
+ * */
+
+
 //    ios::sync_with_stdio(0);
 //    cin.tie(0);
-freopen("/home/csc/Downloads/consistency_chapter_2_input.txt", "r", stdin);
-freopen("/home/csc/Downloads/output.txt", "w", stdout);
+//freopen("/home/csc/Downloads/gold_mine_chapter_1_input.txt", "r", stdin);
+//freopen("/home/csc/Downloads/output.txt", "w", stdout);
 //freopen("/home/csc/Online-Judge-Code/G/output.txt", "w", stdout);
     int t, i=1;
     read(t);
