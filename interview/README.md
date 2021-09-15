@@ -2,6 +2,8 @@
 - never over-confident
   - write code fast, finish code first and then polish it
   - thinking for at least on minute or enumerate all situations even for simple problems
+  - do not answer to fast  
+
 
 # Preparation
 - why come to the company
