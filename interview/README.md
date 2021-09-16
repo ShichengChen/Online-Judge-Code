@@ -8,6 +8,7 @@
 # Preparation
 - why come to the company
 - what does the company do
+- self introduction
 - if encounter unknown problem, I can ask for thinking 10 seconds
 
 
