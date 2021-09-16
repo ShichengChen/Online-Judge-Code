@@ -7,6 +7,7 @@
 
 # Preparation
 - why come to the company
+- what does the company do
 - if encounter unknown problem, I can ask for thinking 10 seconds
 
 
