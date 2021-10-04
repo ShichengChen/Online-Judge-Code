@@ -4,6 +4,8 @@
   - thinking for at least on minute or enumerate all situations even for simple problems
   - do not answer to fast  
 
+- solve problem from the easiest way
+
 
 # Preparation
 - why come to the company
