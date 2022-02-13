@@ -3,6 +3,12 @@
 typedef long long ll;
 using namespace std;
 using namespace __gnu_pbds;
+template<class T>
+using ordered_set = tree<T, null_type,less<T>, rb_tree_tag, tree_order_statistics_node_update> ;
+template<class key, class value, class cmp = std::less<key>>
+using ordered_map = tree<key, value, cmp, rb_tree_tag, tree_order_statistics_node_update>;
+// find_by_order(k)  returns iterator to kth element starting from 0;
+// order_of_key(k) returns count of elements strictly smaller than k;
 #define lcnt (cnt<<1)
 #define rcnt (cnt<<1|1)
 #define vt vector
@@ -131,6 +137,29 @@ mt19937 mt_rng(chrono::steady_clock::now().time_since_epoch().count());
 ll randint(ll a, ll b) {
     return uniform_int_distribution<ll>(a, b)(mt_rng);
 }
+mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+inline int64_t random_long(long long l = LLONG_MIN,long long r = LLONG_MAX){
+    uniform_int_distribution<int64_t> generator(l,r);
+    return generator(rng);
+}
+struct custom_hash { // Credits: https://codeforces.com/blog/entry/62393
+    static uint64_t splitmix64(uint64_t x) {
+        // http://xorshift.di.unimi.it/splitmix64.c
+        x += 0x9e3779b97f4a7c15;
+        x = (x ^ (x >> 30)) * 0xbf58476d1ce4e5b9;
+        x = (x ^ (x >> 27)) * 0x94d049bb133111eb;
+        return x ^ (x >> 31);
+    }
+    size_t operator()(uint64_t x) const {
+        static const uint64_t FIXED_RANDOM = chrono::steady_clock::now().time_since_epoch().count();
+        return splitmix64(x + FIXED_RANDOM);
+    }
+    template<typename L, typename R>
+    size_t operator()(pair<L,R> const& Y) const{
+        static const uint64_t FIXED_RANDOM = chrono::steady_clock::now().time_since_epoch().count();
+        return splitmix64(Y.first * 31ull + Y.second + FIXED_RANDOM);
+    }
+};
 template<class T, class U> void vti(vt<T> &v, U x, size_t n) {v=vt<T>(n, x);}
 template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     v=vt<T>(n);
@@ -161,7 +190,7 @@ public:
     friend std::ostream& operator << (std::ostream& out, const modnum& n) { return out << int(n); }
     friend std::istream& operator >> (std::istream& in, modnum& n) { ll v_; in >> v_; n = modnum(v_); return in; }
     friend string to_string(modnum& n){return to_string(n.v);}
-    //friend void read(int &n){cin>>n;}
+    friend void read(int &n){cin>>n;}
     friend bool operator == (const modnum& a, const modnum& b) { return a.v == b.v; }
     friend bool operator != (const modnum& a, const modnum& b) { return a.v != b.v; }
 
@@ -235,133 +264,99 @@ inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
 // Recur([&](auto dfs, int u,int f)->void{dfs(f,u);})(0,-1);
 using mint = modnum<MOD>;
 const int MAXN = 2e5+20;
-
-const double eps = 1e-8;
-int dcmp(double x) { if(fabs(x) < eps) return 0; else return x < 0 ? -1 : 1; }
-
-const double PI = acos(-1.0);
-double torad(double deg) { return deg/180 * PI; }
-
-
-
-typedef Point Vector;
-
-Vector operator + (const Vector& A, const Vector& B) { return Vector(A.x+B.x, A.y+B.y); }
-Vector operator - (const Point& A, const Point& B) { return Vector(A.x-B.x, A.y-B.y); }
-Vector operator * (const Vector& A, double p) { return Vector(A.x*p, A.y*p); }
-Vector operator / (const Vector& A, double p) { return Vector(A.x/p, A.y/p); }
-bool operator < (const Point& a, const Point& b) {
-    return a.x < b.x || (a.x == b.x && a.y < b.y);
-}
-bool operator == (const Point& a, const Point &b) {
-    return dcmp(a.x-b.x) == 0 && dcmp(a.y-b.y) == 0;
-}
-bool operator != (const Point& a, const Point &b) {return !(a==b);}
-double Dot(const Vector& A, const Vector& B) { return A.x*B.x + A.y*B.y; }
-double Det(const Vector& A, const Vector& B){return A.x*B.y - A.y*B.x;}
-double Length(const Vector& A) { return sqrt(Dot(A, A)); }
-double Angle(const Vector& A, const Vector& B) { return acos(Dot(A, B) / Length(A) / Length(B)); }
-double Rad2pi(const Vector& A, const Vector& B){return atan2(Det(A,B), Dot(A,B));  }
-double Cross(const Vector& A, const Vector& B) { return A.x*B.y - A.y*B.x; }
-Point GetLineIntersection(const Point& P, const Point& v, const Point& Q, const Point& w) {
-    Vector u = P-Q;
-    double t = Cross(w, u) / Cross(v, w);
-    return P+v*t;
-}
-double DistanceToSegment(const Point& P, const Point& A, const Point& B) {
-    if(A == B) return Length(P-A);
-    Vector v1 = B - A, v2 = P - A, v3 = P - B;
-    if(dcmp(Dot(v1, v2)) < 0) return Length(v2);
-    else if(dcmp(Dot(v1, v3)) > 0) return Length(v3);
-    else return fabs(Cross(v1, v2)) / Length(v1);
-}
-Vector Rotate(const Vector& A, double rad) {
-    return Vector(A.x*cos(rad)-A.y*sin(rad), A.x*sin(rad)+A.y*cos(rad));
-}
-bool SegmentProperIntersection(const Point& a1, const Point& a2, const Point& b1, const Point& b2) {
-    double c1 = Cross(a2-a1,b1-a1), c2 = Cross(a2-a1,b2-a1),
-            c3 = Cross(b2-b1,a1-b1), c4=Cross(b2-b1,a2-b1);
-    return dcmp(c1)*dcmp(c2)<0 && dcmp(c3)*dcmp(c4)<0;
-}
-bool OnSegment(const Point& p, const Point& a1, const Point& a2) {
-    return dcmp(Cross(a1-p, a2-p)) == 0 && dcmp(Dot(a1-p, a2-p)) < 0;
-}
-Vector Normal(Vector A) {
-    double L = Length(A);
-    return Vector(-A.y/L, A.x/L);
-}
-Point GetLineProjection(Point P, Point A, Point B) {
-    Vector v = B-A;
-    return A+v*(Dot(v, P-A) / Dot(v, v));
-}
-double DistanceToLine(Point P, Point A, Point B) {
-    Vector v1 = B - A, v2 = P - A;
-    return fabs(Cross(v1, v2)) / Length(v1); // 如果不取绝对值，得到的是有向距离
-}
-bool OnLine(Point P, Point A, Point B){return dcmp(DistanceToLine(P,A,B))==0;}
-int IsPointInPolygon(const Point& p, const vector<Point> poly){
-    int wn = 0;
-    int n = poly.size();
-    for(int i = 0; i < n; i++){
-        const Point& p1 = poly[i];
-        const Point& p2 = poly[(i+1)%n];
-        if(p1 == p || p2 == p || OnSegment(p, p1, p2)) return -1; // 在边界上
-        int k = dcmp(Cross(p2-p1, p-p1));
-        int d1 = dcmp(p1.y - p.y);
-        int d2 = dcmp(p2.y - p.y);
-        if(k > 0 && d1 <= 0 && d2 > 0) wn++;
-        if(k < 0 && d2 <= 0 && d1 > 0) wn--;
+struct Node{
+    vt<mint>a;
+    Node(mint a0=1,mint a1=0){a.resize(2);a[0]=a0,a[1]=a1;}
+    Node operator *(const Node &cur)const{
+        return {
+                a[0]*cur.a[0]+(1-a[0])*cur.a[1],
+                a[1]*cur.a[0]+(1-a[1])*cur.a[1],
+        };
     }
-    if (wn != 0) return 1; // 内部
-    return 0; // 外部
-}
+    Node operator /(const int i){
+        a[0]/=mint(i);
+        a[1]/=mint(i);
+        return *this;
+    }
+    friend string to_string(Node cur){return to_string(cur.a[0])+" "+  to_string(cur.a[1]);}
+};
 void solve() {
-    int n;
-    read(n);
-    vt<Point>arr(n);
-    read(arr);
-    {
-        Point cur;read(cur);
-        FOR(n)arr[i]=arr[i]-cur;
-    }
-//print(arr);
-//    sort(all(arr),[&](Point a,Point b){
-//        double r0= Rad2pi(Point(0,0),a),r1=Rad2pi(Point(0,0),b);
-//        if(dcmp(r0-r1)==0)return Length(a)< Length(b);
-//        return r0<r1;
-//    });
-    double ans=1e15;
-    vt<vt<vt<double>>>d(n,vt<vt<double>>(n,vt<double>(2,1e15)));
-    auto updated=[&](Point cur, int i,int j){
-        if(OnLine(cur,arr[i],arr[j]))return;
-        double d0=Length(arr[i]-cur);
-        double d1=Length(arr[j]-cur);
-        umin(d[i][j][Cross(arr[j]-arr[i],cur-arr[j])>0],d0+d1);
-    };
-    FOR(i,0,n)FOR(j,i+1,n)FOR(k,j+1,n){
-                //print(IsPointInPolygon(Point({0,0}),{arr[i],arr[j],arr[k]}));
-                //print(arr[i],arr[j],arr[k]);
-        if(IsPointInPolygon(Point({0,0}),{arr[i],arr[j],arr[k]})==1){
-            umin(ans, Length(arr[i]-arr[j])+Length(arr[i]-arr[k])+
-                            Length(arr[k]-arr[j]));
+    int n,q,p;
+    read(n,q,p);
+    const int bitl=20;
+    vt<vt<int>>fa(n+1,vt<int>(bitl,0));
+    vt<int>d(n+1,0);
+    vt<vt<Node>>pro(n+1,vt<Node>(bitl,Node(1,0)));
+    pro[1][0]=Node(p,p)/1000000;
+    d[1]=1;
+    FOR(u,1,n+1){
+        if(u!=1){
+            int a,b,c;
+            read(a,b,c);
+            fa[u][0]=a;
+            d[u]=d[a]+1;
+            pro[u][0]=Node(b,c)/1000000;
         }
-        updated(arr[k],i,j);
-        updated(arr[j],i,k);
-        updated(arr[i],k,j);
-    }
-    FOR(i,0,n)FOR(j,i+1,n){
-        if(arr[i]!=Point({0,0}) && arr[j]!=Point({0,0}) &&
-        OnSegment(Point(0,0),arr[i],arr[j])){
-            umin(ans,d[i][j][0]+d[i][j][1]);
+        FOR(i,1,bitl){
+            int B = fa[u][i-1];
+            fa[u][i]=fa[B][i-1];
+            pro[u][i]=pro[B][i-1]*pro[u][i-1];
         }
     }
-    if(ans>=1e15)print("IMPOSSIBLE");
-    else print(ans);
+    while (q--){
+        int u,v;
+        read(u,v);
+        if(d[u]<d[v])swap(u,v);
+        int curu=u,curv=v;
+        Node accu=Node(),accv=Node();
+        if(d[curu]>d[curv]){
+            for (int i = bitl-1; i >= 0; --i) {
+                if(d[curu]-(1<<i)>=d[curv]){
+                    accu=pro[curu][i]*accu;
+                    curu=fa[curu][i];
+                }
+            }
+        }
+        assert(d[curu]==d[curv]);
+        if(curu!=curv){
+            for (int i = bitl-1; i >= 0; --i) {
+                if(fa[curu][i]!=fa[curv][i]){
+                    accu=pro[curu][i]*accu;
+                    accv=pro[curv][i]*accv;
+                    curu=fa[curu][i];
+                    curv=fa[curv][i];
+                }
+            }
+            assert(curu!=curv);
+            accu=pro[curu][0]*accu;
+            accv=pro[curv][0]*accv;
+            curu=fa[curu][0];
+            curv=fa[curv][0];
+        }
 
+//        debug(curu);
+        Node s=pro[curu][19];
+//        debug(s,accu,accv);
+        mint ans=s.a[0]*accu.a[0]*accv.a[0]+(1-s.a[0])*accu.a[1]*accv.a[1];
+        write(ans," ");
+    }
+    print();
 }
 int main() {
+//    Test a=Test({1,2});
+//    Test b=Test({3,4});
+//    b=a;
+//    print(a.a[0],a.a[1]);
+//    print(b.a[0],b.a[1]);
+//    a.a[0]=5;
+//    print(a.a[0],a.a[1]);
+//    print(b.a[0],b.a[1]);
+    //print(Test({1,2})*Test({3,4}));
 //    ios::sync_with_stdio(0);
 //    cin.tie(0);
+//set<int>se={1,2,3};
+//print(se.erase(4));
+//print(se.erase(3));
     int t, i=1;
     read(t);
     while(t--) {
@@ -393,14 +388,10 @@ formulate the problem by math notations
 /*
 
 99
-3 5 1
-2 2 3 4
+ 10
+ 2345678901
 
- 1 1 1
-1 1 1 1
-
- 5 4 1
- 2 2 3 3
-
+ 19
+ 01234567898765432101
 
  * */
