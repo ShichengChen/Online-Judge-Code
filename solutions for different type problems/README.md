@@ -7,13 +7,20 @@
 
 
 # General
-  - listen to instrumental songs only.
-  - dp? binary search? math?
-  - find the essentials in the problem instead of trying different samples
-  - solving the problem from forward and backward directions.[Construct Target Array With Multiple Sums](https://leetcode.com/explore/featured/card/may-leetcoding-challenge-2021/599/week-2-may-8th-may-14th/3737/)
-  - abstract the problem so that I write condensed code.
-  - changed variables vs unchanged variables
-  - formulate the problem by math notations
+  - Before Coding
+    - listen to instrumental songs only.
+    - not sleepy
+  - Solve problems
+    - find the essentials in the problem instead of trying different samples
+      - changed variables vs unchanged variables
+      - formulate the problem by math notations
+    - think from possible answers
+      - dp? binary search? math?
+      - solving the problem from forward and backward directions.[Construct Target Array With Multiple Sums](https://leetcode.com/explore/featured/card/may-leetcoding-challenge-2021/599/week-2-may-8th-may-14th/3737/)
+  - Prepare to code
+    - abstract the problem so that I write condensed code.
+  
+
 
 
 # XOR operation
