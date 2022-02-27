@@ -5,6 +5,8 @@ using namespace std;
 using namespace __gnu_pbds;
 template<class T>
 using ordered_set = tree<T, null_type,less<T>, rb_tree_tag, tree_order_statistics_node_update> ;
+template<class T>
+using ordered_greater_set = tree<T, null_type,less<T>, rb_tree_tag, tree_order_statistics_node_update> ;
 template<class key, class value, class cmp = std::less<key>>
 using ordered_map = tree<key, value, cmp, rb_tree_tag, tree_order_statistics_node_update>;
 // find_by_order(k)  returns iterator to kth element starting from 0;
@@ -13,6 +15,7 @@ using ordered_map = tree<key, value, cmp, rb_tree_tag, tree_order_statistics_nod
 #define rcnt (cnt<<1|1)
 #define vt vector
 #define pb push_back
+#define mp make_pair
 #define all(c) (c).begin(), (c).end()
 #define sz(x) (int)(x).size()
 #define F_OR(i, a, b, s) for (int i=(a); (s)>0?i<(b):i>(b); i+=(s))
@@ -50,16 +53,8 @@ template<class A, size_t S> void read(array<A, S>& a);
 template<class H, class T> void read(pair<H,T>&c);
 template<class H, class T> void read(Point &c);
 template<class T> void read(T& x) {cin >> x;}
-void read(double& d) {
-    string t;
-    read(t);
-    d=stod(t);
-}
-void read(long double& d) {
-    string t;
-    read(t);
-    d=stold(t);
-}
+void read(double& d) {string t;read(t);d=stod(t);}
+void read(long double& d) {string t;read(t);d=stold(t);}
 void read(Point &c){read(c.x);read(c.y);}
 template<class H, class T> void read(pair<H,T>&c){read(c.first);read(c.second);}
 template<class H, class... T> void read(H& h, T&... t) {read(h);read(t...);}
@@ -249,6 +244,26 @@ public:
     friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
 };
 
+template <typename T,typename U>
+std::pair<T,U> operator+(const std::pair<T,U> & l,const std::pair<T,U> & r) {
+    return {l.first+r.first,l.second+r.second};
+}
+template <typename T,typename U>
+std::pair<T,U> operator+(const std::pair<T,U> & l,T &r) {return l+mp(r,r);}
+template <typename T,typename U>
+std::pair<T,U> operator- (const std::pair<T,U> & l) {return mp(-l.first,-l.second);}
+template <typename T,typename U>
+std::pair<T,U> operator-(const std::pair<T,U> & l,const std::pair<T,U> & r) {return l+(-r);}
+template <typename T,typename U>
+std::pair<T,U> operator-(const std::pair<T,U> & l,T &r) {return l-mp(r,r);}
+template <typename T,typename U>
+std::pair<T,U> operator*(const std::pair<T,U> & l,const std::pair<T,U> & r) {return {l.first*r.first,l.second*r.second};}
+template <typename T,typename U>
+std::pair<T,U> operator*(const std::pair<T,U> & l,T &r) {return l*mp(r,r);}
+template <typename T,typename U>
+bool checkPairRange(const std::pair<T,U> & l,T lx0,T lx1, U ly0, U ly1){
+    return l.first>=lx0 && l.first<lx1 && l.second>=ly0 && l.second<ly1;
+};
 template<class F>
 struct fHelper:F{
     explicit fHelper(F&& f):F(forward<F>(f)){}
@@ -264,99 +279,65 @@ inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
 // Recur([&](auto dfs, int u,int f)->void{dfs(f,u);})(0,-1);
 using mint = modnum<MOD>;
 const int MAXN = 2e5+20;
-struct Node{
-    vt<mint>a;
-    Node(mint a0=1,mint a1=0){a.resize(2);a[0]=a0,a[1]=a1;}
-    Node operator *(const Node &cur)const{
-        return {
-                a[0]*cur.a[0]+(1-a[0])*cur.a[1],
-                a[1]*cur.a[0]+(1-a[1])*cur.a[1],
-        };
-    }
-    Node operator /(const int i){
-        a[0]/=mint(i);
-        a[1]/=mint(i);
-        return *this;
-    }
-    friend string to_string(Node cur){return to_string(cur.a[0])+" "+  to_string(cur.a[1]);}
-};
 void solve() {
-    int n,q,p;
-    read(n,q,p);
-    const int bitl=20;
-    vt<vt<int>>fa(n+1,vt<int>(bitl,0));
-    vt<int>d(n+1,0);
-    vt<vt<Node>>pro(n+1,vt<Node>(bitl,Node(1,0)));
-    pro[1][0]=Node(p,p)/1000000;
-    d[1]=1;
-    FOR(u,1,n+1){
-        if(u!=1){
-            int a,b,c;
-            read(a,b,c);
-            fa[u][0]=a;
-            d[u]=d[a]+1;
-            pro[u][0]=Node(b,c)/1000000;
+    int n;
+    read(n);
+    vt<string>arr(n);
+    read(arr);
+    int bn=0,rn=0;
+    FOR(i,n)FOR(j,n){if(arr[i][j]=='R')rn++,arr[i][j]='0';if(arr[i][j]=='B')bn++,arr[i][j]='1';}
+    if(abs(bn-rn)>1){print("Impossible");return;}
+    vt<pair<int,int>>dir={{1,0},{-1,0},{0,-1},{1,-1},{-1,+1},{0,+1}};
+    vt<vt<int>>vis;
+    auto DFS=Recur([&](auto dfs, pair<int,int>u,int blue)->bool{
+        vis[u.second][u.first]=1;
+        auto checkWin=[&](pair<int,int>u,int blue){
+            if(blue && u.first==n-1)return true;
+            if(!blue && u.second==n-1)return true;
+            return false;
+        };
+        if(checkWin(u,blue)){
+            //print(u);
+            return true;
         }
-        FOR(i,1,bitl){
-            int B = fa[u][i-1];
-            fa[u][i]=fa[B][i-1];
-            pro[u][i]=pro[B][i-1]*pro[u][i-1];
+        for (auto &du: dir){
+            auto nu=u+du;
+            if(checkPairRange(nu,0,n,0,n) && !vis[nu.second][nu.first] &&
+            arr[nu.second][nu.first]==blue+'0')
+                if(dfs(nu,blue))return true;
         }
-    }
-    while (q--){
-        int u,v;
-        read(u,v);
-        if(d[u]<d[v])swap(u,v);
-        int curu=u,curv=v;
-        Node accu=Node(),accv=Node();
-        if(d[curu]>d[curv]){
-            for (int i = bitl-1; i >= 0; --i) {
-                if(d[curu]-(1<<i)>=d[curv]){
-                    accu=pro[curu][i]*accu;
-                    curu=fa[curu][i];
-                }
-            }
-        }
-        assert(d[curu]==d[curv]);
-        if(curu!=curv){
-            for (int i = bitl-1; i >= 0; --i) {
-                if(fa[curu][i]!=fa[curv][i]){
-                    accu=pro[curu][i]*accu;
-                    accv=pro[curv][i]*accv;
-                    curu=fa[curu][i];
-                    curv=fa[curv][i];
-                }
-            }
-            assert(curu!=curv);
-            accu=pro[curu][0]*accu;
-            accv=pro[curv][0]*accv;
-            curu=fa[curu][0];
-            curv=fa[curv][0];
-        }
+        return false;
+    });
 
-//        debug(curu);
-        Node s=pro[curu][19];
-//        debug(s,accu,accv);
-        mint ans=s.a[0]*accu.a[0]*accv.a[0]+(1-s.a[0])*accu.a[1]*accv.a[1];
-        write(ans," ");
+    auto connected=[&](int blue){
+        vti(vis,0,n,n);
+        if(blue){FOR(y,n)if(arr[y][0]==blue+'0')if(DFS(mp(0,y),blue))return true;}
+        else {FOR(x,n)if(arr[0][x]==blue+'0')if(DFS(mp(x,0),blue))return true;}
+        return false;
+    };
+    auto checkdoulbec=[&](int blue){
+        FOR(i,n)FOR(j,n)
+        if(arr[i][j]=='0'+blue){
+            arr[i][j]='#';
+            if(!connected(blue))return true;
+            arr[i][j]=(char)(blue+'0');
+        }
+        return false;
+    };
+    if(connected(1) && connected(0)){print("Impossible");}
+    else if(!connected(1) && !connected(0)){print("Nobody wins");}
+    else if(connected(1) && !connected(0)){
+        if(n==1||(checkdoulbec(1) && bn>=rn))print("Blue wins");
+        else print("Impossible");
     }
-    print();
+    else if(!connected(1) && connected(0)){
+        if(n==1||(checkdoulbec(0) && bn<=rn))print("Red wins");
+        else print("Impossible");
+    }
 }
 int main() {
-//    Test a=Test({1,2});
-//    Test b=Test({3,4});
-//    b=a;
-//    print(a.a[0],a.a[1]);
-//    print(b.a[0],b.a[1]);
-//    a.a[0]=5;
-//    print(a.a[0],a.a[1]);
-//    print(b.a[0],b.a[1]);
-    //print(Test({1,2})*Test({3,4}));
-//    ios::sync_with_stdio(0);
-//    cin.tie(0);
-//set<int>se={1,2,3};
-//print(se.erase(4));
-//print(se.erase(3));
+    int a[3]={1,2,3};
+    print(1[a]);
     int t, i=1;
     read(t);
     while(t--) {
@@ -387,11 +368,32 @@ formulate the problem by math notations
 
 /*
 
-99
- 10
- 2345678901
-
- 19
- 01234567898765432101
+7
+1
+.
+1
+B
+1
+R
+2
+BR
+BB
+4
+RRBB
+RRB.
+RRB.
+RRBB
+4
+R.BB
+RRB.
+RRB.
+RRBB
+6
+......
+..B...
+RRRRRR
+..B.B.
+..BB..
+......
 
  * */

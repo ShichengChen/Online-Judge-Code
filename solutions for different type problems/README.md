@@ -12,8 +12,8 @@
     - not sleepy
   - Solve problems
     - find the essentials in the problem instead of trying different samples
-      - changed variables vs unchanged variables
       - formulate the problem by math notations
+      - changed variables vs unchanged variables
     - think from possible answers
       - dp? binary search? math?
       - solving the problem from forward and backward directions.[Construct Target Array With Multiple Sums](https://leetcode.com/explore/featured/card/may-leetcoding-challenge-2021/599/week-2-may-8th-may-14th/3737/)
