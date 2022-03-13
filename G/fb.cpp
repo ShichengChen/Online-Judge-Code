@@ -5,6 +5,8 @@ using namespace std;
 using namespace __gnu_pbds;
 template<class T>
 using ordered_set = tree<T, null_type,less<T>, rb_tree_tag, tree_order_statistics_node_update> ;
+template<class T>
+using ordered_greater_set = tree<T, null_type,less<T>, rb_tree_tag, tree_order_statistics_node_update> ;
 template<class key, class value, class cmp = std::less<key>>
 using ordered_map = tree<key, value, cmp, rb_tree_tag, tree_order_statistics_node_update>;
 // find_by_order(k)  returns iterator to kth element starting from 0;
@@ -13,6 +15,7 @@ using ordered_map = tree<key, value, cmp, rb_tree_tag, tree_order_statistics_nod
 #define rcnt (cnt<<1|1)
 #define vt vector
 #define pb push_back
+#define mp make_pair
 #define all(c) (c).begin(), (c).end()
 #define sz(x) (int)(x).size()
 #define F_OR(i, a, b, s) for (int i=(a); (s)>0?i<(b):i>(b); i+=(s))
@@ -50,16 +53,8 @@ template<class A, size_t S> void read(array<A, S>& a);
 template<class H, class T> void read(pair<H,T>&c);
 template<class H, class T> void read(Point &c);
 template<class T> void read(T& x) {cin >> x;}
-void read(double& d) {
-    string t;
-    read(t);
-    d=stod(t);
-}
-void read(long double& d) {
-    string t;
-    read(t);
-    d=stold(t);
-}
+void read(double& d) {string t;read(t);d=stod(t);}
+void read(long double& d) {string t;read(t);d=stold(t);}
 void read(Point &c){read(c.x);read(c.y);}
 template<class H, class T> void read(pair<H,T>&c){read(c.first);read(c.second);}
 template<class H, class... T> void read(H& h, T&... t) {read(h);read(t...);}
@@ -249,6 +244,26 @@ public:
     friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
 };
 
+template <typename T,typename U>
+std::pair<T,U> operator+(const std::pair<T,U> & l,const std::pair<T,U> & r) {
+    return {l.first+r.first,l.second+r.second};
+}
+template <typename T,typename U>
+std::pair<T,U> operator+(const std::pair<T,U> & l,T &r) {return l+mp(r,r);}
+template <typename T,typename U>
+std::pair<T,U> operator- (const std::pair<T,U> & l) {return mp(-l.first,-l.second);}
+template <typename T,typename U>
+std::pair<T,U> operator-(const std::pair<T,U> & l,const std::pair<T,U> & r) {return l+(-r);}
+template <typename T,typename U>
+std::pair<T,U> operator-(const std::pair<T,U> & l,T &r) {return l-mp(r,r);}
+template <typename T,typename U>
+std::pair<T,U> operator*(const std::pair<T,U> & l,const std::pair<T,U> & r) {return {l.first*r.first,l.second*r.second};}
+template <typename T,typename U>
+std::pair<T,U> operator*(const std::pair<T,U> & l,T &r) {return l*mp(r,r);}
+template <typename T,typename U>
+bool checkPairRange(const std::pair<T,U> & l,T lx0,T lx1, U ly0, U ly1){
+    return l.first>=lx0 && l.first<lx1 && l.second>=ly0 && l.second<ly1;
+};
 template<class F>
 struct fHelper:F{
     explicit fHelper(F&& f):F(forward<F>(f)){}
@@ -264,106 +279,55 @@ inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
 // Recur([&](auto dfs, int u,int f)->void{dfs(f,u);})(0,-1);
 using mint = modnum<MOD>;
 const int MAXN = 2e5+20;
+void solve(){
 
-void solve() {
-    int n;
-    read(n);
-    vt<int>w(n);
-    vt<ll>d(n,0);
-    vt<vt<int>>vec(n);
-    read(w);
-    FOR(n-1){
-        int u,v;
-        read(u,v);
-        vec[u-1].push_back(v-1);
-        vec[v-1].push_back(u-1);
-    }
-    if(n==1){print(w[0]);return;}
-    auto DFS=Recur([&](auto dfs, int u,int f)->void{
-        d[u]=w[u];
-        ll maxn=0;
-        EACH(v,vec[u])if(v!=f){
-            dfs(v,u);
-            umax(maxn,d[v]);
+    int n,m;
+    read(n,m);
+    vt<int>arr(m);
+    read(arr);
+    multiset<int>se0,se1(all(arr));
+    multiset<int>nse0,nse1;
+    int ans=0;
+    auto se2se=[&](multiset<int>&sea,multiset<int>&seb,vt<int>&arr){
+        FOR(i,m)if(arr[i]>0){
+            if(sea.find(arr[i])!=sea.end()){
+                seb.insert(arr[i]);
+                sea.erase(sea.find(arr[i]));
+                arr[i]=-1;
+            }
         }
-        d[u]+=maxn;
-    });
-    multiset<ll,greater<>>se={0,0};
-    EACH(v,vec[0]){
-        DFS(v,0);
-        se.insert(d[v]);
+    };
+    auto se2sethrough=[&](multiset<int>&sea,multiset<int>&seb,vt<int>&arr,int add){
+        int cnt=sz(sea);
+        FOR(i,m)if(arr[i]>0){
+            if(cnt>0){
+                seb.insert(arr[i]);
+                arr[i]=-1;
+                ans+=add;
+                cnt--;
+            }
+        }
+    };
+    FOR(i,n){
+        read(arr);
+        se2se(se0,nse0,arr);
+        se2se(se1,nse1,arr);
+        se2sethrough(se1,nse0,arr,0);
+        se2sethrough(se0,nse0,arr,1);
+        se0.swap(nse0);
+        se1.swap(nse1);
+        nse0.clear();
+        nse1.clear();
+//        print(se0);
+//        print(se1);
     }
-    auto it=se.begin();it++;
-    print(*se.begin()+w[0]+*it);
-}
-struct Point {
-    double x, y;
-    Point(double x=0, double y=0):x(x),y(y) { }
-};
-const double eps = 1e-8;
-int dcmp(double x) {
-    if(fabs(x) < eps) return 0; else return x < 0 ? -1 : 1;
-}
-bool operator == (const Point& a, const Point &b) {
-    return dcmp(a.x-b.x) == 0 && dcmp(a.y-b.y) == 0;
-}
-typedef Point Vector;
-Vector operator + (const Vector& A, const Vector& B) { return Vector(A.x+B.x, A.y+B.y); }
-Vector operator - (const Point& A, const Point& B) { return Vector(A.x-B.x, A.y-B.y); }
-Vector operator * (const Vector& A, double p) { return Vector(A.x*p, A.y*p); }
-Vector operator / (const Vector& A, double p) { return Vector(A.x/p, A.y/p); }
-double Cross(const Vector& A, const Vector& B) { return A.x*B.y - A.y*B.x; }
-double Dot(const Vector& A, const Vector& B) { return A.x*B.x + A.y*B.y; }
-bool SegmentProperIntersection(const Point& a1, const Point& a2, const Point& b1, const Point& b2) {
-    double c1 = Cross(a2-a1,b1-a1), c2 = Cross(a2-a1,b2-a1),
-            c3 = Cross(b2-b1,a1-b1), c4=Cross(b2-b1,a2-b1);
-    return dcmp(c1)*dcmp(c2)<0 && dcmp(c3)*dcmp(c4)<0;
-}
-bool OnSegment(const Point& p, const Point& a1, const Point& a2) {
-    return dcmp(Cross(a1-p, a2-p)) == 0 && dcmp(Dot(a1-p, a2-p)) < 0;
-}
-
-bool InTriangle2D(vector<double> point, vector<vector<double>> triangle) {
-    Point cpoint(point[0],point[1]);
-    vector<Point>cpoints;
-    for (int i = 0; i < (int)triangle.size(); ++i)
-        cpoints.emplace_back(triangle[i][0],triangle[i][1]);
-    cpoint+(cpoint-cpoints[2])*1000
-    bool c01= SegmentProperIntersection(cpoint,cpoints[2],cpoints[1],cpoints[0]);
-    bool c02= SegmentProperIntersection(cpoint,cpoints[1],cpoints[2],cpoints[0]);
-    bool c12= SegmentProperIntersection(cpoint,cpoints[0],cpoints[1],cpoints[2]);
-    bool d01 = OnSegment(cpoint,cpoints[0],cpoints[1]);
-    bool d02 = OnSegment(cpoint,cpoints[0],cpoints[2]);
-    bool d12 = OnSegment(cpoint,cpoints[1],cpoints[2]);
-    bool e01 = OnSegment(cpoints[0],cpoint,cpoints[1])||OnSegment(cpoints[1],cpoint,cpoints[0]);
-    bool e02 = OnSegment(cpoints[0],cpoint,cpoints[2])||OnSegment(cpoints[2],cpoint,cpoints[0]);
-    bool e12 = OnSegment(cpoints[1],cpoint,cpoints[2])||OnSegment(cpoints[2],cpoint,cpoints[1]);
-    bool notClick=true;
-    for (int i = 0; i < (int)triangle.size(); ++i)
-        notClick=notClick&&(!(cpoints[i]==cpoint));
-    bool noIntersection=((!c01)&&(!c02)&&(!c12));
-    bool notOnLines=(!d01)&&(!d02)&&(!d12);
-    bool notGeneralLines=(!e01)&&(!e02)&&(!e12);
-    //return (d01||d02||d12)||((!c01)&&(!c02)&&(!c12));
-    return noIntersection&&notOnLines&&notGeneralLines&&notClick;
+    print(ans);
 }
 int main() {
-/*
-2
-0
-1
-3
-2
-0 0
-0 2
-2 0
- * */
-
-
 //    ios::sync_with_stdio(0);
 //    cin.tie(0);
-//freopen("/home/csc/Downloads/gold_mine_chapter_1_input.txt", "r", stdin);
-//freopen("/home/csc/Downloads/output.txt", "w", stdout);
+freopen("/home/csc/Downloads/runway_input.txt", "r", stdin);
+freopen("/home/csc/Downloads/output.txt", "w", stdout);
 //freopen("/home/csc/Online-Judge-Code/G/output.txt", "w", stdout);
     int t, i=1;
     read(t);

@@ -280,66 +280,74 @@ inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
 using mint = modnum<MOD>;
 const int MAXN = 2e5+20;
 void solve() {
-    int n;
-    read(n);
-    vt<string>arr(n);
-    read(arr);
-    int bn=0,rn=0;
-    FOR(i,n)FOR(j,n){if(arr[i][j]=='R')rn++,arr[i][j]='0';if(arr[i][j]=='B')bn++,arr[i][j]='1';}
-    if(abs(bn-rn)>1){print("Impossible");return;}
-    vt<pair<int,int>>dir={{1,0},{-1,0},{0,-1},{1,-1},{-1,+1},{0,+1}};
-    vt<vt<int>>vis;
-    auto DFS=Recur([&](auto dfs, pair<int,int>u,int blue)->bool{
-        vis[u.second][u.first]=1;
-        auto checkWin=[&](pair<int,int>u,int blue){
-            if(blue && u.first==n-1)return true;
-            if(!blue && u.second==n-1)return true;
-            return false;
-        };
-        if(checkWin(u,blue)){
-            //print(u);
-            return true;
+    string s0,s1;
+    read(s0,s1);
+    int ans=0;
+    if(s0==s1){print(0);return;}
+    if(s0=="0")ans=1,s0="1";
+    //if(s0==s1){print(1);return;}
+    auto str2vec=[&](string s){
+        vt<int>vec;
+        s+="2";
+        for (int i = 1,j=0; i < sz(s); ++i)
+            if(s[i]!=s[i-1])vec.push_back(i-j),j=i;
+        return vec;
+    };
+    vt<int>v0=str2vec(s0),v1=str2vec(s1);
+    //debug(v0,v1);
+    if(s1=="0"){ print(sz(v0));return;}
+    if(sz(v0)+(s0.back()=='1')< sz(v1)){ print("IMPOSSIBLE");return;}
+    if(sz(v0)< sz(v1))v0.push_back(0),s0+='0';
+    auto cmpv=[&](int idx){
+        for (int i = 0; i+idx < sz(v0); ++i) {
+//            if(i+idx==sz(v0)-1 && !((!idx && v0[idx+i]<=v1[i]) || (idx && s0.back()=='0' && v0[idx+i]<=v1[i]) ||
+//                    (idx && s0.back()==1 && v0[idx+i]==v1[i])))return false;
+            if(i+idx==sz(v0)-1 && !((!idx && v0[idx+i]<=v1[i] && s0.back()=='0') ||
+                                    (!idx && v0[idx+i]==v1[i] && s0.back()=='1') ||
+                                    (idx && (sz(v0)> sz(v1)||s0.back()=='0') && v0[idx+i]<=v1[i]) ||
+                                    (idx && sz(v0)==sz(v1) && v0[idx+i]==v1[i])))return false;
+            if(i+idx<sz(v0)-1 && v1[i]!=v0[i+idx])return false;
         }
-        for (auto &du: dir){
-            auto nu=u+du;
-            if(checkPairRange(nu,0,n,0,n) && !vis[nu.second][nu.first] &&
-            arr[nu.second][nu.first]==blue+'0')
-                if(dfs(nu,blue))return true;
-        }
-        return false;
-    });
+        return true;
+    };
+    auto calculate=[&](int idx){
+        int len= sz(v0)-idx;
+        //debug(idx,len);
+        if(idx== sz(v0)){
+            ans+=accumulate(all(v1),0)+ max(sz(v1)-len,idx);
+        }else{
 
-    auto connected=[&](int blue){
-        vti(vis,0,n,n);
-        if(blue){FOR(y,n)if(arr[y][0]==blue+'0')if(DFS(mp(0,y),blue))return true;}
-        else {FOR(x,n)if(arr[0][x]==blue+'0')if(DFS(mp(x,0),blue))return true;}
-        return false;
-    };
-    auto checkdoulbec=[&](int blue){
-        FOR(i,n)FOR(j,n)
-        if(arr[i][j]=='0'+blue){
-            arr[i][j]='#';
-            if(!connected(blue))return true;
-            arr[i][j]=(char)(blue+'0');
+            ans+=(v1[len-1]-v0.back());
+            //debug(ans);
+            ans+= max(sz(v1)-len,idx)+ accumulate(v1.begin()+len,v1.end(),0);
         }
-        return false;
+        print(ans);
     };
-    if(connected(1) && connected(0)){print("Impossible");}
-    else if(!connected(1) && !connected(0)){print("Nobody wins");}
-    else if(connected(1) && !connected(0)){
-        if(n==1||(checkdoulbec(1) && bn>=rn))print("Blue wins");
-        else print("Impossible");
+
+    for (int i = sz(v0)- sz(v1); i < sz(v0); ++i) {
+        if(cmpv(i)){calculate(i);return;}
     }
-    else if(!connected(1) && connected(0)){
-        if(n==1||(checkdoulbec(0) && bn<=rn))print("Red wins");
-        else print("Impossible");
-    }
+    calculate(sz(v0));
 }
 int main() {
-    int a[3]={1,2,3};
-    print(1[a]);
+
+
+    vt<int>vec={1,2,3,4},ans(4),ordinals;
+    std::generate(vec.begin(), vec.end(), [n = 0] () mutable { return n++; });
+    print(vec);
+    std::transform(vec.begin(), vec.end(), std::back_inserter(ordinals),
+                   [](unsigned char c) -> std::size_t { return c; });
+    print(ordinals);
+    transform(ordinals.cbegin(), ordinals.cend(), ordinals.cbegin(),
+              ordinals.begin(), std::plus<>{});
+    print(ordinals);
+//    int a[3]={1,2,3};
+//    print(1[a]);
+//    freopen("/home/csc/Online-Judge-Code/G/input.txt", "r", stdin);
+//    freopen("/home/csc/Online-Judge-Code/G/output.txt2", "w", stdout);
     int t, i=1;
     read(t);
+
     while(t--) {
         cout << "Case #" << i << ": ";
         solve();
@@ -368,32 +376,14 @@ formulate the problem by math notations
 
 /*
 
-7
-1
-.
-1
-B
-1
-R
-2
-BR
-BB
-4
-RRBB
-RRB.
-RRB.
-RRBB
-4
-R.BB
-RRB.
-RRB.
-RRBB
-6
-......
-..B...
-RRRRRR
-..B.B.
-..BB..
-......
+99
+ 1010 101
+ 101 1010
+ 0 1110000
+ 1001110000 1
+ 100111 1111
+
+ 10100 101110
+ 10001 1101
 
  * */

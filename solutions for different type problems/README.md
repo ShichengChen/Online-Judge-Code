@@ -15,7 +15,7 @@
       - formulate the problem by math notations
       - changed variables vs unchanged variables
     - think from possible answers
-      - dp? binary search? math?
+      - dp? binary search? math? Flow network?
       - solving the problem from forward and backward directions.[Construct Target Array With Multiple Sums](https://leetcode.com/explore/featured/card/may-leetcoding-challenge-2021/599/week-2-may-8th-may-14th/3737/)
   - Prepare to code
     - abstract the problem so that I write condensed code.

@@ -5,6 +5,8 @@ using namespace std;
 using namespace __gnu_pbds;
 template<class T>
 using ordered_set = tree<T, null_type,less<T>, rb_tree_tag, tree_order_statistics_node_update> ;
+template<class T>
+using ordered_greater_set = tree<T, null_type,less<T>, rb_tree_tag, tree_order_statistics_node_update> ;
 template<class key, class value, class cmp = std::less<key>>
 using ordered_map = tree<key, value, cmp, rb_tree_tag, tree_order_statistics_node_update>;
 // find_by_order(k)  returns iterator to kth element starting from 0;
@@ -13,6 +15,7 @@ using ordered_map = tree<key, value, cmp, rb_tree_tag, tree_order_statistics_nod
 #define rcnt (cnt<<1|1)
 #define vt vector
 #define pb push_back
+#define mp make_pair
 #define all(c) (c).begin(), (c).end()
 #define sz(x) (int)(x).size()
 #define F_OR(i, a, b, s) for (int i=(a); (s)>0?i<(b):i>(b); i+=(s))
@@ -50,16 +53,8 @@ template<class A, size_t S> void read(array<A, S>& a);
 template<class H, class T> void read(pair<H,T>&c);
 template<class H, class T> void read(Point &c);
 template<class T> void read(T& x) {cin >> x;}
-void read(double& d) {
-    string t;
-    read(t);
-    d=stod(t);
-}
-void read(long double& d) {
-    string t;
-    read(t);
-    d=stold(t);
-}
+void read(double& d) {string t;read(t);d=stod(t);}
+void read(long double& d) {string t;read(t);d=stold(t);}
 void read(Point &c){read(c.x);read(c.y);}
 template<class H, class T> void read(pair<H,T>&c){read(c.first);read(c.second);}
 template<class H, class... T> void read(H& h, T&... t) {read(h);read(t...);}
@@ -249,6 +244,26 @@ public:
     friend modnum operator / (const modnum& a, const modnum& b) { return modnum(a) /= b; }
 };
 
+template <typename T,typename U>
+std::pair<T,U> operator+(const std::pair<T,U> & l,const std::pair<T,U> & r) {
+    return {l.first+r.first,l.second+r.second};
+}
+template <typename T,typename U>
+std::pair<T,U> operator+(const std::pair<T,U> & l,T &r) {return l+mp(r,r);}
+template <typename T,typename U>
+std::pair<T,U> operator- (const std::pair<T,U> & l) {return mp(-l.first,-l.second);}
+template <typename T,typename U>
+std::pair<T,U> operator-(const std::pair<T,U> & l,const std::pair<T,U> & r) {return l+(-r);}
+template <typename T,typename U>
+std::pair<T,U> operator-(const std::pair<T,U> & l,T &r) {return l-mp(r,r);}
+template <typename T,typename U>
+std::pair<T,U> operator*(const std::pair<T,U> & l,const std::pair<T,U> & r) {return {l.first*r.first,l.second*r.second};}
+template <typename T,typename U>
+std::pair<T,U> operator*(const std::pair<T,U> & l,T &r) {return l*mp(r,r);}
+template <typename T,typename U>
+bool checkPairRange(const std::pair<T,U> & l,T lx0,T lx1, U ly0, U ly1){
+    return l.first>=lx0 && l.first<lx1 && l.second>=ly0 && l.second<ly1;
+};
 template<class F>
 struct fHelper:F{
     explicit fHelper(F&& f):F(forward<F>(f)){}
@@ -264,29 +279,76 @@ inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
 // Recur([&](auto dfs, int u,int f)->void{dfs(f,u);})(0,-1);
 using mint = modnum<MOD>;
 const int MAXN = 2e5+20;
-int n,k;
-void solve() {
-
+int setBitNumber(int n){
+    n |= n >> 1;
+    n |= n >> 2;
+    n |= n >> 4;
+    n |= n >> 8;
+    n |= n >> 16;
+    n = n + 1;
+    return (n >> 1);
 }
-int solution(vector<int>&vec){
-
+int cnot(int n){
+    if(n==0)return 1;
+    //print(setBitNumber(n),(setBitNumber(n)*2-1));
+    return n^(setBitNumber(n)*2-1);
+}
+void solve() {
+    string s0,s1;
+    read(s0,s1);
+    int s=stoi(s0, 0, 2);
+    int e=stoi(s1, 0, 2);
+    //print(s,e);
+    queue<pair<int,int>>q;
+    const int maxn=(1<<17)+1;
+    vt<int>d(maxn,MOD);
+    d[s]=0;
+    q.push({s,0});
+    while(sz(q)){
+        auto c=q.front();q.pop();
+        int a=c.first,cnt=c.second;
+        if(a==e)break;
+//        bitset<16> aa(a);
+//        print(aa);
+        int cn=cnot(a);
+//        bitset<16> cc(cn);
+//        print(cc);
+        if(a*2<maxn && d[a*2]==MOD){
+            d[a*2]=cnt+1;
+            q.push({a*2,cnt+1});
+        }if(cn<maxn && d[cn]==MOD){
+            d[cn]=cnt+1;
+            q.push({cn,cnt+1});
+        }
+    }
+    if(d[e]==MOD)print("IMPOSSIBLE");
+    else print(d[e]);
 }
 int main() {
 
 //    ios::sync_with_stdio(false);
 //    cin.tie(nullptr);
-    //freopen("/home/csc/Downloads/vivoparc/1.in", "r", stdin);
-    //freopen("/home/csc/G/output.txt", "w", stdout);
-    int t=1;
+    freopen("/home/csc/Online-Judge-Code/G/input.txt", "r", stdin);
+    freopen("/home/csc/Online-Judge-Code/G/output.txt", "w", stdout);
+    int t, i=1;
     read(t);
-    FOR(t) {
-        //write("Case #", i+1, ": ");
+    while(t--) {
+        cout << "Case #" << i << ": ";
         solve();
+        ++i;
     }
     return 0;
 }
 /*
 
+ 99
+ 1010 101
+ 101 1010
+ 0 1110000
+ 1001110000 1
+ 100111 1111
+
+ 10100 101110
 
 99
  14 10
