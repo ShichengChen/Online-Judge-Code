@@ -53,3 +53,7 @@
 
 # Use the biggest value to represent a group of values [Problem C: Quarantine](https://www.facebook.com/codingcompetitions/hacker-cup/2020/round-1/problems/C)
   - use one value to represent a group of values
+
+
+# group array
+ - binary search bound values
