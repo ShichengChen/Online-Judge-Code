@@ -44,7 +44,7 @@
 - The limitation of one hard problem is 1 day after contests(stop thinking if no more new ideas on this problem)
 
 # How to solve problem faster
-- find patterns in the string(D. Minimum Euler Cycle)[https://codeforces.com/contest/1334/problem/D]
+- find patterns in the string[D. Minimum Euler Cycle](https://codeforces.com/contest/1334/problem/D)
 - read problem carefully and then read samples and explanations even I believe that I understand the problem.
 
 # How to prevent wrong code

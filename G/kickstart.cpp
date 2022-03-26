@@ -79,19 +79,21 @@ template<size_t S> string to_string(bitset<S> b) {
 }
 
 template <class T> string to_string(T v) {
-    char c=' ';
-    if constexpr (std::is_same_v<T, vt<vt<ll>>>) c='\n';
+    char c=' ';int brace=0;
     if constexpr (std::is_same_v<T, vt<vt<int>>>) c='\n';
-    if constexpr (std::is_same_v<T, vt<vt<double>>>) c='\n';
     if constexpr (std::is_same_v<T, vt<vt<vt<int>>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<ll>>>) c='\n';
     if constexpr (std::is_same_v<T, vt<vt<vt<ll>>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<double>>>) c='\n';
     if constexpr (std::is_same_v<T, vt<vt<vt<double>>>>) c='\n';
+    if(c=='\n')brace=1;
     bool f=1;
     string res;
     EACH(x, v) {
         if(!f)res+=c;
         f=0;
-        res+=to_string(x);
+        if(brace)res+="["+ to_string(x)+"]";
+        else res+=to_string(x);
     }
     return res;
 }
@@ -160,9 +162,7 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     v=vt<T>(n);
     EACH(a, v)vti(a, x, m);
 }
-const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
-const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-inline bool inboard(int y,int x,int n,int m){return y>=0 && x >=0 && y<n && x<m;}
+
 const int LOGMAXN = 18;
 //ll const MOD=998244353;
 ll const MOD=1e9+7;
@@ -264,6 +264,10 @@ template <typename T,typename U>
 bool checkPairRange(const std::pair<T,U> & l,T lx0,T lx1, U ly0, U ly1){
     return l.first>=lx0 && l.first<lx1 && l.second>=ly0 && l.second<ly1;
 };
+const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
+const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
+const pair<int,int> pairdir[]={{0,1},{0,-1},{1,0},{-1,0}};
+inline bool inboard(int y,int x,int n,int m){return y>=0 && x >=0 && y<n && x<m;}
 template<class F>
 struct fHelper:F{
     explicit fHelper(F&& f):F(forward<F>(f)){}
@@ -279,68 +283,51 @@ inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
 // Recur([&](auto dfs, int u,int f)->void{dfs(f,u);})(0,-1);
 using mint = modnum<MOD>;
 const int MAXN = 2e5+20;
-void solve() {
-    string s0,s1;
-    read(s0,s1);
-    int ans=0;
-    if(s0==s1){print(0);return;}
-    if(s0=="0")ans=1,s0="1";
-    //if(s0==s1){print(1);return;}
-    auto str2vec=[&](string s){
-        vt<int>vec;
-        s+="2";
-        for (int i = 1,j=0; i < sz(s); ++i)
-            if(s[i]!=s[i-1])vec.push_back(i-j),j=i;
-        return vec;
+void solve(){
+    int n;
+    string s;
+    read(n,s);
+    n=sz(s);
+    auto checkequ=[](string &s1,string &s2){
+        FOR(i,sz(s1))if(s1[i]!='?' && s1[i]!=s2[i])return false;
+        return true;
     };
-    vt<int>v0=str2vec(s0),v1=str2vec(s1);
-    //debug(v0,v1);
-    if(s1=="0"){ print(sz(v0));return;}
-    if(sz(v0)+(s0.back()=='1')< sz(v1)){ print("IMPOSSIBLE");return;}
-    if(sz(v0)< sz(v1))v0.push_back(0),s0+='0';
-    auto cmpv=[&](int idx){
-        for (int i = 0; i+idx < sz(v0); ++i) {
-//            if(i+idx==sz(v0)-1 && !((!idx && v0[idx+i]<=v1[i]) || (idx && s0.back()=='0' && v0[idx+i]<=v1[i]) ||
-//                    (idx && s0.back()==1 && v0[idx+i]==v1[i])))return false;
-            if(i+idx==sz(v0)-1 && !((!idx && v0[idx+i]<=v1[i] && s0.back()=='0') ||
-                                    (!idx && v0[idx+i]==v1[i] && s0.back()=='1') ||
-                                    (idx && (sz(v0)> sz(v1)||s0.back()=='0') && v0[idx+i]<=v1[i]) ||
-                                    (idx && sz(v0)==sz(v1) && v0[idx+i]==v1[i])))return false;
-            if(i+idx<sz(v0)-1 && v1[i]!=v0[i+idx])return false;
+    auto checkpal=[](string &s1,string &s2){
+        for (int i = 5; i < 7; ++i) {
+            for (int st = 0; st <= sz(s1)-i; ++st) {
+                int suc=1;
+                FOR(k,(i+1)/2){
+                    if(s2[st+k]!=s2[st+i-k-1]){
+                        suc=0;
+                        break;
+                    }
+                }
+                if(suc)return false;
+            }
         }
         return true;
     };
-    auto calculate=[&](int idx){
-        int len= sz(v0)-idx;
-        //debug(idx,len);
-        if(idx== sz(v0)){
-            ans+=accumulate(all(v1),0)+ max(sz(v1)-len,idx);
-        }else{
-
-            ans+=(v1[len-1]-v0.back());
-            //debug(ans);
-            ans+= max(sz(v1)-len,idx)+ accumulate(v1.begin()+len,v1.end(),0);
+    int len=15;
+    for (int k = 0; k < max(n-len,1); k+=10) {
+        int succ=0;
+        string s1=s.substr(0,len);
+        for (int i = 0; i < (1<<len); ++i) {
+            string s2= std::bitset<15>(i).to_string().substr(0,sz(s1));
+            //print(sz(s1), sz(s2));
+            if(checkequ(s1,s2) && checkpal(s1,s2)){
+                succ=1;
+                break;
+            }
         }
-        print(ans);
-    };
-
-    for (int i = sz(v0)- sz(v1); i < sz(v0); ++i) {
-        if(cmpv(i)){calculate(i);return;}
+        if(!succ){
+            print("IMPOSSIBLE");
+            return;
+        }
     }
-    calculate(sz(v0));
+    print("POSSIBLE");
 }
+
 int main() {
-
-
-    vt<int>vec={1,2,3,4},ans(4),ordinals;
-    std::generate(vec.begin(), vec.end(), [n = 0] () mutable { return n++; });
-    print(vec);
-    std::transform(vec.begin(), vec.end(), std::back_inserter(ordinals),
-                   [](unsigned char c) -> std::size_t { return c; });
-    print(ordinals);
-    transform(ordinals.cbegin(), ordinals.cend(), ordinals.cbegin(),
-              ordinals.begin(), std::plus<>{});
-    print(ordinals);
 //    int a[3]={1,2,3};
 //    print(1[a]);
 //    freopen("/home/csc/Online-Judge-Code/G/input.txt", "r", stdin);
@@ -356,6 +343,7 @@ int main() {
     return 0;
 }
 /*
+
 re-read the problem
 re-read the code
 create some samples
@@ -375,6 +363,14 @@ formulate the problem by math notations
 
 
 /*
+
+
+ 99
+ ?1?1??????
+ 111??????
+
+ ????????????????
+
 
 99
  1010 101

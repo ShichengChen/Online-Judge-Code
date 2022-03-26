@@ -79,19 +79,21 @@ template<size_t S> string to_string(bitset<S> b) {
 }
 
 template <class T> string to_string(T v) {
-    char c=' ';
-    if constexpr (std::is_same_v<T, vt<vt<ll>>>) c='\n';
+    char c=' ';int brace=0;
     if constexpr (std::is_same_v<T, vt<vt<int>>>) c='\n';
-    if constexpr (std::is_same_v<T, vt<vt<double>>>) c='\n';
     if constexpr (std::is_same_v<T, vt<vt<vt<int>>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<ll>>>) c='\n';
     if constexpr (std::is_same_v<T, vt<vt<vt<ll>>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<double>>>) c='\n';
     if constexpr (std::is_same_v<T, vt<vt<vt<double>>>>) c='\n';
+    if(c=='\n')brace=1;
     bool f=1;
     string res;
     EACH(x, v) {
         if(!f)res+=c;
         f=0;
-        res+=to_string(x);
+        if(brace)res+="["+ to_string(x)+"]";
+        else res+=to_string(x);
     }
     return res;
 }
@@ -160,9 +162,7 @@ template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     v=vt<T>(n);
     EACH(a, v)vti(a, x, m);
 }
-const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
-const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-inline bool inboard(int y,int x,int n,int m){return y>=0 && x >=0 && y<n && x<m;}
+
 const int LOGMAXN = 18;
 //ll const MOD=998244353;
 ll const MOD=1e9+7;
@@ -264,6 +264,10 @@ template <typename T,typename U>
 bool checkPairRange(const std::pair<T,U> & l,T lx0,T lx1, U ly0, U ly1){
     return l.first>=lx0 && l.first<lx1 && l.second>=ly0 && l.second<ly1;
 };
+const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
+const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
+const pair<int,int> pairdir[]={{0,1},{0,-1},{1,0},{-1,0}};
+inline bool inboard(int y,int x,int n,int m){return y>=0 && x >=0 && y<n && x<m;}
 template<class F>
 struct fHelper:F{
     explicit fHelper(F&& f):F(forward<F>(f)){}
@@ -281,64 +285,51 @@ using mint = modnum<MOD>;
 const int MAXN = 2e5+20;
 void solve(){
 
-    int n,m;
-    read(n,m);
-    vt<int>arr(m);
-    read(arr);
-    multiset<int>se0,se1(all(arr));
-    multiset<int>nse0,nse1;
-    int ans=0;
-    auto se2se=[&](multiset<int>&sea,multiset<int>&seb,vt<int>&arr){
-        FOR(i,m)if(arr[i]>0){
-            if(sea.find(arr[i])!=sea.end()){
-                seb.insert(arr[i]);
-                sea.erase(sea.find(arr[i]));
-                arr[i]=-1;
-            }
-        }
-    };
-    auto se2sethrough=[&](multiset<int>&sea,multiset<int>&seb,vt<int>&arr,int add){
-        int cnt=sz(sea);
-        FOR(i,m)if(arr[i]>0){
-            if(cnt>0){
-                seb.insert(arr[i]);
-                arr[i]=-1;
-                ans+=add;
-                cnt--;
-            }
-        }
-    };
-    FOR(i,n){
-        read(arr);
-        se2se(se0,nse0,arr);
-        se2se(se1,nse1,arr);
-        se2sethrough(se1,nse0,arr,0);
-        se2sethrough(se0,nse0,arr,1);
-        se0.swap(nse0);
-        se1.swap(nse1);
-        nse0.clear();
-        nse1.clear();
-//        print(se0);
-//        print(se1);
-    }
-    print(ans);
 }
 int main() {
 //    ios::sync_with_stdio(0);
 //    cin.tie(0);
-freopen("/home/csc/Downloads/runway_input.txt", "r", stdin);
-freopen("/home/csc/Downloads/output.txt", "w", stdout);
+//freopen("/home/csc/Downloads/gold_mine_chapter_2_input.txt", "r", stdin);
+//freopen("/home/csc/Downloads/output.txt", "w", stdout);
 //freopen("/home/csc/Online-Judge-Code/G/output.txt", "w", stdout);
-    int t, i=1;
+    int t=1, i=1;
     read(t);
     while(t--) {
-        cout << "Case #" << i << ": ";
+        //cout << "Case #" << i << ": ";
         solve();
         ++i;
     }
     return 0;
 }
 /*
+99
+5 1
+1 2 3 4 5
+1 2
+ 2 3
+ 2 4
+ 2 5
+
+
+ 99
+ 4 1
+ 1 2 3 4
+ 1 2
+ 1 3
+ 1 4
+
+
+8 1
+460 894 297 169 447 963 836 2
+3 1
+1 5
+5 2
+4 2
+5 7
+6 5
+4 8
+
+
  4
  3 3
  4 5 1
