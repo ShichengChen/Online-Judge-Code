@@ -28,9 +28,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -D_FORTIFY_SOURCE=2")
 #add_executable(G tc.cpp)
 
 #add_executable(G main2.cpp)
-add_executable(G kickstart.cpp)
+#add_executable(G kickstart.cpp)
 #add_executable(G jam.cpp)
 #add_executable(G lc.cpp)
 #add_executable(G multithread.cpp)
-#add_executable(G fb.cpp)
+add_executable(G fb.cpp)
 

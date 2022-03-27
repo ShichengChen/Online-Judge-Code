@@ -285,56 +285,19 @@ using mint = modnum<MOD>;
 const int MAXN = 2e5+20;
 void solve(){
     int n;
-    string s;
-    read(n,s);
-    n=sz(s);
-    auto checkequ=[](string &s1,string &s2){
-        FOR(i,sz(s1))if(s1[i]!='?' && s1[i]!=s2[i])return false;
-        return true;
-    };
-    auto checkpal=[](string &s1,string &s2){
-        for (int i = 5; i < 7; ++i) {
-            for (int st = 0; st <= sz(s1)-i; ++st) {
-                int suc=1;
-                FOR(k,(i+1)/2){
-                    if(s2[st+k]!=s2[st+i-k-1]){
-                        suc=0;
-                        break;
-                    }
-                }
-                if(suc)return false;
-            }
-        }
-        return true;
-    };
-    int len=15;
-    for (int k = 0; k < max(n-len,1); k+=10) {
-        int succ=0;
-        string s1=s.substr(0,len);
-        for (int i = 0; i < (1<<len); ++i) {
-            string s2= std::bitset<15>(i).to_string().substr(0,sz(s1));
-            //print(sz(s1), sz(s2));
-            if(checkequ(s1,s2) && checkpal(s1,s2)){
-                succ=1;
-                break;
-            }
-        }
-        if(!succ){
-            print("IMPOSSIBLE");
-            return;
-        }
-    }
-    print("POSSIBLE");
+
 }
 
 int main() {
-//    int a[3]={1,2,3};
-//    print(1[a]);
+    string s="01234";
+    int a=(int)(s[0]);
+    a='8';
+    s[1]=(char)a;
+    print(s);
 //    freopen("/home/csc/Online-Judge-Code/G/input.txt", "r", stdin);
 //    freopen("/home/csc/Online-Judge-Code/G/output.txt2", "w", stdout);
     int t, i=1;
     read(t);
-
     while(t--) {
         cout << "Case #" << i << ": ";
         solve();

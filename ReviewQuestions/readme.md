@@ -28,4 +28,4 @@
 # 2022
 - [Problem C2: Gold Mine - Chapter 2](https://www.facebook.com/codingcompetitions/hacker-cup/2021/qualification-round/problems/C2)
 - [Double or NOTing (14pts, 26pts)](https://codingcompetitions.withgoogle.com/codejam/round/00000000004362d7/00000000007c1139)
-- 
+- [Facebook Hacker Cup2021 Round 1 Problem A3: Weak Typing - Chapter 3](https://www.facebook.com/codingcompetitions/hacker-cup/2021/round-1/problems/A3)

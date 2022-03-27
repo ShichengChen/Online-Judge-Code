@@ -7,7 +7,7 @@
 
 
 # General
-  - Before Coding
+  - Before the whole process.
     - listen to instrumental songs only.
     - not sleepy
   - Solve problems
@@ -19,6 +19,23 @@
       - solving the problem from forward and backward directions.[Construct Target Array With Multiple Sums](https://leetcode.com/explore/featured/card/may-leetcoding-challenge-2021/599/week-2-may-8th-may-14th/3737/)
   - Prepare to code
     - abstract the problem so that I write condensed code.
+  - Code
+  - Test
+    - Edge cases
+    - re-read the problem
+    - re-read the code
+      - go through each variable!
+    - create some random samples
+    - draw graphs!
+    
+  - After Accept (using equal amount of time for solving problems and summary)
+    - learn from others
+      - editorial
+      - others' codes
+      - YouTube videos
+    - organize by myself
+      - how could I solve the problem within 2 hours?
+      - mind map
   
 
 
