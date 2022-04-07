@@ -285,21 +285,34 @@ using mint = modnum<MOD>;
 const int MAXN = 2e5+20;
 void solve(){
     int n;
-
+    read(n);
+    vt<int>arr(n);
+    read(arr);
+    auto win=[&](int i){
+        vt<int>vec(2,0);
+        FOR(j,n)vec[bool(arr[j]&(1<<i))]++;
+        if(!vec[1] || vec[1]%2==0)return 0;
+        if(vec[1]==1)return 1;
+        if(vec[1]%4==1 && vec[0]%2==0)return 1;
+        if(vec[1]%4==3 && vec[0]%2==0)return -1;
+        if(vec[1]%4==3 && vec[0]%2==1)return 1;
+        if(vec[1]%4==1 && vec[0]%2==1)return 1;
+        assert(false);
+    };
+    for (int i = 30; i >= 0; --i) {
+        int a=win(i);
+        if(a==1){print("WIN");return;}
+        if(a==-1){print("LOSE");return;}
+    }
+    print("DRAW");
 }
-
 int main() {
-    string s="01234";
-    int a=(int)(s[0]);
-    a='8';
-    s[1]=(char)a;
-    print(s);
 //    freopen("/home/csc/Online-Judge-Code/G/input.txt", "r", stdin);
 //    freopen("/home/csc/Online-Judge-Code/G/output.txt2", "w", stdout);
     int t, i=1;
     read(t);
     while(t--) {
-        cout << "Case #" << i << ": ";
+        //cout << "Case #" << i << ": ";
         solve();
         ++i;
     }

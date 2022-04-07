@@ -227,25 +227,22 @@ inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
 // Recur([&](auto dfs, int u,int f)->void{dfs(f,u);})(0,-1);
 using mint = modnum<MOD>;
 const int MAXN = 1e6+20;
-
+using matrix=vt<vt<mint>>;
 void solve() {
-    int n;read(n);
-    string s;read(s);
-    mint d0=0,ans=0,pos=0;
-    char start=0;
-    FOR(i,0,n){
-        if(start==0 && (s[i]=='X'||s[i]=='O')){
-            pos=i;
-            start=s[i];
-        }else if(start && start==s[i]){
-            pos=i;
-        }else if(start && (s[i]=='X'||s[i]=='O') && start!=s[i]){
-            d0+=(pos+1);
-            start=s[i];
-            pos=i;
-        }
-        ans+=d0;
-    }
+    int n;string s;
+    read(n,s);
+    auto matrixPro=[&](matrix&m0,matrix&m1){
+        matrix ans=vt<vt<mint>>(6,vt<mint>(6,0));
+        FOR(i, 7)FOR(j, 7)FOR(k,7)
+            ans[i][j]+=m0[i][k]*m1[k][j];
+        return ans;
+    };
+    matrix mo={ {1,1,1,0,0,0},
+                {0,1,1,0,0,0},
+                {1,1,1,0,0,0},
+                {1,1,1,0,0,0},
+                {0,0,1,1,1,1},
+                {0,0,0,0,0,1},};
     print(ans);
 }
 
