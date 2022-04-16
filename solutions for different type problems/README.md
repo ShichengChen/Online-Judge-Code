@@ -16,7 +16,7 @@
       - changed variables vs unchanged variables
     - think from possible answers
       - dp? binary search? math? Flow network?
-      - solving the problem from forward and backward directions.[Construct Target Array With Multiple Sums](https://leetcode.com/explore/featured/card/may-leetcoding-challenge-2021/599/week-2-may-8th-may-14th/3737/)
+      - solving the problem from forward and backward directions.[Construct Target Array With Multiple Sums](https://leetcode.com/problems/construct-target-array-with-multiple-sums/)
   - Prepare to code
     - abstract the problem so that I write condensed code.
   - Code
