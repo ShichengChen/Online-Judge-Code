@@ -1,9 +1,15 @@
 # before 2021
-- [D. Minimum Euler Cycle](https://codeforces.com/contest/1334/problem/D) (15:08-15:59)
-- [E. K-periodic Garland](https://codeforces.com/contest/1353/problem/E) (22:27-23:37 9:58-10:18)
+- [D. Minimum Euler Cycle](https://codeforces.com/contest/1334/problem/D) 
+  - April 15 2022 15:08-15:59
+- [E. K-periodic Garland](https://codeforces.com/contest/1353/problem/E)
+  - April 15 2022 22:27-23:37 9:58-10:18
 - [Tree Shuffling](https://codeforces.com/contest/1363/problem/E)
+  - April 18 2022 21:15-22:09 
 - [D. Orac and Medians](https://codeforces.com/contest/1350/problem/D)
-- [CodeCraft-20 C. Primitive Primes](https://codeforces.com/contest/1316/problem/C)
+  - April 19 2022 
+- [CodeCraft-20 C. Primitive Primes](https://codeforces.com/contest/1316/problem/C) 
+  - April 20 2022 18:16-18:42 22:26-22:58 
+  - April 21 2022 21:27-22:51 
 - [Codeforces Round #629 F.Make k Equal](https://codeforces.com/contest/1328/problem/F)
 - [E. Quantifier Question](https://codeforces.com/contest/1345/problem/E)
 - [EXPOGO](https://codingcompetitions.withgoogle.com/codejam/round/000000000019fef2/00000000002d5b62)
@@ -17,13 +23,20 @@
 - [Broken Clock](https://codingcompetitions.withgoogle.com/codejam/round/0000000000435baf/00000000007ae694)
 - [Elimination](https://www.facebook.com/codingcompetitions/hacker-cup/2020/round-2/problems/B)
 - [D. Maximum Distributed Tree](https://codeforces.com/contest/1401/problem/D)
-- [Construct Target Array With Multiple Sums](https://leetcode.com/explore/featured/card/may-leetcoding-challenge-2021/599/week-2-may-8th-may-14th/3737/) (April 9 2022)
-- [GameGame](https://codeforces.com/contest/1383/problem/B) (April 7 2022)
-- [String Transformation 1](https://codeforces.com/contest/1383/problem/A)(April 9 2022, 15:25-16:14)
-- [C. Good Subarrays](https://codeforces.com/contest/1398/problem/C) (April 7 2022)
-- [D. Zigzags](https://codeforces.com/contest/1400/problem/D) (April 11 2022, 20:33-21:05)
-- [Yet Another Segments Subset](https://codeforces.com/contest/1399/problem/F)
-- [Round B Kick Start 2021 Truck Delivery](https://codingcompetitions.withgoogle.com/kickstart/round/0000000000435a5b/000000000077a885#problem) (April 6 2022)
+- [Construct Target Array With Multiple Sums](https://leetcode.com/explore/featured/card/may-leetcoding-challenge-2021/599/week-2-may-8th-may-14th/3737/)
+  - April 9 2022
+- [GameGame](https://codeforces.com/contest/1383/problem/B) 
+  - April 7 2022
+- [String Transformation 1](https://codeforces.com/contest/1383/problem/A)
+  - April 9 2022, 15:25-16:14
+- [C. Good Subarrays](https://codeforces.com/contest/1398/problem/C) 
+  - April 7 2022
+- [D. Zigzags](https://codeforces.com/contest/1400/problem/D)
+  - April 11 2022, 20:33-21:05
+- [Yet Another Segments Subset](https://codeforces.com/contest/1399/problem/F) 
+  - April 16 2022
+- [Round B Kick Start 2021 Truck Delivery](https://codingcompetitions.withgoogle.com/kickstart/round/0000000000435a5b/000000000077a885#problem) 
+  - April 6 2022
 - [Problem C: Quarantine](https://www.facebook.com/codingcompetitions/hacker-cup/2020/round-1/problems/C)
 # 2022
 - [Problem C2: Gold Mine - Chapter 2](https://www.facebook.com/codingcompetitions/hacker-cup/2021/qualification-round/problems/C2)
