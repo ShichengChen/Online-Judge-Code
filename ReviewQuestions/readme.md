@@ -11,8 +11,13 @@
   - April 20 2022 18:16-18:42 22:26-22:58 
   - April 21 2022 21:27-22:51 
 - [Codeforces Round #629 F.Make k Equal](https://codeforces.com/contest/1328/problem/F)
+  - April 21 2022 22:16-22:49 
+  - April 22 2022 20:30-22:59
 - [E. Quantifier Question](https://codeforces.com/contest/1345/problem/E)
+  - April 23 2022 10:36-12:00, 17:40-18:44 (read question wrongly, restart thinking)
+  - April 23 2022 18:44-19:58, 21:55-23:59 (little anxiety, read tutorial to get answer)
 - [EXPOGO](https://codingcompetitions.withgoogle.com/codejam/round/000000000019fef2/00000000002d5b62)
+  - April 24 2022 0:34-01:02
 - [Restorer Distance](https://codeforces.com/contest/1355/problem/E)
 - [Count The Blocks](https://codeforces.com/contest/1327/problem/E)
 - [Reading Books (hard version)](https://codeforces.com/contest/1374/problem/E2)
@@ -42,3 +47,4 @@
 - [Problem C2: Gold Mine - Chapter 2](https://www.facebook.com/codingcompetitions/hacker-cup/2021/qualification-round/problems/C2)
 - [Double or NOTing (14pts, 26pts)](https://codingcompetitions.withgoogle.com/codejam/round/00000000004362d7/00000000007c1139)
 - [Facebook Hacker Cup2021 Round 1 Problem A3: Weak Typing - Chapter 3](https://www.facebook.com/codingcompetitions/hacker-cup/2021/round-1/problems/A3)
+- [Insert a Progression](https://codeforces.com/contest/1671/problem/D)
