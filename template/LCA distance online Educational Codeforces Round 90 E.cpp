@@ -12,6 +12,7 @@ int n,m;
 vector<int>vec[MAXN];
 int depth[MAXN],fa[MAXN][LOGMAXN];
 struct LCA_DIS{
+    //build(1,0)
     void build(int u,int f){
         depth[u]=depth[f]+1;
         fa[u][0]=f;
@@ -22,8 +23,9 @@ struct LCA_DIS{
             if(v!=f)build(v,u);
         }
     }
-    int lca_dis(int u,int v){
-        if(u==v)return 0;
+    //return father and distance
+    int lca(int u,int v){
+        if(u==v)return u;
         int ans=0;
         if(depth[u]<depth[v])swap(u,v);
         for (int i = LOGMAXN-1; i >= 0; --i) {
@@ -32,7 +34,7 @@ struct LCA_DIS{
                 ans+=(1<<i);
             }
         }
-        if(u==v)return ans;
+        if(u==v)return u;
         for (int i = LOGMAXN-1; i >= 0; --i) {
             if(fa[u][i]!=fa[v][i]){
                 ans+=(1<<(i+1));
@@ -40,7 +42,11 @@ struct LCA_DIS{
                 v=fa[v][i];
             }
         }
-        return ans+2;
+        return fa[u][0];
+    }
+    int dis(int u,int v){
+        int f=lca(u,v);
+        return (depth[f]-depth[u])+(depth[f]-depth[v]);
     }
 };
 int main(){

@@ -1,5 +1,8 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "misc-no-recursion"
 #include <bits/stdc++.h>
 #include<ext/pb_ds/assoc_container.hpp>
+#include <random>
 typedef long long ll;
 using namespace std;
 using namespace __gnu_pbds;
@@ -15,6 +18,9 @@ using ordered_map = tree<key, value, cmp, rb_tree_tag, tree_order_statistics_nod
 #define rcnt (cnt<<1|1)
 #define vt vector
 #define pb push_back
+#define bg begin
+#define f_ first
+#define s_ second
 #define mp make_pair
 #define all(c) (c).begin(), (c).end()
 #define sz(x) (int)(x).size()
@@ -80,25 +86,23 @@ template<size_t S> string to_string(bitset<S> b) {
 
 template <class T> string to_string(T v) {
     char c=' ';int brace=0;
-    if constexpr (std::is_same_v<T, vt<vt<int>>>) c='\n';
-    if constexpr (std::is_same_v<T, vt<vt<vt<int>>>>) c='\n';
-    if constexpr (std::is_same_v<T, vt<vt<ll>>>) c='\n';
-    if constexpr (std::is_same_v<T, vt<vt<vt<ll>>>>) c='\n';
-    if constexpr (std::is_same_v<T, vt<vt<double>>>) c='\n';
-    if constexpr (std::is_same_v<T, vt<vt<vt<double>>>>) c='\n';
-    if(c=='\n')brace=1;
+    if constexpr (std::is_same_v<T, vt<vt<int>>>) c='\n',brace=1;
+    if constexpr (std::is_same_v<T, vt<vt<vt<int>>>>) c='\n',brace=1;
+    if constexpr (std::is_same_v<T, vt<vt<ll>>>) c='\n',brace=1;
+    if constexpr (std::is_same_v<T, vt<vt<vt<ll>>>>) c='\n',brace=1;
+    if constexpr (std::is_same_v<T, vt<vt<double>>>) c='\n',brace=1;
+    if constexpr (std::is_same_v<T, vt<vt<vt<double>>>>) c='\n',brace=1;
+    //if(c=='\n')brace=1;
     bool f=1;
     string res;
     EACH(x, v) {
         if(!f)res+=c;
         f=0;
-        if(brace)res+="["+ to_string(x)+"]";
-        else res+=to_string(x);
+        res+=to_string(x);
     }
     return res;
 }
 template<class T,class U> string to_string(pair<T,U> a){return to_string(a.first)+":"+to_string(a.second);}
-
 template<class A> void write(A x) {cout << to_string(x);}
 template<class H, class... T> void write(const H& h, const T&... t) {write(h);write(t...);}
 template<class H, class... T> void print(const H& h, const T&... t);
@@ -157,13 +161,13 @@ struct custom_hash { // Credits: https://codeforces.com/blog/entry/62393
         return splitmix64(Y.first * 31ull + Y.second + FIXED_RANDOM);
     }
 };
-template<class T, class U> void vti(vt<T> &v, U x, size_t n) {v=vt<T>(n, x);}
-template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
+template<class T, class U> void vtini(vt<T> &v, U x, size_t n) {v=vt<T>(n, x);}
+template<class T, class U> void vtini(vt<T> &v, U x, size_t n, size_t m...) {
     v=vt<T>(n);
-    EACH(a, v)vti(a, x, m);
+    EACH(a, v)vtini(a, x, m);
 }
 
-const int LOGMAXN = 18;
+
 //ll const MOD=998244353;
 ll const MOD=1e9+7;
 
@@ -279,46 +283,148 @@ struct fHelper:F{
 template<class F>
 inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
 // auto DFS=Recur([&](auto dfs, int u,int f)->void{dfs(v,u);});
-// DFS(u,f);
+// DFS(1,n)
 // Recur([&](auto dfs, int u,int f)->void{dfs(f,u);})(0,-1);
 using mint = modnum<MOD>;
+const int LOGMAXN = 18;
 const int MAXN = 2e5+20;
-void solve(){
-    int n;
-    read(n);
-    vt<int>arr(n);
-    read(arr);
-    auto win=[&](int i){
-        vt<int>vec(2,0);
-        FOR(j,n)vec[bool(arr[j]&(1<<i))]++;
-        if(!vec[1] || vec[1]%2==0)return 0;
-        if(vec[1]==1)return 1;
-        if(vec[1]%4==1 && vec[0]%2==0)return 1;
-        if(vec[1]%4==3 && vec[0]%2==0)return -1;
-        if(vec[1]%4==3 && vec[0]%2==1)return 1;
-        if(vec[1]%4==1 && vec[0]%2==1)return 1;
-        assert(false);
-    };
-    for (int i = 30; i >= 0; --i) {
-        int a=win(i);
-        if(a==1){print("WIN");return;}
-        if(a==-1){print("LOSE");return;}
+using pii=pair<int,int>;
+//vector<int>vec[MAXN];
+//int depth[MAXN],fa[MAXN][LOGMAXN];
+template<class T>
+struct RMQ {
+    vector<vector<T>> jmp;
+    RMQ(const vector<T>& V) : jmp(1, V) {
+        for (int pw = 1, k = 1; pw * 2 <= sz(V); pw *= 2, ++k) {
+            jmp.emplace_back(sz(V) - pw * 2 + 1);
+            FOR(j,0,sz(jmp[k]))
+                jmp[k][j] = min(jmp[k - 1][j], jmp[k - 1][j + pw]);
+        }
     }
-    print("DRAW");
+    T query(int a, int b) {
+        assert(a < b); // or return inf if a == b
+        int dep = 31 - __builtin_clz(b - a);
+        return min(jmp[dep][a], jmp[dep][b - (1 << dep)]);
+    }
+};
+struct LCA {
+    int T = 0;
+    vt<int> time, path, ret;
+    RMQ<int> rmq;
+    LCA(vector<vt<int>>& C) : time(sz(C)), rmq((dfs(C,0,-1), ret)) {}
+    void dfs(vector<vt<int>>& C, int v, int par) {
+        time[v] = T++;
+        for (int y : C[v]) if (y != par) {
+                path.push_back(v), ret.push_back(time[v]);
+                dfs(C, y, v);
+            }
+    }
+    int lca(int a, int b) {
+        if (a == b) return a;
+        tie(a, b) = minmax(time[a], time[b]);
+        return path[rmq.query(a, b)];
+    }
+    //dist(a,b){return depth[a] + depth[b] - 2*depth[lca(a,b)];}
+};
+//void readEdges(int m, vt<vt<int>>&vec){
+void readEdges(int m,vt<vt<int>>&vec,int o){
+    FOR(i,m){
+        int a,b;read(a,b);
+        a-=o,b-=o;
+        vec[a].push_back(b);
+        vec[b].push_back(a);
+    }
+}
+void solve(){
+    int n,m;
+    read(n,m);
+    vt<vt<ll>> arr(n, vt<ll>(m));
+    read(arr);
+    auto match=[&](int i0,int i1){
+        ll a=0;
+        FOR(i,m)a+=arr[i0][i]-arr[i1][i];
+        return a==0;
+    };
+    auto pre=[&](int i0,int i1){
+        for (int i = 0,j=m-1; i < j; ++i) {
+            ll dif=(arr[i0][i]-arr[i1][i]);
+            while(dif){
+                while(arr[i0][j]==arr[i1][j])j--;
+                assert(i<j);
+                ll dif2=arr[i0][j]-arr[i1][j];
+                if(dif<0){
+                    arr[i1][j]+=min(abs(dif2),abs(dif));
+                    dif-=max(dif2,dif);
+                }else{
+                    arr[i0][j]+=min(dif2,dif);
+                    dif-=dif2;
+                }
+            }
+        }
+    };
+    auto sol=[&](int i0,int i1){
+        ll dif=0;
+        for (int i = m-1; i>=0; --i) {
+            ll dif=(arr[i0][i]-arr[i1][i]);
+            while(dif){
+                while(arr[i0][j]==arr[i1][j])j--;
+                assert(i<j);
+                ll dif2=arr[i0][j]-arr[i1][j];
+                if(dif<0){
+                    arr[i1][j]+=min(abs(dif2),abs(dif));
+                    dif-=max(dif2,dif);
+                }else{
+                    arr[i0][j]+=min(dif2,dif);
+                    dif-=dif2;
+                }
+            }
+        }
+    };
+    int st=-1;
+    if(match(0,1))st=1,pre(0,1);
+    else if(match(0,2))st=0,pre(0,2);
+    else if(match(1,2))st=1,pre(1,2);
+    FOR(i,0,n)if(i!=st){
+        if(!match(st,i)){
+            print(sp);
+
+        }
+    }
 }
 int main() {
 //    freopen("/home/csc/Online-Judge-Code/G/input.txt", "r", stdin);
 //    freopen("/home/csc/Online-Judge-Code/G/output.txt2", "w", stdout);
-    int t, i=1;
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int t=1, i=1;
     read(t);
     while(t--) {
-        //cout << "Case #" << i << ": ";
+//        cout << "Case #" << i << ": ";
         solve();
         ++i;
     }
     return 0;
 }
 /*
+5
+
+4
+4 8 9 13
+
+
+
+7
+ 1 2
+ 1 3
+ 2 4
+ 2 5
+ 3 6
+ 3 7
+ 99
+ 2 2 3
+ 3 4 2 3
+ 4 2 5 3 7
+ 2 2 6
 
 re-read the problem
 re-read the code
@@ -339,6 +445,59 @@ formulate the problem by math notations
 
 
 /*
+ *
+ 99 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36
+ 99
+ 31
+ 230 231 232 233 234 235 236 237 238 239
+ 240 241 242 243 244 245 246 247 248 249
+ 250 251 252 253 254 255     257 258 259
+ 260 262
+
+
+
+999
+ 5
+20 10 30 10 20
+3
+1 8 1
+6
+7 6 6 8 5 8
+6
+14 3 8 10 15 4
+4
+1 100 100 1
+3
+40 10 10
+
+
+
+
+
+
+
+
+ 99
+ -521613854 56777512 428978993
+-180948782 170332536 141234994
+ -208371359 112978477 228078842
+243542549 225956954 64861504
+
+
+ 990906301
+
+ *
+4 2 1
+ 9 1 1
+ 5 1 0
+ 6 0 1
+ 1 0 0
+
+ 4 3 1
+ 9 1 1
+ 5 1 0
+ 6 0 1
+ 1 0 0
 
 
  99
@@ -359,3 +518,4 @@ formulate the problem by math notations
  10001 1101
 
  * */
+//#pragma clang diagnostic pop

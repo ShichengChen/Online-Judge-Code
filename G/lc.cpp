@@ -191,29 +191,37 @@ class Solution {
     inline bool inboard(int y,int x,int n,int m){
         return y>=0 && x >=0 && y<n && x<m;
     }
+    using pii=pair<int,int>;
 public:
-    int minMoves2(vector<int>& nums) {
-        sort(all(nums));
-        int len= sz(nums);
-        int ans=0;
-        for (int i:nums) {
-            ans+= abs(i-nums[len/2]);
+    int tallestBillboard(vt<int>arr){
+        int MAXN=5000;
+        vt<vt<int>>d(sz(arr)+1,vt<int>(MAXN*2+4,-1));
+        d[0][MAXN]=0;
+        for (int i = 0; i < sz(arr); ++i) {
+            for (int j = 0; j <= MAXN*2; ++j) {
+                umax(d[i+1][j],d[i][j]);
+                if(j-arr[i]>=0 && d[i][j-arr[i]]>=0)umax(d[i+1][j],d[i][j-arr[i]]+arr[i]);
+                if(j+arr[i]<=MAXN*2 && d[i][j+arr[i]]>=0)umax(d[i+1][j],d[i][j+arr[i]]+arr[i]);
+            }
         }
-        return ans;
+        //print(d);
+        return d[sz(arr)][MAXN]/2;
     }
 };
 int main() {
     Solution s;
-    s.numSubmatrixSumTarget({1,2,3},4);
-//    vector<int>arr={1,1,2,2,2,3};
-//    int idx=max_element(arr.begin(),arr.end())-arr.begin();
-//    int maxn=arr[idx?0:1];
-//    for (int i = 0; i < arr.size(); ++i) {
-//        if(i==idx)continue;
-//        if(arr[i]>maxn)maxn=arr[i];
-//    }
-//    print(maxn);
-//    int idx=max_element(arr.begin(),arr.end())-arr.begin();
-    //int ans=max()
-
+    cout << s.tallestBillboard({1,2,3,6}) << "\n";
+    cout << s.tallestBillboard({1,2,3,4,5,6}) << "\n";
+    cout << s.tallestBillboard({1,2}) << "\n";
+    cout << s.tallestBillboard({1,2,4,8,16,32,64,128,256,512,50,50,50,150,150,150,100,100,100,123}) << "\n";
+    //1023
 }
+/*
+
+ qwerty
+ q*w*e**y
+
+ qwerty
+ q.*w*e**y
+
+ */

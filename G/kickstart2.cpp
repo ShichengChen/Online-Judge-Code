@@ -1,8 +1,5 @@
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "misc-no-recursion"
 #include <bits/stdc++.h>
 #include<ext/pb_ds/assoc_container.hpp>
-#include <random>
 typedef long long ll;
 using namespace std;
 using namespace __gnu_pbds;
@@ -18,9 +15,6 @@ using ordered_map = tree<key, value, cmp, rb_tree_tag, tree_order_statistics_nod
 #define rcnt (cnt<<1|1)
 #define vt vector
 #define pb push_back
-#define bg begin
-#define f_ first
-#define s_ second
 #define mp make_pair
 #define all(c) (c).begin(), (c).end()
 #define sz(x) (int)(x).size()
@@ -85,21 +79,19 @@ template<size_t S> string to_string(bitset<S> b) {
 }
 
 template <class T> string to_string(T v) {
-    char c=' ';int brace=0;
-    if constexpr (std::is_same_v<T, vt<vt<int>>>) c='\n';
-    if constexpr (std::is_same_v<T, vt<vt<vt<int>>>>) c='\n';
+    char c=' ';
     if constexpr (std::is_same_v<T, vt<vt<ll>>>) c='\n';
-    if constexpr (std::is_same_v<T, vt<vt<vt<ll>>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<int>>>) c='\n';
     if constexpr (std::is_same_v<T, vt<vt<double>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<vt<int>>>>) c='\n';
+    if constexpr (std::is_same_v<T, vt<vt<vt<ll>>>>) c='\n';
     if constexpr (std::is_same_v<T, vt<vt<vt<double>>>>) c='\n';
-    if(c=='\n')brace=1;
     bool f=1;
     string res;
     EACH(x, v) {
         if(!f)res+=c;
         f=0;
-        if(brace)res+="["+ to_string(x)+"]";
-        else res+=to_string(x);
+        res+=to_string(x);
     }
     return res;
 }
@@ -163,12 +155,14 @@ struct custom_hash { // Credits: https://codeforces.com/blog/entry/62393
         return splitmix64(Y.first * 31ull + Y.second + FIXED_RANDOM);
     }
 };
-template<class T, class U> void vtini(vt<T> &v, U x, size_t n) {v=vt<T>(n, x);}
-template<class T, class U> void vtini(vt<T> &v, U x, size_t n, size_t m...) {
+template<class T, class U> void vti(vt<T> &v, U x, size_t n) {v=vt<T>(n, x);}
+template<class T, class U> void vti(vt<T> &v, U x, size_t n, size_t m...) {
     v=vt<T>(n);
-    EACH(a, v)vtini(a, x, m);
+    EACH(a, v)vti(a, x, m);
 }
-
+const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
+const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
+inline bool inboard(int y,int x,int n,int m){return y>=0 && x >=0 && y<n && x<m;}
 const int LOGMAXN = 18;
 //ll const MOD=998244353;
 ll const MOD=1e9+7;
@@ -270,10 +264,6 @@ template <typename T,typename U>
 bool checkPairRange(const std::pair<T,U> & l,T lx0,T lx1, U ly0, U ly1){
     return l.first>=lx0 && l.first<lx1 && l.second>=ly0 && l.second<ly1;
 };
-const int d4i[4]={-1, 0, 1, 0}, d4j[4]={0, 1, 0, -1};
-const int d8i[8]={-1, -1, 0, 1, 1, 1, 0, -1}, d8j[8]={0, 1, 1, 1, 0, -1, -1, -1};
-const pair<int,int> pairdir[]={{0,1},{0,-1},{1,0},{-1,0}};
-inline bool inboard(int y,int x,int n,int m){return y>=0 && x >=0 && y<n && x<m;}
 template<class F>
 struct fHelper:F{
     explicit fHelper(F&& f):F(forward<F>(f)){}
@@ -289,37 +279,52 @@ inline decltype(auto) Recur(F&&f){return fHelper<F>{forward<F>(f)};}
 // Recur([&](auto dfs, int u,int f)->void{dfs(f,u);})(0,-1);
 using mint = modnum<MOD>;
 const int MAXN = 2e5+20;
-using pii=pair<int,int>;
-void solve(){
-    int n;string s;
-    read(n,s);
-    auto check=[&](string &s){
-        FOR(i, sz(s)/2)if(s[i]!=s[sz(s)-i-1])return false;
+void solve() {
+    int n,m,p;
+    read(n,m,p);
+    vt<string>f(n),ban(m);
+    read(f,ban);
+    vt<pair<int,int>>vec(p);
+    string bs=f[0];
+    int minn=0;
+    FOR(i,p){
+        int cur=0;
+        FOR(j,n)cur+=f[j][i]=='0';
+        if(cur<=n-cur)vec[i]={cur,i},bs[i]='1';
+        else vec[i]={n-cur,i},bs[i]='0';
+        minn+=min(cur,n-cur);
+    }
+    sort(all(vec),greater<>());
+    vt<int>id(p);
+    int ans=10000;
+    auto checkban=[&](){
+        FOR(m)if(!bs.compare(ban[i]))return false;
         return true;
     };
-    int acc=0;
-    auto DFS=Recur([&](auto dfs, string s,int cnt)->void{
-        if(sz(s)==1){
-            acc+=cnt+1;
-            return;
+    auto sinverse=[&](int bit){
+        FOR(i,min(10,p)){
+            int idx=vec[i].second;
+            if(bit&(1<<i))bs[idx]=(1-(bs[idx]-'0'))+'0';
         }
-        FOR(i, sz(s)){
-            string c=s.substr(0,i)+((i+1)<sz(s)?s.substr(i+1):"");
-            //print("c:",c);
-            dfs(c,cnt+check(c));
+    };
+    //debug(bs,ban,bs.compare(ban[0]));
+    for (int bit = 0; bit < (1<<min(p,10)); ++bit) {
+        string oldbs=bs;
+        sinverse(bit);
+            if(checkban()){
+            int acc=0;
+            FOR(i,min(10,p))if(bit&(1<<i))acc+=(n-2*vec[i].first);
+            umin(ans,minn+acc);
+            //print(bit,bs,acc);
         }
-    });
-    DFS(s,0);
-    mint ans=acc;
-    FOR(i,n-1)ans/=(n-i);
+        bs=oldbs;
+    }
     print(ans);
+
+
 }
 int main() {
-//    freopen("/home/csc/Online-Judge-Code/G/input.txt", "r", stdin);
-//    freopen("/home/csc/Online-Judge-Code/G/output.txt2", "w", stdout);
-//    ios::sync_with_stdio(false);
-//    cin.tie(nullptr);
-    int t=1, i=1;
+    int t, i=1;
     read(t);
     while(t--) {
         cout << "Case #" << i << ": ";
@@ -329,28 +334,6 @@ int main() {
     return 0;
 }
 /*
-
- 99
- 5 abcdd
- 5 aaccd
- 5 adaae
- 5 aaddd
- 5 aaade
-
-Case #1: 700000007
-Case #2: 400000005
-Case #3: 200000004
-Case #4: 500000006
-Case #5: 800000008
-Case #6:
-
-Case #1: 400000005
-Case #2: 800000008
-Case #3: 400000006
-Case #4: 3
-Case #5: 600000007
-
-
 re-read the problem
 re-read the code
 create some samples
@@ -370,77 +353,33 @@ formulate the problem by math notations
 
 
 /*
- *
- 99 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36
- 99
- 31
- 230 231 232 233 234 235 236 237 238 239
- 240 241 242 243 244 245 246 247 248 249
- 250 251 252 253 254 255     257 258 259
- 260 262
 
-
-
-999
- 5
-20 10 30 10 20
-3
-1 8 1
-6
-7 6 6 8 5 8
-6
-14 3 8 10 15 4
+7
+1
+.
+1
+B
+1
+R
+2
+BR
+BB
 4
-1 100 100 1
-3
-40 10 10
-
-
-
-
-
-
-
-
- 99
- -521613854 56777512 428978993
--180948782 170332536 141234994
- -208371359 112978477 228078842
-243542549 225956954 64861504
-
-
- 990906301
-
- *
-4 2 1
- 9 1 1
- 5 1 0
- 6 0 1
- 1 0 0
-
- 4 3 1
- 9 1 1
- 5 1 0
- 6 0 1
- 1 0 0
-
-
- 99
- ?1?1??????
- 111??????
-
- ????????????????
-
-
-99
- 1010 101
- 101 1010
- 0 1110000
- 1001110000 1
- 100111 1111
-
- 10100 101110
- 10001 1101
+RRBB
+RRB.
+RRB.
+RRBB
+4
+R.BB
+RRB.
+RRB.
+RRBB
+6
+......
+..B...
+RRRRRR
+..B.B.
+..BB..
+......
 
  * */
-//#pragma clang diagnostic pop

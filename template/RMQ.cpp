@@ -215,6 +215,38 @@ ll const MOD=1e9+7;
 //
 //using mint = modnum<MOD>;
 const int MAXN = 2e6+20;
+
+using pii=pair<int,int>;
+struct RMQ2{
+    //for max rmq
+    vt<vt<int>>maxn,minn;
+    int N;
+    explicit RMQ(vt<int>&in){
+        N= sz(in);
+        int h=int(log2(N)+2);
+        maxn=vt<vt<int>>(N,vt<int>(h,0));
+        minn=vt<vt<int>>(N,vt<int>(h,0));
+        FOR(i,N)minn[i][0]=maxn[i][0]=in[i];
+        FOR(j,1,h)
+            FOR(i, N){{
+                    maxn[i][j]=maxn[i][j-1];
+                    minn[i][j]=minn[i][j-1];
+                    if(i+(1<<(j-1))<N) {
+                        umax(maxn[i][j], maxn[i + (1 << (j - 1))][j - 1]);
+                        umin(minn[i][j], minn[i + (1 << (j - 1))][j - 1]);
+                    }
+                }
+            }
+    }
+    vt<int> query(int l,int r){
+        //[l,r];
+        assert(l>=0 && l<=r && r<N);
+        int len=int(log2(r-l+1));
+        return {min(minn[l][len],minn[r+1-(1<<len)][len]),
+                max(maxn[l][len],maxn[r+1-(1<<len)][len])};
+    }
+};
+
 struct RMQ{
     //for max rmq
     vt<vt<int>>arr;
@@ -223,7 +255,7 @@ struct RMQ{
         N= sz(in);
         int h=int(log2(N)+2);
         arr=vt<vt<int>>(N,vt<int>(h,0));
-        FOR(N)arr[i][0]=in[i];
+        FOR(i,N)arr[i][0]=in[i];
         FOR(j,1,h)
             FOR(i, N){{
                 arr[i][j]=arr[i][j-1];

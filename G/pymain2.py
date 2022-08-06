@@ -17,22 +17,25 @@ def insr():
 def invr():
     return(map(int,input().split()))
 
-
-
-
 def solve():
-    n = inp()
-    arr=inlt()
-    arr.sort()
-    #print(arr)
-    j=0
-    for i in range(n):
-        if(arr[i]>=j+1):j+=1
-    print(j)
+    n,m=inlt()
+    arr=np.array(sorted(inlt()))
+    if(m==1):print(np.median(arr))
+    else:
+        mid=n-(m-1)
+        print(np.median(arr[:mid])+np.sum(arr[mid:]))
 
 if __name__ == "__main__":
-    #t=1
-    t=inp()
+    t=1
+    t=int(input())
     for i in range(t):
         print("Case #"+str(i+1)+": ", end ="")
         solve()
+
+
+
+'''
+99
+2 10
+1 2
+'''
