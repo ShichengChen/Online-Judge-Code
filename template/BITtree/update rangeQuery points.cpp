@@ -142,7 +142,8 @@ public:
         arr.clear();
         arr=vector<T>(sz(cur),0);
         assert(type==1);
-        if(type==1)FOR(i,1,sz(cur))update(i,cur[i]-cur[i-1]);//,print(arr[i]);
+//        if(type==1)FOR(i,1,sz(cur))update(i,cur[i]-cur[i-1]);//,print(arr[i]);
+        if(type==1)FOR(i,1,sz(cur))update(i,cur[i]);//,print(arr[i]); 
         //print(arr);
     }
     void update(int x,T val) { while(x<sz(arr))  {  arr[x]+=val;  x+=(x&-x);}   }
